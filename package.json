@@ -6,8 +6,9 @@
   "exports": { ".": "./index.js" },
   "scripts": {
     "test": "node --test tests/*.test.js",
+    "verify:analytics": "node scripts/inject-network-analytics.js",
     "verify:smoke": "node scripts/verify-smoke.js",
-    "verify:all": "npm test && npm run verify:smoke"
+    "verify:all": "npm run verify:analytics && npm test && npm run verify:smoke"
   },
   "engines": { "node": "22.x" }
 }

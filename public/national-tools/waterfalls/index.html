@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<!-- network-ga4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Y5D2V2W7HN"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-Y5D2V2W7HN');</script>
+<title>Waterfall Window | Live Waterfall Flow Forecast</title>
+<meta name="description" content="Is a waterfall worth visiting today? Waterfall Window combines connected USGS gauges, NOAA National Water Model guidance, seasonal flow history, forecast precipitation and upstream regulation context into a live waterfall spectacle forecast.">
+<link rel="canonical" href="https://chrisizworski.com/national-tools/waterfalls/">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<meta property="og:title" content="Waterfall Window | Is the flow worth seeing today?">
+<meta property="og:description" content="A live waterfall spectacle forecast built from multiple independent hydrologic and weather signals.">
+<meta property="og:type" content="website"><meta property="og:url" content="https://chrisizworski.com/national-tools/waterfalls/">
+<meta name="twitter:card" content="summary"><meta name="twitter:title" content="Waterfall Window"><meta name="twitter:description" content="Live waterfall flow intelligence from USGS, NOAA and NWS signals.">
+<link rel="stylesheet" href="/national-tools/waterfalls/_assets/national-waterfall.css">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","@id":"https://chrisizworski.com/national-tools/waterfalls/#app","name":"Waterfall Window","url":"https://chrisizworski.com/national-tools/waterfalls/","applicationCategory":"TravelApplication","operatingSystem":"Any","isAccessibleForFree":true,"description":"A live waterfall spectacle forecast derived from hydrologically connected observations, model guidance, seasonal flow history and weather forecasts.","author":{"@id":"https://chrisizworski.com/#person"}},{"@type":"Person","@id":"https://chrisizworski.com/#person","name":"Chris Izworski","url":"https://chrisizworski.com/"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://chrisizworski.com/"},{"@type":"ListItem","position":2,"name":"U.S. Outdoor Tools","item":"https://chrisizworski.com/national-tools/"},{"@type":"ListItem","position":3,"name":"Waterfall Window","item":"https://chrisizworski.com/national-tools/waterfalls/"}]}]}</script>
+</head>
+<body data-analytics-page="national-waterfalls">
+<header class="site-head"><div class="head-in"><a class="brand" href="/">Chris Izworski</a><nav class="nav" aria-label="Primary"><a href="/">Home</a><a href="/tools/">Michigan Tools</a><a href="/national-tools/">U.S. Outdoor Tools</a></nav></div></header>
+<main class="wrap">
+  <div class="crumb"><a href="/">Home</a> &rsaquo; <a href="/national-tools/">U.S. Outdoor Tools</a> &rsaquo; Waterfall Window</div>
+  <section class="hero">
+    <div><div class="eyebrow">Live hydrologic intelligence</div><h1>Waterfall Window</h1><p class="dek">How spectacular is the flow right now — and is it getting better? This tool links a waterfall to its river network, then reads several independent signals together instead of pretending one nearby gauge tells the whole story.</p></div>
+    <aside class="hero-note"><strong>A spectacle forecast, not a safety score.</strong>High water can make a waterfall more dramatic and the surrounding river edge more dangerous at the same time.</aside>
+  </section>
+
+  <section class="search-panel" aria-labelledby="find-title">
+    <div class="kicker">Find a waterfall</div><h2 id="find-title">Where are you thinking about going?</h2><p>Search a named waterfall anywhere in the United States, or look for mapped waterfalls around your current location.</p>
+    <form id="waterfall-search-form"><div class="search-row"><label class="sr-only" for="waterfall-query">Waterfall name</label><input class="search-input" id="waterfall-query" autocomplete="off" placeholder="Tahquamenon Falls, Multnomah Falls, Yosemite Falls…"><button class="button" type="submit">Check the flow</button></div></form>
+    <div class="search-actions"><button class="button secondary" id="nearby-button" type="button">Find waterfalls near me</button></div>
+    <div class="examples">Try: <button data-example="Tahquamenon Falls">Tahquamenon Falls</button> · <button data-example="Multnomah Falls">Multnomah Falls</button> · <button data-example="Yosemite Falls">Yosemite Falls</button> · <button data-example="Cumberland Falls Kentucky">Cumberland Falls</button></div>
+    <div class="status" id="search-status" aria-live="polite"></div>
+    <div class="result-wrap" id="search-results-wrap" hidden><div class="results" id="search-results"></div></div>
+  </section>
+
+  <section class="analysis" id="analysis" hidden aria-live="polite">
+    <div class="analysis-head"><div><div class="kicker">Waterfall outlook</div><h2 id="analysis-name">Waterfall</h2><div class="analysis-place" id="analysis-place"></div></div><div class="confidence" id="confidence">Confidence</div></div>
+    <div class="score-grid">
+      <article class="score-card primary"><div class="when">Right now</div><div class="score"><span id="now-score">—</span><span>/100</span></div><div class="score-label" id="now-label">—</div><div class="flow" id="now-flow">—</div></article>
+      <article class="score-card"><div class="when">Next 24 hours</div><div class="score"><span id="day-score">—</span><span>/100</span></div><div class="score-label" id="day-label">—</div><div class="flow" id="day-flow">—</div></article>
+      <article class="score-card"><div class="when">Next 3 days</div><div class="score"><span id="three-score">—</span><span>/100</span></div><div class="score-label" id="three-label">—</div><div class="flow" id="three-flow">—</div></article>
+    </div>
+    <ul class="reasons" id="reasons"></ul><div class="caution" id="caution"></div>
+
+    <section class="signal-section"><h2>What is driving the score?</h2><div class="signal-grid">
+      <article class="signal-card"><div class="kicker">Observed water</div><h3>Connected USGS gauge</h3><div class="metric" id="gauge-metric">—</div><div class="detail" id="gauge-detail"></div><span class="source-state" id="gauge-state"></span></article>
+      <article class="signal-card"><div class="kicker">Seasonal context</div><h3>What is normal now?</h3><div class="metric" id="seasonal-metric">—</div><div class="detail" id="seasonal-detail"></div><span class="source-state" id="seasonal-state"></span></article>
+      <article class="signal-card"><div class="kicker">Reach forecast</div><h3>National Water Model</h3><div class="metric" id="model-metric">—</div><div class="detail" id="model-detail"></div><span class="source-state" id="model-state"></span></article>
+      <article class="signal-card"><div class="kicker">Incoming water</div><h3>NWS precipitation</h3><div class="metric" id="precip-metric">—</div><div class="detail" id="precip-detail"></div><span class="source-state" id="precip-state"></span></article>
+      <article class="signal-card"><div class="kicker">Flow controls</div><h3>Upstream dams / reservoirs</h3><div class="metric" id="regulation-metric">—</div><div class="detail" id="regulation-detail"></div><span class="source-state" id="regulation-state"></span></article>
+    </div></section>
+  </section>
+
+  <section class="method"><div class="kicker">Why this is different</div><h2>One waterfall, several independent signals</h2><p>The waterfall is first attached to the mapped hydrologic network. From there, the tool looks along that network for relevant observations and infrastructure, retrieves local modeled streamflow and weather forcing, builds a same-season baseline, and only then derives the spectacle forecast.</p>
+    <div class="method-grid">
+      <div class="method-item"><strong>USGS NLDI</strong><span>Hydrolocation snap, river-network connectivity, gauges and upstream regulation features.</span></div>
+      <div class="method-item"><strong>USGS Water Data</strong><span>Live connected streamflow plus daily history for the seasonal reference.</span></div>
+      <div class="method-item"><strong>NOAA National Water Model</strong><span>Near-real-time analysis and forecast guidance on the waterfall's local river reach, including ungauged streams.</span></div>
+      <div class="method-item"><strong>National Weather Service</strong><span>Quantitative precipitation forecast used as an independent future-flow driver.</span></div>
+    </div>
+    <p class="fineprint">Waterfall Window is an experimental decision-intelligence product. It does not estimate exact curtain width, plume shape, visibility, trail status or safe viewing distance. Modeled flow is guidance rather than an official NWS river forecast. Heavily regulated waterfalls may respond to releases that public national feeds cannot predict precisely.</p>
+  </section>
+</main>
+<footer class="footer"><div class="footer-in">Waterfall Window · Part of the U.S. Outdoor Tools by Chris Izworski</div></footer>
+<script src="/national-tools/waterfalls/_assets/national-waterfall-page.js" defer></script>
+</body></html>

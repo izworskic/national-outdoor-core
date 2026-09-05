@@ -1,0 +1,38 @@
+{
+  "product": "Waterfall Window",
+  "version": "1.0.0",
+  "goal": "Turn multiple independent national hydrologic and weather feeds into a trustworthy answer to: Is this waterfall visually worth visiting now, and is the flow likely to improve over the next three days?",
+  "value_function": {
+    "decision_usefulness": 25,
+    "data_fusion_depth": 20,
+    "hydrologic_correctness": 20,
+    "confidence_and_degradation": 10,
+    "safety_separation": 10,
+    "search_growth_surface": 10,
+    "mobile_accessibility_performance": 5,
+    "release_target": 90
+  },
+  "hard_vetoes": [
+    "Do not choose a gauge by straight-line distance when NLDI network linkage is available.",
+    "Do not label National Water Model guidance as an official NWS forecast.",
+    "Do not present spectacle score as safety or access advice.",
+    "Do not invent live flow, rainfall, historical percentile, or regulation data when a source fails.",
+    "Do not retain high confidence when connected observations or seasonal history are absent.",
+    "Do not allow upstream regulation detection to increase confidence."
+  ],
+  "benchmark_cases": [
+    {"name":"free-flowing gauged waterfall","required":"NLDI + NWM + connected USGS gauge + seasonal daily history + NWS QPF; confidence High when all current"},
+    {"name":"ungauged waterfall","required":"NLDI + local NWM + NWS QPF; score may render but confidence Low and observation absence disclosed"},
+    {"name":"regulated waterfall","required":"upstream dam/reservoir disclosure; confidence penalty; no claim releases are known"},
+    {"name":"high-water spectacle","required":"high spectacle may coexist with elevated safety caution"},
+    {"name":"source outage","required":"partial result degrades explicitly; never substitute fabricated values"},
+    {"name":"wrong-basin-nearby-gauge trap","required":"network-connected gauge only; geographic-nearest shortcut forbidden"}
+  ],
+  "launch_metrics": {
+    "api_success_target": ">= 95% for hydrologically mappable U.S. waterfalls",
+    "core_response_target": "<= 5 seconds p50 after warm cache",
+    "mobile_target": "first decision visible without horizontal scroll at 390px",
+    "seo_target": "canonical tool page indexable; API endpoints noindex",
+    "engagement_events": ["waterfall_search","waterfall_select","nearby_search","window_render","source_degraded"]
+  }
+}

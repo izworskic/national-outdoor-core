@@ -17,6 +17,18 @@
     {
       "source": "/national-tools/smoke/_assets/:path*",
       "destination": "/assets/:path*"
+    },
+    {
+      "source": "/national-tools/waterfalls/_api",
+      "destination": "/api/national-waterfall-window"
+    },
+    {
+      "source": "/national-tools/waterfalls/_search",
+      "destination": "/api/national-waterfall-search"
+    },
+    {
+      "source": "/national-tools/waterfalls/_assets/:path*",
+      "destination": "/assets/:path*"
     }
   ]
 }

@@ -1,0 +1,33 @@
+"use strict";
+const fs=require("node:fs");
+const path=require("node:path");
+const root=path.resolve(__dirname,"..");
+const benchmark=JSON.parse(fs.readFileSync(path.join(root,"benchmarks/national-smoke-outdoor-window.json"),"utf8"));
+let score=100;
+const failures=[];
+function requireFile(file,points=5){if(!fs.existsSync(path.join(root,file))){failures.push(`missing ${file}`);score-=points}}
+benchmark.required_files.forEach(file=>requireFile(file));
+requireFile("scripts/inject-network-analytics.js",8);
+const html=fs.readFileSync(path.join(root,"public/national-tools/smoke/index.html"),"utf8");
+const api=fs.readFileSync(path.join(root,"api/national-smoke-window.js"),"utf8");
+const engine=fs.readFileSync(path.join(root,"lib/smoke-window.js"),"utf8");
+const pagejs=fs.readFileSync(path.join(root,"public/assets/national-smoke-page.js"),"utf8");
+const prompt=fs.readFileSync(path.join(root,"docs/prompts/national-smoke-outdoor-window.md"),"utf8");
+function check(ok,label,points){if(!ok){failures.push(label);score-=points}}
+check(/rel="canonical" href="https:\/\/chrisizworski\.com\/national-tools\/smoke\/"/.test(html),"canonical smoke URL missing",10);
+check(/WebApplication/.test(html),"WebApplication structured data missing",4);
+check(/G-Y5D2V2W7HN/.test(html),"network GA4 measurement missing from smoke HTML",10);
+check(/national-smoke-window/.test(html+api+pagejs),"smoke API contract not wired",8);
+check(/X-Robots-Tag/.test(api)&&/noindex, nofollow/.test(api),"API noindex protection missing",8);
+check(/reportingarea\.dat/.test(api),"supported AirNow reporting-area feed missing",8);
+check(/ndgd_apm25_hr01/.test(api),"NOAA hourly PM2.5 guidance source missing",8);
+check(/forecastHourly/.test(api),"NWS hourly context missing",5);
+check(/VIIRS_NOAA21_NRT/.test(api),"NOAA-21 FIRMS optional context missing",3);
+check(/not an official AQI forecast/i.test(engine+html),"false-AQI-forecast guardrail missing",10);
+check(/degraded_families/.test(api)&&/optional_degraded_families/.test(api)&&/Promise\.allSettled/.test(api),"independent source degradation missing",8);
+check(/confidence/.test(engine)&&/Insufficient evidence/.test(engine),"confidence/true-unavailable handling missing",6);
+check(/return res\.status\(200\)/.test(api),"insufficient-evidence results must remain renderable",5);
+check(/Loss function/.test(prompt)&&/Hard vetoes/.test(prompt)&&/Release benchmark/.test(prompt),"master prompt release framework incomplete",8);
+if(score<benchmark.ship_score)failures.push(`score ${score} below ship threshold ${benchmark.ship_score}`);
+console.log(JSON.stringify({score,ship_score:benchmark.ship_score,pass:failures.length===0,failures},null,2));
+if(failures.length)process.exit(1);

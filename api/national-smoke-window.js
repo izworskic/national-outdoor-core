@@ -6,7 +6,6 @@ const AIRNOW_URL = "https://files.airnowtech.org/airnow/today/reportingarea.dat"
 const NOAA_PM25 = "https://mapservices.weather.noaa.gov/raster/rest/services/air_quality/ndgd_apm25_hr01/ImageServer/identify";
 const NWS_BASE = "https://api.weather.gov";
 const USER_AGENT = "ChrisIzworski-National-Smoke-Window/1.0 (https://chrisizworski.com/national-tools/smoke/)";
-
 let airNowCache = { expires: 0, text: null, fetchedAt: null };
 
 function setHeaders(res) {
@@ -23,9 +22,7 @@ async function fetchWithTimeout(url, options = {}, timeoutMs = 9000) {
     const response = await fetch(url, { ...options, signal: controller.signal });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     return response;
-  } finally {
-    clearTimeout(timer);
-  }
+  } finally { clearTimeout(timer); }
 }
 
 async function airNowText() {
@@ -107,20 +104,17 @@ function parseFirmsCsv(text, latitude, longitude) {
       satellite: headers.indexOf("satellite") >= 0 ? row[headers.indexOf("satellite")] : null,
     };
   }).filter((row) => row && row.distance_miles != null && row.distance_miles <= 150)
-    .sort((a, b) => a.distance_miles - b.distance_miles)
-    .slice(0, 12);
+    .sort((a, b) => a.distance_miles - b.distance_miles).slice(0, 12);
 }
 
 async function firmsContext(latitude, longitude) {
   const key = process.env.FIRMS_MAP_KEY;
   if (!key) return { available: false, reason_code: "firms_key_not_configured", detections: [] };
-  const latPad = 2.2, lonPad = 2.8;
-  const bbox = [longitude - lonPad, latitude - latPad, longitude + lonPad, latitude + latPad]
-    .map((v) => Math.max(-180, Math.min(180, v)).toFixed(3)).join(",");
+  const bbox = [longitude - 2.8, latitude - 2.2, longitude + 2.8, latitude + 2.2]
+    .map((v, i) => Math.max(i % 2 ? -90 : -180, Math.min(i % 2 ? 90 : 180, v)).toFixed(3)).join(",");
   const url = `https://firms.modaps.eosdis.nasa.gov/api/area/csv/${encodeURIComponent(key)}/VIIRS_NOAA21_NRT/${bbox}/1`;
   const response = await fetchWithTimeout(url, { headers: { "user-agent": USER_AGENT } }, 9000);
-  const text = await response.text();
-  return { available: true, reason_code: null, detections: parseFirmsCsv(text, latitude, longitude) };
+  return { available: true, reason_code: null, detections: parseFirmsCsv(await response.text(), latitude, longitude) };
 }
 
 function sourceStatus(name, type, available, details = {}) {
@@ -128,14 +122,10 @@ function sourceStatus(name, type, available, details = {}) {
 }
 
 async function buildResult(latitude, longitude, now = Date.now()) {
-  const outcomes = await Promise.allSettled([
-    airNowText(),
-    noaaPm25Guidance(latitude, longitude, now),
-    nwsHourly(latitude, longitude),
-    firmsContext(latitude, longitude),
+  const [airResult, modelResult, weatherResult, firmsResult] = await Promise.allSettled([
+    airNowText(), noaaPm25Guidance(latitude, longitude, now), nwsHourly(latitude, longitude), firmsContext(latitude, longitude),
   ]);
 
-  const [airResult, modelResult, weatherResult, firmsResult] = outcomes;
   let air = { observation: null, forecasts: [] }, airMeta = null;
   if (airResult.status === "fulfilled") {
     airMeta = airResult.value;
@@ -155,7 +145,7 @@ async function buildResult(latitude, longitude, now = Date.now()) {
   if (airResult.status === "rejected" || !air.observation) degraded.push("airnow_pm25_observation");
   if (modelResult.status === "rejected" || model.length < 3) degraded.push("noaa_hourly_pm25_guidance");
   if (weatherResult.status === "rejected") degraded.push("nws_hourly_weather");
-  if (!fires.available) degraded.push("nasa_firms_fire_context");
+  const optionalDegraded = fires.available ? [] : ["nasa_firms_fire_context"];
 
   return {
     generated_at: new Date(now).toISOString(),
@@ -192,27 +182,24 @@ async function buildResult(latitude, longitude, now = Date.now()) {
       caveat: "Satellite fire detections are context only and do not prove that a particular fire caused smoke at this location."
     },
     degraded_families: degraded,
+    optional_degraded_families: optionalDegraded,
     sources: [
       sourceStatus("AirNow reporting-area data", "official observation and agency forecast", airResult.status === "fulfilled", {
-        url: AIRNOW_URL,
-        fetched_at: airMeta?.fetchedAt || null,
+        url: AIRNOW_URL, fetched_at: airMeta?.fetchedAt || null,
         note: "PM2.5 AQI values and categories are preserved as published; observations are preliminary real-time data."
       }),
       sourceStatus("NOAA/NWS hourly PM2.5 forecast guidance", "numerical model guidance", modelResult.status === "fulfilled" && model.length > 0, {
         url: "https://mapservices.weather.noaa.gov/raster/rest/services/air_quality/ndgd_apm25_hr01/ImageServer",
-        sample_count: model.length,
-        issued_at: model[0]?.issued_time || null,
+        sample_count: model.length, issued_at: model[0]?.issued_time || null,
         note: "Hourly concentration guidance is used to compare windows and is not presented as an official AQI forecast."
       }),
       sourceStatus("National Weather Service hourly forecast", "official weather forecast", weatherResult.status === "fulfilled", {
-        url: "https://api.weather.gov/",
-        updated_at: weather.updated_at,
+        url: "https://api.weather.gov/", updated_at: weather.updated_at,
         note: "Wind and weather provide planning context; they do not override AirNow AQI."
       }),
       sourceStatus("NASA FIRMS NOAA-21 VIIRS", "satellite fire-detection context", fires.available, {
-        url: "https://firms.modaps.eosdis.nasa.gov/api/",
-        reason_code: fires.reason_code,
-        note: "Optional context family requiring a FIRMS MAP_KEY."
+        url: "https://firms.modaps.eosdis.nasa.gov/api/", reason_code: fires.reason_code,
+        note: "Optional context family requiring a FIRMS_MAP_KEY."
       }),
     ],
     product_truth: "AirNow AQI is official agency-reported air-quality information. The outdoor window is an independent planning inference from public observations and NOAA model guidance, not a health advisory or official AQI forecast."
@@ -226,8 +213,7 @@ module.exports = async function handler(req, res) {
   const longitude = smoke.finite(req.query?.lon ?? req.query?.longitude, -180, 180);
   if (latitude == null || longitude == null) return res.status(400).end(JSON.stringify({ error: "Valid lat and lon are required" }));
   try {
-    const result = await buildResult(latitude, longitude);
-    return res.status(result.status === "insufficient_evidence" ? 503 : 200).end(JSON.stringify(result));
+    return res.status(200).end(JSON.stringify(await buildResult(latitude, longitude)));
   } catch (error) {
     return res.status(502).end(JSON.stringify({ error: "Smoke-window data is temporarily unavailable", reason_code: "unexpected_backend_failure", detail: String(error?.message || error).slice(0, 180) }));
   }

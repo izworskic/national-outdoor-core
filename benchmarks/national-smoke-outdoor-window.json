@@ -1,0 +1,49 @@
+{
+  "name": "National Smoke & Outdoor Air Window release benchmark",
+  "version": "2026-09-05",
+  "ship_score": 90,
+  "critical_floor": 85,
+  "value_function": {
+    "decision_utility": 25,
+    "truth_and_provenance": 20,
+    "hourly_forecast_intelligence": 15,
+    "resilience_and_uncertainty": 12,
+    "mobile_accessible_ux": 10,
+    "search_and_growth_architecture": 10,
+    "performance_and_operability": 8
+  },
+  "hard_vetoes": [
+    "AirNow observed AQI is recalculated, blended, or relabeled as proprietary AQI",
+    "Hourly modeled PM2.5 concentration is presented as an official AQI forecast or health advisory",
+    "A distant or arbitrary reporting area is silently presented as local",
+    "Failure of one source family destroys otherwise useful independent evidence",
+    "The canonical route or API becomes unintentionally indexable or changes an existing canonical URL",
+    "The tool publishes thin city pages where geography does not materially change live evidence",
+    "A recommendation is shown with no confidence or provenance state",
+    "Release tests or benchmark score are below threshold"
+  ],
+  "regression_scenarios": [
+    "Bay City, MI — nearby PM2.5 observation and normal forecast path",
+    "Detroit, MI — urban reporting-area path",
+    "Minneapolis, MN — smoke-prone Upper Midwest path",
+    "Denver, CO — western smoke and elevation market path",
+    "Seattle, WA — Pacific Northwest smoke path",
+    "Spokane, WA — elevated smoke-event path",
+    "Phoenix, AZ — ozone may dominate overall AQI but smoke tool stays PM2.5-specific",
+    "Miami, FL — low-smoke/no-nearby-fire context remains useful",
+    "AirNow unavailable — NOAA hourly guidance survives with lower confidence",
+    "NOAA PM2.5 guidance unavailable — current AirNow AQI survives with lower confidence",
+    "NWS weather unavailable — core air decision survives without wind",
+    "FIRMS key absent or request failed — fire context degrades without blocking result",
+    "No usable PM2.5 observation and fewer than three model samples — true insufficient-evidence response"
+  ],
+  "required_files": [
+    "api/national-smoke-window.js",
+    "lib/smoke-window.js",
+    "public/national-tools/smoke/index.html",
+    "public/assets/national-smoke-page.js",
+    "public/assets/national-smoke.css",
+    "tests/smoke-window.test.js",
+    "docs/prompts/national-smoke-outdoor-window.md"
+  ]
+}

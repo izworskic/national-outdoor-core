@@ -1,6 +1,6 @@
 "use strict";
 
-// One-time release operation. Retry after canonical root routing was corrected.
+// One-time release operation. Final retry after chrisizworski.com explicit Smoke routing passed production smoke checks.
 const URL_TO_SUBMIT = "https://chrisizworski.com/national-tools/smoke/";
 const KEY = "5b4f872f11781f223cca2273093559c0";
 const KEY_LOCATION = `${URL_TO_SUBMIT}${KEY}.txt`;

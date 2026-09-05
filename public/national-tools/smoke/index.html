@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Wildfire Smoke Forecast & Best Outdoor Air Window</title>
+<meta name="description" content="Enter a U.S. city or ZIP to see current AirNow PM2.5 AQI, NOAA hourly PM2.5 forecast guidance, the cleaner 3-hour outdoor window, trend, wind and confidence.">
+<link rel="canonical" href="https://chrisizworski.com/national-tools/smoke/">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<meta property="og:title" content="Wildfire Smoke & Outdoor Air Window | Chris Izworski">
+<meta property="og:description" content="Current PM2.5 AQI plus the cleaner modeled outdoor window over the next 48 hours.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://chrisizworski.com/national-tools/smoke/">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="/assets/national-tools.css?v=20260905">
+<link rel="stylesheet" href="/assets/national-smoke.css?v=20260905">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Wildfire Smoke & Outdoor Air Window","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","isAccessibleForFree":true,"url":"https://chrisizworski.com/national-tools/smoke/","description":"A U.S. outdoor-air planning tool combining AirNow PM2.5 AQI, NOAA hourly PM2.5 model guidance and National Weather Service weather context."}</script>
+</head>
+<body>
+<header class="site-head"><div class="head-in"><a class="brand" href="/">Chris Izworski</a><nav class="nav" aria-label="Primary"><a href="/">Home</a><a href="/tools/">Michigan Tools</a><a href="/national-tools/" aria-current="page">U.S. Outdoor Tools</a></nav></div></header>
+<main class="smoke-shell">
+  <div class="breadcrumb"><a href="/">Home</a> &rsaquo; <a href="/national-tools/">U.S. Outdoor Tools</a> &rsaquo; Smoke & Outdoor Air</div>
+  <div class="tool-kicker">Live public data · United States</div>
+  <h1>When is the air better for being outside?</h1>
+  <p class="smoke-sub">Check current PM2.5 air quality, then compare NOAA's hourly concentration guidance to find the cleaner 3-hour outdoor window over the next 48 hours.</p>
+  <section class="smoke-lookup" aria-label="Location lookup">
+    <form id="smoke-location" class="location-form"><label for="location">City or ZIP</label><div class="location-row"><input id="location" name="location" placeholder="Bay City, MI or 48706" autocomplete="postal-code" required><button class="btn" type="submit">Check air</button></div><button class="location-link" data-use-location type="button">Use my location</button></form>
+    <div class="status" aria-live="polite"></div>
+  </section>
+  <section id="smoke-result" class="smoke-result" hidden aria-live="polite">
+    <div class="result-place" id="result-place">Your location</div><div class="tool-kicker">Outdoor air call</div><h2 id="decision-headline" class="smoke-decision">—</h2><p id="decision-why" class="smoke-why"></p>
+    <div class="primary-grid">
+      <article class="primary-card"><span class="metric-label">Current PM2.5 AQI</span><strong id="current-aqi" class="metric-big">—</strong><span id="current-category" class="metric-state">—</span><small id="current-place">AirNow reporting area</small></article>
+      <article class="primary-card best-card"><span class="metric-label">Cleaner 3-hour window</span><strong id="best-window" class="window-big">—</strong><span id="window-pm25" class="metric-state">—</span><small>Lowest modeled PM2.5 period in the next 48 hours</small></article>
+      <article class="primary-card"><span class="metric-label">Next several hours</span><strong id="trend" class="window-big">—</strong><span id="wind" class="metric-state">—</span><small>NOAA PM2.5 guidance + NWS weather context</small></article>
+      <article class="primary-card"><span class="metric-label">Evidence confidence</span><strong id="confidence" class="window-big">—</strong><span id="degraded" class="metric-state">—</span><small id="confidence-reason">—</small></article>
+    </div>
+    <section class="timeline-section" aria-labelledby="timeline-title"><div class="section-head"><div><div class="tool-kicker">Hourly model guidance</div><h3 id="timeline-title">What the next hours look like</h3></div><p>Lower bars mean lower modeled PM2.5 concentration. This is not an AQI forecast.</p></div><div id="hourly-timeline" class="hourly-timeline"></div></section>
+    <section class="evidence-row"><article><div class="tool-kicker">Agency outlook</div><h3>AirNow PM2.5 forecast</h3><div id="daily-forecast" class="forecast-list">No agency PM2.5 forecast available for this reporting area.</div></article><article><div class="tool-kicker">Fire context</div><h3>Nearby satellite detections</h3><p id="fire-context">Loading fire context…</p><small>Fire detections can help explain regional context, but do not prove which fire caused smoke at your location.</small></article></section>
+    <details class="source-details"><summary>Sources, freshness & what this result means</summary><div id="source-list" class="source-list"></div><p class="truth-note" id="product-truth"></p></details>
+  </section>
+  <section class="smoke-explain"><h2>Built to answer a decision, not redraw a smoke map</h2><div class="explain-grid"><article><div class="tool-kicker">Now</div><h3>Observed AQI stays official</h3><p>The current PM2.5 AQI and category come from AirNow reporting-area data and are not recalculated or blended into a proprietary AQI.</p></article><article><div class="tool-kicker">Next</div><h3>Hourly guidance finds the window</h3><p>NOAA/NWS hourly PM2.5 model guidance is compared across contiguous 3-hour periods. Lower modeled concentration wins.</p></article><article><div class="tool-kicker">Confidence</div><h3>Missing data lowers certainty</h3><p>A missing model, observation, weather feed or optional fire feed is shown as degraded evidence rather than silently replaced with made-up precision.</p></article></div><p class="health-note">This is an outdoor-planning tool, not medical advice or an official air-quality warning. When AQI is elevated, use AirNow and your local air agency for official health guidance.</p></section>
+</main>
+<footer class="footer"><div class="footer-in">© 2026 <a href="/">Chris Izworski</a> · Free live tools built from public data.</div></footer>
+<script src="/assets/national-tools.js?v=20260905"></script><script src="/assets/national-smoke-page.js?v=20260905"></script>
+</body>
+</html>

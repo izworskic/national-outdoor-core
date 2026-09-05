@@ -42,9 +42,23 @@ test("forecast rain and rising flow can improve the future score without changin
   assert.equal(result.confidence.label, "High");
 });
 
-test("confidence explicitly drops when observation and history signals are missing", () => {
+test("confidence explicitly drops when observation or history signals are missing", () => {
   assert.equal(confidence({ hasReach: true, hasNwm: true }).label, "Low");
+  assert.equal(confidence({ hasReach: true, hasNwm: true, hasGauge: true, hasSeasonal: false, hasPrecip: true, gaugeRelation: "upstream-mainstem" }).label, "Low");
   assert.equal(confidence({ hasReach: true, hasNwm: true, hasGauge: true, hasSeasonal: true, hasPrecip: true, gaugeRelation: "upstream-mainstem" }).label, "High");
+});
+
+test("spectacle score is withheld when no seasonal baseline exists", () => {
+  const result = buildWaterfallWindow({
+    current_flow_cfs: 150, nwm_peak_24h_cfs: 180, nwm_peak_72h_cfs: 220,
+    has_reach: true, has_nwm: true, has_gauge: false, has_seasonal: false, has_precip: true,
+    qpf_24h_in: 0.5, qpf_72h_in: 1.0, seasonal: {},
+  });
+  assert.equal(result.now.score, null);
+  assert.equal(result.next_24h.score, null);
+  assert.equal(result.next_3d.score, null);
+  assert.equal(result.now.label, "Limited evidence");
+  assert.equal(result.confidence.label, "Low");
 });
 
 test("very high water produces a safety caution separate from spectacle", () => {

@@ -8,5 +8,15 @@
         { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
       ]
     }
+  ],
+  "rewrites": [
+    {
+      "source": "/national-tools/smoke/_api",
+      "destination": "/api/national-smoke-window"
+    },
+    {
+      "source": "/national-tools/smoke/_assets/:path*",
+      "destination": "/assets/:path*"
+    }
   ]
 }

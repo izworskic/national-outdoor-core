@@ -8,16 +8,21 @@ const failures=[];
 function requireFile(file,points=5){if(!fs.existsSync(path.join(root,file))){failures.push(`missing ${file}`);score-=points}}
 benchmark.required_files.forEach(file=>requireFile(file));
 requireFile("scripts/inject-network-analytics.js",8);
+const indexNowKey="5b4f872f11781f223cca2273093559c0";
+requireFile(`public/national-tools/smoke/${indexNowKey}.txt`,8);
 const html=fs.readFileSync(path.join(root,"public/national-tools/smoke/index.html"),"utf8");
 const api=fs.readFileSync(path.join(root,"api/national-smoke-window.js"),"utf8");
 const engine=fs.readFileSync(path.join(root,"lib/smoke-window.js"),"utf8");
 const pagejs=fs.readFileSync(path.join(root,"public/assets/national-smoke-page.js"),"utf8");
 const prompt=fs.readFileSync(path.join(root,"docs/prompts/national-smoke-outdoor-window.md"),"utf8");
+const vercel=fs.readFileSync(path.join(root,"vercel.json"),"utf8");
 function check(ok,label,points){if(!ok){failures.push(label);score-=points}}
 check(/rel="canonical" href="https:\/\/chrisizworski\.com\/national-tools\/smoke\/"/.test(html),"canonical smoke URL missing",10);
-check(/WebApplication/.test(html),"WebApplication structured data missing",4);
+check(/WebApplication/.test(html)&&/https:\/\/chrisizworski\.com\/#person/.test(html),"WebApplication/Person structured data missing",4);
 check(/G-Y5D2V2W7HN/.test(html),"network GA4 measurement missing from smoke HTML",10);
-check(/national-smoke-window/.test(html+api+pagejs),"smoke API contract not wired",8);
+check(/\.\/_api\?lat=/.test(pagejs)&&/national-tools\/smoke\/_api/.test(vercel)&&/api\/national-smoke-window/.test(vercel),"canonical smoke API proxy contract not wired",8);
+check(/_assets\/national-smoke\.css/.test(html)&&/national-tools\/smoke\/_assets/.test(vercel),"canonical smoke asset proxy contract not wired",5);
+check(fs.readFileSync(path.join(root,`public/national-tools/smoke/${indexNowKey}.txt`),"utf8").trim()===indexNowKey,"IndexNow ownership key invalid",8);
 check(/X-Robots-Tag/.test(api)&&/noindex, nofollow/.test(api),"API noindex protection missing",8);
 check(/reportingarea\.dat/.test(api),"supported AirNow reporting-area feed missing",8);
 check(/ndgd_apm25_hr01/.test(api),"NOAA hourly PM2.5 guidance source missing",8);

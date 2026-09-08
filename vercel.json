@@ -5,7 +5,10 @@
     {
       "source": "/api/(.*)",
       "headers": [
-        { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
       ]
     }
   ],
@@ -30,5 +33,7 @@
       "source": "/national-tools/waterfalls/_assets/:path*",
       "destination": "/assets/:path*"
     }
-  ]
+  ],
+  "buildCommand": "npm run verify:analytics",
+  "outputDirectory": "public"
 }

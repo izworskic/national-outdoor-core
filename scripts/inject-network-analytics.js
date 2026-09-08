@@ -21,12 +21,15 @@ function htmlFiles(dir) {
 function inject(file) {
   let html = fs.readFileSync(file, "utf8");
   const needsGa4 = !html.includes(measurementId);
-  const needsAdsense = !html.includes(adsensePublisherId);
+  const needsAdsense = !/<script\b[^>]*src=["'][^"']*pagead\/js\/adsbygoogle\.js\b/i.test(html);
   if (!needsGa4 && !needsAdsense) return false;
   if (!/<\/head>/i.test(html)) throw new Error(`Cannot inject site tags: missing </head> in ${path.relative(root, file)}`);
   const snippets = [];
   if (needsGa4) snippets.push(gaSnippet);
-  if (needsAdsense) snippets.push(adsenseSnippet);
+  if (needsAdsense) {
+    if (!html.includes('name="google-adsense-account"')) snippets.push(adsenseSnippet);
+    snippets.push(`<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsensePublisherId}" crossorigin="anonymous"></script>`);
+  }
   html = html.replace(/<\/head>/i, `${snippets.join("\n")}\n</head>`);
   fs.writeFileSync(file, html);
   return true;

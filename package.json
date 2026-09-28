@@ -5,11 +5,12 @@
   "main": "index.js",
   "exports": { ".": "./index.js" },
   "scripts": {
-    "vercel-build": "node scripts/generate-location-pages.mjs",
-    "test": "node scripts/generate-location-pages.mjs && node --test tests/*.test.js",
+    "build": "node scripts/generate-location-pages.mjs && node scripts/generate-breakout-live-pages.mjs && node scripts/inject-network-analytics.js",
+    "vercel-build": "npm run build",
+    "test": "node scripts/generate-location-pages.mjs && node scripts/generate-breakout-live-pages.mjs && node --test tests/*.test.js",
     "verify:analytics": "node scripts/inject-network-analytics.js",
     "verify:smoke": "node scripts/verify-smoke.js",
-    "verify:all": "npm run verify:analytics && npm test && npm run verify:smoke"
+    "verify:all": "npm run build && node --test tests/*.test.js && npm run verify:smoke"
   },
   "engines": { "node": "22.x" }
 }

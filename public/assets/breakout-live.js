@@ -1,6 +1,7 @@
 (() => {
   const root=document.querySelector('[data-tool-id]');
   if(!root) return;
+  const OWNER='https://national-outdoor-core.vercel.app';
   const id=root.dataset.toolId;
   const $=s=>document.querySelector(s);
   const status=$('#liveStatus'), headline=$('#liveHeadline'), facts=$('#liveFacts'), fresh=$('#liveFresh'), excerpt=$('#sourceExcerpt'), source=$('#sourceLink'), ramps=$('#ramps'), err=$('#liveError');
@@ -8,7 +9,7 @@
   async function load(){
     err.hidden=true; status.textContent='Checking live source…'; headline.textContent='This page will not invent a live answer if the source fails.'; facts.innerHTML='';
     try{
-      const r=await fetch(`/api/breakout-live?id=${encodeURIComponent(id)}`,{cache:'no-store'});
+      const r=await fetch(`${OWNER}/api/breakout-live?id=${encodeURIComponent(id)}`,{cache:'no-store',mode:'cors'});
       const d=await r.json();
       if(!r.ok||!d.ok) throw new Error(d.detail||d.error||`HTTP ${r.status}`);
       status.textContent=d.status||'Live source checked';

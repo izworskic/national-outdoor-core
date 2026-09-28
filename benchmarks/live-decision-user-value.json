@@ -1,0 +1,69 @@
+{
+  "version": "1.0.0",
+  "date": "2026-09-28",
+  "objective": "A live-decision page must materially reduce a real trip decision beyond what a search snippet or the official source already provides. Search traffic is an outcome; decision surplus is the product gate.",
+  "benchmark": {
+    "scoreMax": 100,
+    "dimensions": {
+      "fiveSecondAnswer": {"weight": 15, "pass": "The primary decision is understandable in under five seconds on a phone."},
+      "actionTranslation": {"weight": 15, "pass": "The result says what changes in the visitor's plan, not only what the source says."},
+      "multiSignalSynthesis": {"weight": 15, "pass": "The tool combines the signals that actually control the decision, or explains why one authoritative source is sufficient."},
+      "evidenceAndFreshness": {"weight": 10, "pass": "Source, observation time, refresh time and truthful degraded state are visible."},
+      "temporalContext": {"weight": 10, "pass": "The user can tell whether the answer applies now, later today, tomorrow, or only seasonally."},
+      "spatialSpecificity": {"weight": 10, "pass": "The answer resolves the relevant route, ramp, entrance, viewing area or segment instead of a vague destination-wide state."},
+      "fallbackOrAlternative": {"weight": 10, "pass": "A bad or ambiguous state gives a useful next move: reroute, choose another area, wait, or verify a named source."},
+      "repeatUtility": {"weight": 5, "pass": "There is a reason to return when conditions change."},
+      "mobileScanability": {"weight": 5, "pass": "Verdict, consequence and next check fit the first mobile interaction without card hunting."},
+      "failureHonesty": {"weight": 5, "pass": "Missing or ambiguous upstream data never becomes a reassuring answer."}
+    },
+    "thresholds": {
+      "breakoutReady": 85,
+      "usefulDecisionTool": 70,
+      "promisingButIncomplete": 55,
+      "thinStatusWrapper": 0
+    }
+  },
+  "lossFunction": {
+    "definition": "Decision loss measures how much work or uncertainty remains after using the page. Lower is better.",
+    "maxLoss": 100,
+    "components": {
+      "searchSnippetParity": 20,
+      "officialSourceParity": 15,
+      "falseConfidenceRisk": 15,
+      "staleOrAmbiguousState": 10,
+      "missingTimeContext": 10,
+      "missingSpatialContext": 10,
+      "noAlternativePath": 10,
+      "genericCopy": 5,
+      "sessionDeadEnd": 5
+    },
+    "target": "Loss <= 15 for a breakout-ready tool; loss <= 30 for a useful decision tool."
+  },
+  "hardVetoes": [
+    "The page merely repeats one official open/closed line with no material decision surplus.",
+    "A green or positive state could be mistaken for a safety all-clear when another controlling signal is missing.",
+    "The live source cannot be verified or truthfully degraded when unavailable.",
+    "The primary search intent is already owned by another Chris Izworski canonical.",
+    "The page needs thin doorway variants to create demand."
+  ],
+  "baselineBeforeValuePass": [
+    {"id":"zion-narrows-conditions","score":78,"loss":22,"class":"usefulDecisionTool","largestGap":"No trend/forecast context; route consequence needed closer to the live verdict."},
+    {"id":"haleakala-sunrise","score":74,"loss":26,"class":"usefulDecisionTool","largestGap":"Good synthesis, but the user still has to translate forecast wording into an alarm-clock decision."},
+    {"id":"lake-powell-ramp-status","score":72,"loss":28,"class":"usefulDecisionTool","largestGap":"Ramp rows are data-heavy; strongest current launch candidates are not prioritized."},
+    {"id":"grand-canyon-access","score":61,"loss":39,"class":"promisingButIncomplete","largestGap":"Multiple access gates are useful, but the page does not yet turn them into a rim-choice workflow."},
+    {"id":"cadillac-mountain-sunrise","score":60,"loss":40,"class":"promisingButIncomplete","largestGap":"Forecast + access is useful, but the consequence and flip conditions are buried."},
+    {"id":"lake-mead-access","score":57,"loss":43,"class":"promisingButIncomplete","largestGap":"Elevation is not enough; named launch-site choice remains too dependent on the official page."},
+    {"id":"going-to-the-sun-road-status","score":48,"loss":52,"class":"thinStatusWrapper","largestGap":"Official NPS status already answers much of the query; through-travel consequence must be explicit."},
+    {"id":"tioga-road-status","score":46,"loss":54,"class":"thinStatusWrapper","largestGap":"The current page is close to a one-line NPS mirror; detour consequence is the missing product value."},
+    {"id":"yellowstone-road-status","score":44,"loss":56,"class":"thinStatusWrapper","largestGap":"A park-wide text classifier cannot replace the official segment map for a route-network decision."},
+    {"id":"mount-rainier-road-status","score":42,"loss":58,"class":"thinStatusWrapper","largestGap":"Area-specific approach roads matter more than a park-wide open/closed read."}
+  ],
+  "changesRequiredByThisAudit": [
+    "Put the trip consequence directly under the live result.",
+    "Expose what can flip the answer so a live result is not mistaken for certainty.",
+    "Give a concrete pre-departure checklist rather than generic source prose.",
+    "Prioritize Lake Powell ramp candidates from the current threshold/status table.",
+    "Treat Yellowstone and Mount Rainier as route/area checks, not park-wide all-clear tools.",
+    "Stop labeling the public portfolio as ten breakout bets until individual tools clear the benchmark."
+  ]
+}

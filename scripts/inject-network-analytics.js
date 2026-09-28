@@ -6,9 +6,11 @@ const path = require("node:path");
 const root = path.resolve(__dirname, "..", "public");
 const measurementId = "G-Y5D2V2W7HN";
 const adsensePublisherId = "ca-pub-8222782620788075";
+const valueScriptUrl = "https://national-outdoor-core.vercel.app/assets/breakout-value.js";
 const gaMarker = "<!-- network-ga4 -->";
 const gaSnippet = `${gaMarker}\n<script async src="https://www.googletagmanager.com/gtag/js?id=${measurementId}"></script>\n<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','${measurementId}');</script>`;
 const adsenseSnippet = `<meta name="google-adsense-account" content="${adsensePublisherId}">`;
+const valueSnippet = `<script defer src="${valueScriptUrl}"></script>`;
 
 function htmlFiles(dir) {
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
@@ -22,7 +24,9 @@ function inject(file) {
   let html = fs.readFileSync(file, "utf8");
   const needsGa4 = !html.includes(measurementId);
   const needsAdsense = !/<script\b[^>]*src=["'][^"']*pagead\/js\/adsbygoogle\.js\b/i.test(html);
-  if (!needsGa4 && !needsAdsense) return false;
+  const isBreakoutDecision = /<body\b[^>]*data-tool-id=/i.test(html);
+  const needsValue = isBreakoutDecision && !html.includes(valueScriptUrl);
+  if (!needsGa4 && !needsAdsense && !needsValue) return false;
   if (!/<\/head>/i.test(html)) throw new Error(`Cannot inject site tags: missing </head> in ${path.relative(root, file)}`);
   const snippets = [];
   if (needsGa4) snippets.push(gaSnippet);
@@ -30,6 +34,7 @@ function inject(file) {
     if (!html.includes('name="google-adsense-account"')) snippets.push(adsenseSnippet);
     snippets.push(`<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsensePublisherId}" crossorigin="anonymous"></script>`);
   }
+  if (needsValue) snippets.push(valueSnippet);
   html = html.replace(/<\/head>/i, `${snippets.join("\n")}\n</head>`);
   fs.writeFileSync(file, html);
   return true;
@@ -42,5 +47,6 @@ for (const file of files) {
   const html = fs.readFileSync(file, "utf8");
   if (!html.includes(measurementId)) throw new Error(`GA4 coverage missing: ${path.relative(root, file)}`);
   if (!html.includes(adsensePublisherId)) throw new Error(`AdSense account coverage missing: ${path.relative(root, file)}`);
+  if (/<body\b[^>]*data-tool-id=/i.test(html) && !html.includes(valueScriptUrl)) throw new Error(`Decision-value telemetry missing: ${path.relative(root, file)}`);
 }
 console.log(`Network site tags verified on ${files.length} HTML file(s); injected ${changed}.`);

@@ -13,12 +13,22 @@ module.exports = async function breakoutLiveHandler(req, res) {
   }
   const id=(req.query?.id || new URL(req.url,'https://example.test').searchParams.get('id') || '').trim();
   const replacement = await import('../lib/breakout-live-replacements.mjs');
-  const payload = await replacement.buildReplacement(id);
-  if (payload) {
-    res.setHeader('Cache-Control','public, s-maxage=180, stale-while-revalidate=900');
-    res.setHeader('Content-Type','application/json; charset=utf-8');
-    res.statusCode = 200;
-    return res.end(JSON.stringify(payload));
+  try {
+    const payload = await replacement.buildReplacement(id);
+    if (payload) {
+      res.setHeader('Cache-Control','public, s-maxage=180, stale-while-revalidate=900');
+      res.setHeader('Content-Type','application/json; charset=utf-8');
+      res.statusCode = 200;
+      return res.end(JSON.stringify(payload));
+    }
+  } catch (error) {
+    if (id === 'grand-canyon-access' || id === 'haleakala-sunrise') {
+      res.setHeader('Cache-Control','public, s-maxage=60, stale-while-revalidate=180');
+      res.setHeader('Content-Type','application/json; charset=utf-8');
+      res.statusCode = 502;
+      return res.end(JSON.stringify({ok:false,error:'Live source unavailable',detail:String(error?.message||error),updated:new Date().toISOString()}));
+    }
+    throw error;
   }
   const mod = await import('../lib/breakout-live-engine.mjs');
   return mod.default(req, res);

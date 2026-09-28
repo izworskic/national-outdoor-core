@@ -5,7 +5,7 @@
   const id=root.dataset.toolId;
   const $=s=>document.querySelector(s);
   const status=$('#liveStatus'), headline=$('#liveHeadline'), facts=$('#liveFacts'), fresh=$('#liveFresh'), excerpt=$('#sourceExcerpt'), source=$('#sourceLink'), ramps=$('#ramps'), err=$('#liveError');
-  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]));
+  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
   const PLAYBOOKS={
     'zion-narrows-conditions':{
@@ -27,7 +27,7 @@
       title:'Choose the rim before you choose the day',
       action(d){
         const s=String(d.status||'').toUpperCase();
-        if(s.includes('RESTRICTIONS')) return 'At least one major access area is restricted. Pick the open rim/entrance first, then rebuild the route around that side of the canyon.';
+        if(s.includes('RESTRICTIONS')) return 'At least one major access area is restricted. Pick the open rim or entrance first, then rebuild the route around that side of the canyon.';
         if(s.includes('MAJOR ROAD GATES OPEN')) return 'The major road gates reported by NPS are open. Your next decision is the specific scenic road, services and trail access—not a generic “park open” check.';
         return 'The source does not support one park-wide answer. Treat South Rim, Desert View and North Rim as separate access decisions.';
       },
@@ -54,7 +54,7 @@
         const s=String(d.status||'').toUpperCase();
         if(s.includes('STRONGER')) return 'The forecast signal is comparatively favorable. If you already have the required reservation, the early drive has a stronger weather case.';
         if(s.includes('MIXED')) return 'Cloud is the swing factor. Keep the reservation decision separate from the visibility decision and expect partial or changing views.';
-        if(s.includes('CLOUD')||s.includes('WEATHER RISK')) return 'The forecast carries meaningful visibility risk. Decide whether the nonrefundable reservation and 3 a.m. departure are still worth it for you.';
+        if(s.includes('CLOUD')||s.includes('WEATHER RISK')) return 'The forecast carries meaningful visibility risk. Decide whether the reservation and 3 a.m. departure are still worth it for you.';
         return 'The forecast is not complete enough to justify a confident sunrise verdict. Check the summit forecast and reservation status directly.';
       },
       flips:['Cloud can change rapidly at 10,000 feet.','High wind or near-freezing temperatures can materially change the experience.','A reservation allows entry; it does not guarantee visibility.'],
@@ -65,6 +65,7 @@
       title:'Yellowstone is a road network, not one open/closed switch',
       action(d){
         const s=String(d.status||'').toUpperCase();
+        if(s.includes('CHECK EXACT ROUTE')) return 'Choose your entrance and destination first, then verify every connecting segment on the official live map. This tool will not turn a segment network into a fake park-wide green light.';
         if(s==='CLOSED') return 'Do not assume your planned entrance-to-attraction route works. Open the segment map and rebuild around the roads that remain available.';
         if(s==='OPEN') return 'An “open” read is not enough for a park this large. Confirm the exact entrance-to-entrance segments before committing to a cross-park itinerary.';
         return 'Mixed or ambiguous road text should push you to the official segment map. This page should act as a trip-impact flag, not a false park-wide all-clear.';
@@ -77,13 +78,13 @@
       title:'A Tioga closure changes the whole itinerary',
       action(d){
         const s=String(d.status||'').toUpperCase();
-        if(s==='OPEN') return 'The current source supports an open crossing. Check delays and weather, then keep Tioga as the east-west route.';
-        if(s==='CLOSED') return 'Remove Tioga from the itinerary before you start driving. An east-west Yosemite trip now needs a different Sierra crossing or a same-side plan.';
+        if(s==='OPEN'||s.includes('TIOGA CROSSING OPEN')) return 'The current source supports an open crossing. Read the current delay note, check weather, then keep Tioga as the east-west route.';
+        if(s==='CLOSED'||s.includes('TIOGA CROSSING CLOSED')) return 'Remove Tioga from the itinerary before you start driving. An east-west Yosemite trip now needs a different Sierra crossing or a same-side plan.';
         if(s==='PARTIAL') return 'Do not assume a full crossing. Open the official conditions page and verify the entire Tioga segment.';
         return 'The source does not support a clean crossing answer. Verify Tioga directly before committing to an east-west drive.';
       },
       flips:['Snow, rockfall, fire or construction can change access.','A technically open road can still carry material delays.','A closure can add hours depending on your origin and destination.'],
-      checks:['Verify the entire Tioga crossing, not only Yosemite Valley access.','Check the morning of a long crossing.','If closed, reroute before entering the park road system.']
+      checks:['Verify the entire Tioga crossing, not only Yosemite Valley access.','Read the live delay note before departure.','If closed, reroute before entering the park road system.']
     },
     'cadillac-mountain-sunrise':{
       label:'Sunrise decision',
@@ -103,9 +104,11 @@
       title:'Choose the park area only after its approach road works',
       action(d){
         const s=String(d.status||'').toUpperCase();
+        if(s.includes('AREAS DIFFER')||s.includes('ACCESS RESTRICTIONS')) return 'Access differs by park area. Use the live rows above to choose Paradise, Sunrise, White River or Mowich before following GPS; do not treat one open approach as evidence that the others work.';
+        if(s.includes('MAJOR AREAS REPORTED OPEN')) return 'Several major approaches are reported open. Still choose the exact visitor area or trailhead first because closures, parking and facilities remain area-specific.';
         if(s==='CLOSED') return 'Do not build the day around the affected approach. Choose another accessible park area or another day.';
         if(s==='OPEN') return 'The road source reads as open, but Rainier access is area-specific. Confirm the exact approach to Paradise, Sunrise or your trailhead.';
-        return 'A park-wide status is not reliable enough here. Use the official road map for the specific approach you need.';
+        return 'Use the area-by-area rows above and the official road map rather than a park-wide status.';
       },
       flips:['Snow, fire, construction and washouts can affect one side of the mountain only.','Seasonal gates can make one visitor area unreachable while another remains open.','Parking and trail access can fail even when the approach road is open.'],
       checks:['Name the visitor area or trailhead first.','Verify its exact approach road.','Recheck the return route if weather is deteriorating.']
@@ -173,7 +176,7 @@
     const card=document.querySelector('.live-card');
     if(!card) return;
     const s=String(d.status||'').toUpperCase();
-    card.dataset.state = /CLOSED|DO NOT|RISK|RESTRICTION/.test(s) ? 'stop' : /VERIFY|PARTIAL|MIXED|GAP|UNAVAILABLE/.test(s) ? 'verify' : 'go';
+    card.dataset.state = /CLOSED|DO NOT|RISK|RESTRICTION/.test(s) ? 'stop' : /VERIFY|PARTIAL|MIXED|GAP|UNAVAILABLE|AREAS DIFFER|CHECK EXACT ROUTE/.test(s) ? 'verify' : 'go';
   }
 
   async function load(){

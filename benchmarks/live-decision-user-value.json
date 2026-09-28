@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "date": "2026-09-28",
   "objective": "A live-decision page must materially reduce a real trip decision beyond what a search snippet or the official source already provides. Search traffic is an outcome; decision surplus is the product gate.",
   "benchmark": {
@@ -58,6 +58,33 @@
     {"id":"yellowstone-road-status","score":44,"loss":56,"class":"thinStatusWrapper","largestGap":"A park-wide text classifier cannot replace the official segment map for a route-network decision."},
     {"id":"mount-rainier-road-status","score":42,"loss":58,"class":"thinStatusWrapper","largestGap":"Area-specific approach roads matter more than a park-wide open/closed read."}
   ],
+  "implementedValuePass": [
+    {"id":"all","change":"Current result is followed by trip consequence, flip conditions and a pre-commit checklist."},
+    {"id":"going-to-the-sun-road-status","change":"Adds a full-crossing workbench separating west-side extent, Logan Pass/alpine status, east-side extent and vehicle-size gate."},
+    {"id":"lake-mead-access","change":"Uses the named NPS launch table, supports motorized versus paddle/small-craft decisions, and surfaces status/elevation conflicts instead of silently overriding official status."},
+    {"id":"yellowstone-road-status","change":"Replaces park-wide status with entrance-to-destination route presets, projected seasonal segment checks, published delay context and an explicit final live-map check."},
+    {"id":"mount-rainier-road-status","change":"Separates Paradise, Sunrise, White River, Mowich and Cayuse approach decisions."},
+    {"id":"tioga-road-status","change":"Treats Tioga as an east-west itinerary crossing and surfaces the current road note/delay context."},
+    {"id":"lake-powell-ramp-status","change":"Prioritizes current ramp candidates instead of presenting an undifferentiated status table."}
+  ],
+  "fieldTestProtocol": {
+    "comparison": "Same realistic trip decision completed with normal Google/official-source workflow versus the Chris Izworski decision tool.",
+    "metrics": [
+      "timeToCorrectDecisionSeconds",
+      "decisionAccuracy",
+      "falseConfidenceRate",
+      "sourceHops",
+      "canNameWhatWouldFlipTheDecision"
+    ],
+    "minimumScenariosPerTool": 5,
+    "acceptanceGate": {
+      "speed": "At least 30% lower median time to a correct decision than the normal Google/official-source workflow.",
+      "accuracy": "No reduction in decision accuracy.",
+      "trust": "No increase in false-confidence rate.",
+      "comprehension": "At least 80% of testers can identify the main condition that would change the answer."
+    },
+    "rule": "Do not award a new benchmark score from implementation intent alone. Re-score after rendered mobile verification and field-test evidence."
+  },
   "changesRequiredByThisAudit": [
     "Put the trip consequence directly under the live result.",
     "Expose what can flip the answer so a live result is not mistaken for certainty.",

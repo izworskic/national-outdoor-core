@@ -22,13 +22,10 @@ module.exports = async function breakoutLiveHandler(req, res) {
       return res.end(JSON.stringify(payload));
     }
   } catch (error) {
-    if (id === 'grand-canyon-access' || id === 'haleakala-sunrise') {
-      res.setHeader('Cache-Control','public, s-maxage=60, stale-while-revalidate=180');
-      res.setHeader('Content-Type','application/json; charset=utf-8');
-      res.statusCode = 502;
-      return res.end(JSON.stringify({ok:false,error:'Live source unavailable',detail:String(error?.message||error),updated:new Date().toISOString()}));
-    }
-    throw error;
+    res.setHeader('Cache-Control','public, s-maxage=60, stale-while-revalidate=180');
+    res.setHeader('Content-Type','application/json; charset=utf-8');
+    res.statusCode = 502;
+    return res.end(JSON.stringify({ok:false,error:'Live source unavailable',detail:String(error?.message||error),updated:new Date().toISOString()}));
   }
   const mod = await import('../lib/breakout-live-engine.mjs');
   return mod.default(req, res);

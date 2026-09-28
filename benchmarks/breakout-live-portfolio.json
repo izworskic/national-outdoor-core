@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "date": "2026-09-28",
   "target": "10 new canonical live-decision tools; portfolio aspiration 1,000 organic clicks/day per tool, not a forecast",
   "formula": {
@@ -15,14 +15,19 @@
       "Unknown/unsafe rights or source terms for a required data feed"
     ]
   },
+  "rejectedAfterOwnershipAudit": [
+    {"id":"old-faithful-next-eruption","reason":"Primary intent already owned by /national-tools/yellowstone-geysers/."},
+    {"id":"trail-ridge-road-status","reason":"Primary intent already owned by /national-tools/trail-ridge-road/."},
+    {"id":"blue-ridge-parkway-road-status","reason":"Primary closure/road-status intent already owned by /blue-ridge-parkway/closures/."}
+  ],
   "candidates": [
     {"rank":1,"id":"zion-narrows-conditions","name":"Zion Narrows Conditions Today","value":94,"loss":14,"net":80,"primaryDecision":"Can I safely/legally hike the Narrows today, and which route is viable?","sources":["USGS 09405500","NWS alerts","NPS Narrows rules"]},
-    {"rank":2,"id":"old-faithful-next-eruption","name":"Old Faithful Next Eruption","value":96,"loss":17,"net":79,"primaryDecision":"When is the next likely eruption and how long should I expect to wait?","sources":["GeyserTimes live prediction feed","NPS Yellowstone geyser guidance"]},
+    {"rank":2,"id":"grand-canyon-access","name":"Grand Canyon Road & Rim Access Today","value":94,"loss":15,"net":79,"primaryDecision":"Which Grand Canyon rim, entrance and scenic roads are actually accessible today?","sources":["NPS Grand Canyon road conditions","NPS North Rim status"]},
     {"rank":3,"id":"going-to-the-sun-road-status","name":"Going-to-the-Sun Road Status","value":93,"loss":15,"net":78,"primaryDecision":"Can I drive through Glacier on Going-to-the-Sun Road now?","sources":["NPS Glacier road status"]},
-    {"rank":4,"id":"yellowstone-road-status","name":"Yellowstone Road Status","value":92,"loss":15,"net":77,"primaryDecision":"Which Yellowstone entrances and park-road routes are usable now?","sources":["NPS Yellowstone roads"]},
-    {"rank":5,"id":"trail-ridge-road-status","name":"Trail Ridge Road Status","value":91,"loss":15,"net":76,"primaryDecision":"Is Trail Ridge Road open to through travel now?","sources":["NPS Rocky Mountain road status"]},
+    {"rank":4,"id":"haleakala-sunrise","name":"Haleakala Sunrise Conditions & Planner","value":94,"loss":17,"net":77,"primaryDecision":"Is the next Haleakala sunrise worth the 3 a.m. drive and reservation?","sources":["NWS summit forecast","computed solar time","NPS sunrise reservation rules"]},
+    {"rank":5,"id":"yellowstone-road-status","name":"Yellowstone Road Status","value":91,"loss":15,"net":76,"primaryDecision":"Which Yellowstone entrances and park-road routes are usable now?","sources":["NPS Yellowstone roads"]},
     {"rank":6,"id":"tioga-road-status","name":"Tioga Road Status","value":90,"loss":15,"net":75,"primaryDecision":"Can I cross Yosemite on Tioga Road now?","sources":["NPS Yosemite current conditions"]},
-    {"rank":7,"id":"cadillac-mountain-sunrise","name":"Cadillac Mountain Sunrise Planner","value":92,"loss":18,"net":74,"primaryDecision":"Is tomorrow's sunrise worth the reservation/early drive, and when should I arrive?","sources":["NWS forecast","computed solar time","NPS reservation rules"]},
+    {"rank":7,"id":"cadillac-mountain-sunrise","name":"Cadillac Mountain Sunrise Planner","value":92,"loss":18,"net":74,"primaryDecision":"Is the next sunrise worth the reservation/early drive, and when should I arrive?","sources":["NWS forecast","computed solar time","NPS reservation rules"]},
     {"rank":8,"id":"mount-rainier-road-status","name":"Mount Rainier Road Status","value":89,"loss":16,"net":73,"primaryDecision":"Which Mount Rainier approach roads and major visitor areas are reachable now?","sources":["NPS Mount Rainier road status"]},
     {"rank":9,"id":"lake-mead-access","name":"Lake Mead Access Today","value":91,"loss":20,"net":71,"primaryDecision":"What can I launch/access at today's lake level?","sources":["USBR Lake Mead level","NPS Lake Mead access guidance"]},
     {"rank":10,"id":"lake-powell-ramp-status","name":"Lake Powell Boat Ramp Status","value":90,"loss":20,"net":70,"primaryDecision":"Which Lake Powell ramps are usable at the current elevation?","sources":["USBR/NPS Lake Powell level","NPS ramp threshold table"]}

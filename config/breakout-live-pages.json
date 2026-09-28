@@ -12,19 +12,18 @@
     "sourceLink": "https://www.nps.gov/zion/planyourvisit/thenarrows.htm",
     "sourceLinkLabel": "Open NPS Zion Narrows guidance →"
   },
-  "old-faithful-next-eruption": {
-    "title": "Old Faithful Next Eruption Live | Chris Izworski",
-    "description": "Check the next Old Faithful eruption prediction, expected window, source freshness, and official Yellowstone geyser guidance before you walk over.",
-    "h1": "When is Old Faithful expected to erupt next?",
-    "lede": "A clean next-eruption check for Yellowstone visitors: prediction first, source freshness second, official park guidance one tap away.",
+  "grand-canyon-access": {
+    "title": "Grand Canyon Road & Rim Access Today | Chris Izworski",
+    "description": "Check current Grand Canyon South Rim, Desert View and North Rim road access from the official NPS road-conditions page before choosing a rim or entrance.",
+    "h1": "Which Grand Canyon roads and rims are open today?",
+    "lede": "South Rim, Desert View and North Rim are different trip decisions. This turns the current NPS road page into one fast access check before you commit to an entrance or a multi-hour rim-to-rim drive.",
     "decisionTitle": "What this tool is trying to answer",
-    "decisionBody": "Old Faithful is predictable, but not on a fixed clock. The useful question is not how often it erupts. It is what the current prediction says, how fresh it is, and how long you should plan to wait.",
-    "bullets": ["Treat the prediction as a window, not an appointment.", "Arrive early enough to find a viewing spot before the predicted window.", "If the live feed is unavailable, this page deliberately stops instead of estimating from an average interval."],
+    "decisionBody": "Grand Canyon is not one gate with one status. The South Rim is generally year-round, the North Rim is seasonal, and weather or recovery work can change individual roads and services. The tool separates those access decisions instead of returning a vague park-open label.",
+    "bullets": ["South Entrance Road and Desert View Drive can have different temporary winter-weather status.", "North Rim access is seasonal and can carry additional service or trail restrictions even when paved roads are open.", "Driving between South and North Rim is roughly a 4½-hour trip each way, so checking the right rim before leaving matters."],
     "sourceTitle": "See the evidence behind the answer",
-    "sourceBody": "The live card uses the GeyserTimes prediction feed and points back to NPS Yellowstone for official park guidance. Geysers are natural features; predictions are estimates, not schedules.",
-    "sourceLink": "https://www.nps.gov/yell/planyourvisit/geyser-activity.htm",
-    "sourceLinkLabel": "Open NPS Yellowstone geyser activity →",
-    "attribution": {"name":"GeyserTimes","url":"https://geysertimes.org/","license":"Open Database License (ODbL)","licenseUrl":"https://opendatacommons.org/licenses/odbl/"}
+    "sourceBody": "The live result parses the NPS Grand Canyon Weather, Webcams and Road Conditions page for South Entrance, Desert View and North Rim road headings, then preserves the official source link for verification.",
+    "sourceLink": "https://www.nps.gov/grca/planyourvisit/weather-condition.htm",
+    "sourceLinkLabel": "Open NPS Grand Canyon road conditions →"
   },
   "going-to-the-sun-road-status": {
     "title": "Going-to-the-Sun Road Status | Chris Izworski",
@@ -39,6 +38,19 @@
     "sourceLink": "https://www.nps.gov/glac/planyourvisit/directions.htm",
     "sourceLinkLabel": "Open NPS Glacier road information →"
   },
+  "haleakala-sunrise": {
+    "title": "Haleakalā Sunrise Conditions & Planner | Chris Izworski",
+    "description": "Plan Haleakalā sunrise with calculated summit sunrise time, NWS weather near 10,023 feet, and the year-round 3–7 a.m. reservation requirement.",
+    "h1": "Is Haleakalā sunrise worth the 3 a.m. drive?",
+    "lede": "A sunrise reservation is valuable only if you understand the weather you may meet at 10,023 feet. This combines the summit sunrise time, near-sunrise forecast and the access rule in one decision.",
+    "decisionTitle": "What this tool is trying to answer",
+    "decisionBody": "Haleakalā sunrise has a real cost in sleep and logistics: the summit is cold, windy and weather can change fast, reservations are required for vehicles entering from 3 to 7 a.m., and reservations are not refunded for cloud. The useful question is whether tomorrow's conditions justify the early drive.",
+    "bullets": ["A vehicle reservation is required year-round for Summit District entry from 3:00 a.m. to 7:00 a.m.", "NPS releases reservations up to 60 days ahead and a portion 2 days ahead at 7:00 a.m. HST.", "Weather can change quickly at the summit and can be below freezing around dawn; a reservation does not guarantee a visible sunrise."],
+    "sourceTitle": "See the evidence behind the answer",
+    "sourceBody": "Sunrise is calculated at the Haleakalā summit coordinates. NWS hourly forecast guidance near the summit supplies the weather signal. NPS controls reservation and access rules.",
+    "sourceLink": "https://www.nps.gov/hale/planyourvisit/sunrise.htm",
+    "sourceLinkLabel": "Open NPS Haleakalā sunrise guidance →"
+  },
   "yellowstone-road-status": {
     "title": "Yellowstone Road Status Today | Chris Izworski",
     "description": "Check Yellowstone road status before choosing an entrance or cross-park route. Current NPS road language is surfaced with a direct official-source link.",
@@ -51,19 +63,6 @@
     "sourceBody": "The tool checks the current NPS Yellowstone road page for explicit current-status language and shows the supporting source excerpt.",
     "sourceLink": "https://www.nps.gov/yell/planyourvisit/parkroads.htm",
     "sourceLinkLabel": "Open NPS Yellowstone park roads →"
-  },
-  "trail-ridge-road-status": {
-    "title": "Trail Ridge Road Status Today | Chris Izworski",
-    "description": "See whether Trail Ridge Road is open to through travel using the current Rocky Mountain National Park status page and a direct NPS source check.",
-    "h1": "Is Trail Ridge Road open to through travel?",
-    "lede": "The useful answer is through travel across Rocky Mountain National Park—not whether a lower mile of pavement happens to be open.",
-    "decisionTitle": "What this tool is trying to answer",
-    "decisionBody": "Trail Ridge Road can close or reopen with fast mountain-weather changes. This page is intentionally narrow: it checks for explicit NPS through-travel status and puts the source text beside the result so a visitor can verify the decision before driving.",
-    "bullets": ["Open to through travel is the key phrase for a cross-park drive.", "Weather can change road status rapidly even during the normal open season.", "Timed-entry requirements and road status are separate decisions."],
-    "sourceTitle": "See the evidence behind the answer",
-    "sourceBody": "The live card checks the current NPS road-status page and classifies only explicit open/closed language. Mixed or unclear language returns VERIFY.",
-    "sourceLink": "https://www.nps.gov/romo/planyourvisit/road_status.htm",
-    "sourceLinkLabel": "Open NPS Rocky Mountain road status →"
   },
   "tioga-road-status": {
     "title": "Tioga Road Status Today | Chris Izworski",

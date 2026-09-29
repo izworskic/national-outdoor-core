@@ -1,0 +1,52 @@
+{
+  "regions": [
+    {
+      "id": "southwest-colorado-plateau",
+      "name": "Southwest & Colorado Plateau",
+      "description": "Canyon, river and reservoir decisions across Utah, Arizona and southern Nevada.",
+      "toolIds": ["zion-narrows-conditions", "grand-canyon-access", "lake-mead-access", "lake-powell-ramp-status"]
+    },
+    {
+      "id": "rockies",
+      "name": "Rockies & Mountain West",
+      "description": "High-elevation road and park-route decisions across Glacier and Yellowstone.",
+      "toolIds": ["going-to-the-sun-road-status", "yellowstone-road-status"]
+    },
+    {
+      "id": "california-sierra",
+      "name": "California & Sierra",
+      "description": "Cross-Sierra access where a single mountain road can reshape the whole itinerary.",
+      "toolIds": ["tioga-road-status"]
+    },
+    {
+      "id": "pacific-northwest",
+      "name": "Pacific Northwest",
+      "description": "Mountain access decisions where different approaches can have different conditions.",
+      "toolIds": ["mount-rainier-road-status"]
+    },
+    {
+      "id": "northeast-great-lakes",
+      "name": "Northeast & Great Lakes",
+      "description": "Coastal and mountain timing decisions in the Northeast.",
+      "toolIds": ["cadillac-mountain-sunrise"]
+    },
+    {
+      "id": "hawaii",
+      "name": "Hawaii",
+      "description": "Island trips where summit weather, access rules and timing determine whether the drive is worth making.",
+      "toolIds": ["haleakala-sunrise"]
+    }
+  ],
+  "tools": {
+    "zion-narrows-conditions": {"place":"Zion National Park · Utah","kind":"River + canyon decision","tags":"zion utah southwest colorado plateau narrows virgin river hiking flash flood"},
+    "grand-canyon-access": {"place":"Grand Canyon National Park · Arizona","kind":"Road + rim access","tags":"grand canyon arizona southwest colorado plateau south rim north rim desert view road access"},
+    "lake-mead-access": {"place":"Lake Mead · Nevada / Arizona","kind":"Boat launch decision","tags":"lake mead nevada arizona southwest reservoir boat ramp launch water level"},
+    "lake-powell-ramp-status": {"place":"Lake Powell · Utah / Arizona","kind":"Boat ramp decision","tags":"lake powell utah arizona southwest colorado plateau boat ramp launch water level"},
+    "going-to-the-sun-road-status": {"place":"Glacier National Park · Montana","kind":"Mountain road crossing","tags":"glacier montana rockies going to the sun road logan pass road status"},
+    "yellowstone-road-status": {"place":"Yellowstone · Wyoming / Montana / Idaho","kind":"Park route decision","tags":"yellowstone wyoming montana idaho rockies roads entrances old faithful canyon"},
+    "tioga-road-status": {"place":"Yosemite National Park · California","kind":"Cross-Sierra road decision","tags":"yosemite california sierra tioga road pass east west crossing"},
+    "mount-rainier-road-status": {"place":"Mount Rainier · Washington","kind":"Mountain access decision","tags":"mount rainier washington pacific northwest paradise sunrise white river mowich road"},
+    "cadillac-mountain-sunrise": {"place":"Acadia National Park · Maine","kind":"Sunrise decision","tags":"acadia maine northeast cadillac mountain sunrise weather reservation"},
+    "haleakala-sunrise": {"place":"Haleakala National Park · Maui, Hawaii","kind":"Sunrise decision","tags":"haleakala maui hawaii sunrise summit weather reservation"}
+  }
+}

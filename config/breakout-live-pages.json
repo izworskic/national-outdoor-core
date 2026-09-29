@@ -27,7 +27,7 @@
   },
   "going-to-the-sun-road-status": {
     "title": "Going-to-the-Sun Road Status | Chris Izworski",
-    "description": "Check whether you can drive all the way across Going-to-the-Sun Road: west-side extent, Logan Pass/alpine access, east-side extent, and Glacier vehicle limits.",
+    "description": "Check driving access across Going-to-the-Sun Road: west-side extent, Logan Pass/alpine access, east-side extent, and Glacier vehicle limits.",
     "h1": "Can I drive all the way across Going-to-the-Sun Road today?",
     "lede": "Lower road sections can be open while the alpine crossing is not. This checks the west side, Logan Pass area and east side as one through-drive decision before you commit to the 50-mile crossing.",
     "decisionTitle": "What this tool is trying to answer",
@@ -53,7 +53,7 @@
   },
   "yellowstone-road-status": {
     "title": "Yellowstone Road Status Today | Chris Izworski",
-    "description": "Choose a Yellowstone entrance-to-destination route and check its seasonal road segments, current published delay context, and the final NPS live road map before driving.",
+    "description": "Choose a Yellowstone route and check seasonal road segments, published delays, and the official NPS live road map before driving.",
     "h1": "Does my Yellowstone route work today?",
     "lede": "Yellowstone is a road network, not one park-open switch. Pick the drive you actually plan to make, check each seasonal segment and current delay context, then use the live NPS map for the final closure check.",
     "decisionTitle": "What this tool is trying to answer",
@@ -105,7 +105,7 @@
   },
   "lake-mead-access": {
     "title": "Lake Mead Boat Ramp Status Today | Chris Izworski",
-    "description": "See which Lake Mead launch ramps NPS currently lists open for motorized or non-motorized boats, alongside the current lake elevation and published minimum elevations.",
+    "description": "See Lake Mead launch ramps NPS lists open for motorized or non-motorized boats, current lake elevation, and published minimum elevations.",
     "h1": "Where can I launch a boat at Lake Mead today?",
     "lede": "A lake-level number is not the decision. Choose motorized or paddle/small-craft access, then compare the current NPS ramp status, ramp note and published elevation threshold before towing to the water.",
     "decisionTitle": "What this tool is trying to answer",

@@ -8,6 +8,9 @@ const root=path.resolve(here,'..');
 const publicDir=path.join(root,'public');
 const owner='https://national-outdoor-core.vercel.app';
 const pages=JSON.parse(fs.readFileSync(path.join(root,'config','breakout-live-pages.json'),'utf8'));
+for (const [id, page] of Object.entries(pages)) {
+  if (!page.description || page.description.length > 158) throw new Error(`${id}: description must be 1–158 characters`);
+}
 const geography=JSON.parse(fs.readFileSync(path.join(root,'config','breakout-live-geography.json'),'utf8'));
 const portfolio=JSON.parse(fs.readFileSync(path.join(root,'benchmarks','breakout-live-portfolio.json'),'utf8'));
 const candidates=new Map(portfolio.candidates.map(x=>[x.id,x]));

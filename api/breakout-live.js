@@ -15,7 +15,7 @@ module.exports = async function breakoutLiveHandler(req, res) {
   try {
     let payload=null;
     if (id === 'haleakala-sunrise') {
-      const haleakala = await import('../lib/haleakala-sunrise.mjs');
+      const haleakala = await import('../lib/haleakala-sunrise-production.mjs');
       payload = await haleakala.buildHaleakalaSunrise();
     } else {
       const replacement = await import('../lib/breakout-live-replacements.mjs');

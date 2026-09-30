@@ -12,11 +12,17 @@ module.exports = async function breakoutLiveHandler(req, res) {
     return res.end();
   }
   const id=(req.query?.id || new URL(req.url,'https://example.test').searchParams.get('id') || '').trim();
-  const replacement = await import('../lib/breakout-live-replacements.mjs');
-  const normalizers = await import('../lib/breakout-live-value-normalizers.mjs');
   try {
-    const rawPayload = await replacement.buildReplacement(id);
-    const payload = rawPayload ? normalizers.normalizeReplacementPayload(id,rawPayload) : null;
+    let payload=null;
+    if (id === 'haleakala-sunrise') {
+      const haleakala = await import('../lib/haleakala-sunrise.mjs');
+      payload = await haleakala.buildHaleakalaSunrise();
+    } else {
+      const replacement = await import('../lib/breakout-live-replacements.mjs');
+      const normalizers = await import('../lib/breakout-live-value-normalizers.mjs');
+      const rawPayload = await replacement.buildReplacement(id);
+      payload = rawPayload ? normalizers.normalizeReplacementPayload(id,rawPayload) : null;
+    }
     if (payload) {
       res.setHeader('Cache-Control','public, s-maxage=180, stale-while-revalidate=900');
       res.setHeader('Content-Type','application/json; charset=utf-8');

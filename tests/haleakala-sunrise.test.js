@@ -101,4 +101,6 @@ test('custom page generator exposes decision states and crawlable evidence bound
   assert.match(source,/G-Y5D2V2W7HN/);
   assert.match(source,/assets\/haleakala-sunrise\.js/);
   assert.match(source,/assets\/haleakala-sunrise\.css/);
+  assert.match(source,/href="\/national-tools\/kilauea-live\/"/);
+  assert.doesNotMatch(source,/href="\/national-tools\/kilauea-volcano\/"/);
 });

@@ -179,7 +179,7 @@ const html=`<!doctype html>
 <section class="network">
 <p class="eyebrow">Hawaii decision tools</p>
 <h2>More live Hawaii planning</h2>
-<div class="network-grid"><a href="/national-tools/kilauea-volcano/">Kīlauea live decision tool</a><a href="/national-tools/">Browse national live tools</a></div>
+<div class="network-grid"><a href="/national-tools/kilauea-live/">Kīlauea live decision tool</a><a href="/national-tools/">Browse national live tools</a></div>
 <p class="disclaimer">Official closures, warnings and reservation systems control. This tool is decision support, not a guarantee of visibility or access.</p>
 </section>
 </main>

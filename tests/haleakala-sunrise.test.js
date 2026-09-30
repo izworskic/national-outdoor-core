@@ -81,14 +81,14 @@ test('sunrise geometry returns a plausible eastward azimuth',()=>{
   assert.ok(Date.parse(s.civilTwilightIso)<Date.parse(s.iso));
 });
 
-test('custom page exposes decision states and crawlable evidence boundaries',()=>{
+test('custom page generator exposes decision states and crawlable evidence boundaries',()=>{
   const fs=require('node:fs');
-  const html=fs.readFileSync('public/national-tools/haleakala-sunrise/index.html','utf8');
-  for(const term of ['FAVORABLE','CHANGING','UNFAVORABLE','UNCERTAIN']) assert.match(html,new RegExp(term));
-  assert.match(html,/vertical GFS moisture/i);
-  assert.match(html,/No sunrise score/i);
-  assert.match(html,/google-adsense-account/);
-  assert.match(html,/G-Y5D2V2W7HN/);
-  assert.match(html,/assets\/haleakala-sunrise\.js/);
-  assert.match(html,/assets\/haleakala-sunrise\.css/);
+  const source=fs.readFileSync('scripts/generate-haleakala-sunrise-page.mjs','utf8');
+  for(const term of ['FAVORABLE','CHANGING','UNFAVORABLE','UNCERTAIN']) assert.match(source,new RegExp(term));
+  assert.match(source,/vertical GFS moisture/i);
+  assert.match(source,/No sunrise score/i);
+  assert.match(source,/google-adsense-account/);
+  assert.match(source,/G-Y5D2V2W7HN/);
+  assert.match(source,/assets\/haleakala-sunrise\.js/);
+  assert.match(source,/assets\/haleakala-sunrise\.css/);
 });

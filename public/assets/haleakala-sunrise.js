@@ -9,6 +9,16 @@
   const status=$('#liveStatus'),headline=$('#liveHeadline'),facts=$('#liveFacts'),fresh=$('#liveFresh'),err=$('#liveError');
   const refresh=$('#refreshLive');
   const setText=(id,v)=>{const el=$(id);if(el)el.textContent=v??'—';};
+  const fmtClock=iso=>iso?new Intl.DateTimeFormat('en-US',{timeZone:'Pacific/Honolulu',hour:'numeric',minute:'2-digit'}).format(new Date(iso)).replace(' AM',' a.m.').replace(' PM',' p.m.')+' HST':'Unavailable';
+  const PLAIN={FAVORABLE:'Good odds of a clear summit sunrise',CHANGING:'Could go either way',UNFAVORABLE:'Poor odds. Plan for cloud, fog or rain',UNCERTAIN:'Not enough evidence to call it'};
+  const COMPASS=['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];
+  const compass=deg=>Number.isFinite(Number(deg))?COMPASS[Math.round(((Number(deg)%360)+360)%360/22.5)%16]:'';
+  function windChillF(t,mph){
+    if(!Number.isFinite(t)||!Number.isFinite(mph)||t>50||mph<3) return null;
+    const v=Math.pow(mph,0.16);
+    return Math.round(35.74+0.6215*t-35.75*v+0.4275*t*v);
+  }
+  const rhWord=v=>v==null?'No data':v<=30?'Dry':v>=70?'Moist, cloud likely':'Some moisture';
   const event=(name,data={})=>{try{window.va?.('event',{name,data});window.gtag?.('event',name,data);}catch{}};
 
   function renderEvidence(rows=[]){
@@ -29,7 +39,63 @@
     out.hidden=false;
     out.innerHTML=`<strong>Degraded inputs</strong><p>${esc(keys.map(k=>`${k}: ${errors[k]}`).join(' · '))}</p>`;
   }
+  function crossSection(p){
+    const Y=ft=>Math.round(268-ft/15000*236);
+    const levels=[
+      {ft:14000,rh:p.rh600,name:'Above the summit'},
+      {ft:10000,rh:p.rh700,name:'Summit level'},
+      {ft:5000,rh:p.rh850,name:'Below the summit'}
+    ];
+    const puffs=levels.map(l=>{
+      const rh=Number(l.rh);
+      const op=Number.isFinite(rh)?(0.1+0.7*Math.min(100,Math.max(0,rh))/100).toFixed(2):'0.05';
+      let g='';
+      for(let i=0;i<7;i++) g+=`<ellipse cx="${34+i*66}" cy="${Y(l.ft)+(i%2?4:-3)}" rx="36" ry="10" fill="#6f8796" opacity="${op}"/>`;
+      return g;
+    }).join('');
+    const labels=levels.map(l=>{
+      const rh=Number(l.rh),y=Y(l.ft);
+      const has=Number.isFinite(rh);
+      return `<line x1="0" y1="${y}" x2="478" y2="${y}" stroke="#8aa093" stroke-dasharray="3 5"/>
+      <text x="492" y="${y-6}" class="xs-name">${esc(l.name)} · about ${l.ft.toLocaleString('en-US')} ft</text>
+      <text x="492" y="${y+12}" class="xs-val">${has?Math.round(rh)+'% humidity · '+esc(rhWord(rh)):'No data'}</text>`;
+    }).join('');
+    return `<figure class="xs-figure"><svg viewBox="0 0 760 300" role="img" aria-label="Illustrative cross-section of Haleakalā showing forecast humidity at about 5,000, 10,000 and 14,000 feet compared with the 10,023-foot summit" class="xs-svg">
+      <rect x="0" y="0" width="760" height="268" fill="#eef4f2"/>
+      <rect x="0" y="268" width="478" height="32" fill="#bcd3df"/>
+      <path d="M0,268 L70,238 Q150,190 205,140 L222,112 L246,118 L262,111 L278,140 Q330,190 410,238 L478,268 Z" fill="#6b5b4e"/>
+      ${puffs}${labels}
+      <text x="239" y="98" text-anchor="middle" class="xs-summit">Summit 10,023 ft</text>
+    </svg>
+    <figcaption class="xs-cap">Illustrative cross-section, not to scale. Darker puffs mean more forecast humidity at that height. ${esc(p.note||'')}</figcaption></figure>`;
+  }
+  function renderPlace(d){
+    const decision=d.decision||{};
+    const state=decision.state||'UNCERTAIN';
+    setText('#livePlain',PLAIN[state]||PLAIN.UNCERTAIN);
+    document.querySelectorAll('#haleScenarios article').forEach(a=>a.classList.toggle('active',a.dataset.state===state));
+    // feel
+    const n=d.nws?.nearSunrise;
+    setText('#haleWind',n?.windSpeed?`${n.windSpeed}${n.windDirection?' from the '+n.windDirection:''}`:'Unavailable');
+    const t=n?.temperature!=null?Number(n.temperature):null;
+    const wc=windChillF(t,n?.windMph);
+    setText('#haleFeelsLike',wc!=null?`${wc}°F`:(t!=null?`${t}°${n?.temperatureUnit||'F'}`:'Unavailable'));
+    const pp=d.summary?.precipitationProbability;
+    setText('#haleRain',pp==null?'Unavailable':`${Math.round(pp)}%`);
+    // recheck
+    const rc=$('#haleRecheck');
+    if(rc){
+      const hrs=decision.observationDecisionWindowHours,sr=Date.parse(d.astronomy?.sunriseIso||'');
+      if(Number.isFinite(sr)&&hrs){
+        const start=new Date(sr-hrs*3600000).toISOString();
+        rc.textContent=decision.observationUsedForDecision===false
+          ?`Live summit readings start counting toward this call at ${fmtClock(start)}. Check again then, and once more before you leave.`
+          :'Live summit readings are now part of this call. Check once more right before you leave.';
+      }else rc.textContent='';
+    }
+  }
   function render(d){
+    renderPlace(d);
     const decision=d.decision||{};
     const state=decision.state||'UNCERTAIN';
     const card=$('.live-card');
@@ -38,8 +104,8 @@
     headline.textContent=decision.headline||'The evidence engine is abstaining.';
     facts.innerHTML=[
       ['Sunrise',d.astronomy?.sunriseIso?fmtHst(d.astronomy.sunriseIso).replace(/^[A-Za-z]+,\s*/,''):'Unavailable'],
-      ['Summit moisture',d.summary?.summitMoisture||'Unknown'],
-      ['Trend',d.summary?.trend||'Unknown'],
+      ['Air at the summit',d.summary?.summitMoisture||'Unknown'],
+      ['Humidity trend',d.summary?.trend||'Unknown'],
       ['Wind',d.summary?.wind||'Unavailable'],
       ['Confidence',decision.confidence||'LOW']
     ].map(([label,value])=>`<div class="fact"><span>${esc(label)}</span><strong>${esc(value)}</strong></div>`).join('');
@@ -55,17 +121,13 @@
     renderEvidence(d.evidence||[]);
     const p=d.forecastProfile;
     const profile=$('#haleProfile');
-    if(profile) profile.innerHTML=p?`
-      <div><span>850 hPa</span><strong>${p.rh850??'—'}% RH</strong></div>
-      <div><span>700 hPa · near summit</span><strong>${p.rh700??'—'}% RH</strong></div>
-      <div><span>600 hPa</span><strong>${p.rh600??'—'}% RH</strong></div>
-      <p>${esc(p.note||'')}</p>`:'<p class="degraded">Forecast profile unavailable.</p>';
+    if(profile) profile.innerHTML=p?crossSection(p):'<p class="degraded">Forecast moisture profile unavailable.</p>';
     const above=d.experimental?.aboveCloud;
     setText('#haleAboveCloudState',above?.state||'INSUFFICIENT EVIDENCE');
     setText('#haleAboveCloudText',above?.label||'No above-cloud inference is available.');
-    setText('#haleSunriseTime',fmtHst(d.astronomy?.sunriseIso));
-    setText('#haleCivilTwilight',fmtHst(d.astronomy?.civilTwilightIso));
-    setText('#haleAzimuth',d.astronomy?.azimuthDeg!=null?`${d.astronomy.azimuthDeg}°`:'Unavailable');
+    setText('#haleSunriseTime',fmtClock(d.astronomy?.sunriseIso));
+    setText('#haleCivilTwilight',fmtClock(d.astronomy?.civilTwilightIso));
+    setText('#haleAzimuth',d.astronomy?.azimuthDeg!=null?`${d.astronomy.azimuthDeg}° (${compass(d.astronomy.azimuthDeg)})`:'unavailable');
     setText('#haleTemperature',d.summary?.temperature||'Unavailable');
     const hazards=$('#haleHazards');
     if(hazards){
@@ -102,6 +164,7 @@
     }catch(e){
       $('.live-card')?.setAttribute('data-state','verify');
       status.textContent='UNCERTAIN';
+      setText('#livePlain','Live evidence is unavailable right now');
       headline.textContent='Live evidence is unavailable. This page will not substitute a generic weather guess.';
       facts.innerHTML='';
       fresh.textContent='Use the official NPS, NWS and LCO links below before committing.';

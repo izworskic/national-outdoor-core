@@ -32,3 +32,8 @@
 .tioga-source-actions a:hover{background:#dff0e5}
 .tioga-disclaimer{font-size:13px;color:#57665e;line-height:1.5;margin:16px 0 0}
 @media(max-width:700px){.tioga-intro{flex-direction:column}.tioga-method{max-width:none}.tioga-corridor{grid-template-columns:1fr;gap:6px}.tioga-line{height:15px;width:4px;justify-self:center}.tioga-node{min-height:80px}.tioga-alerts,.tioga-source-actions{grid-template-columns:1fr}.tioga-workbench{margin:0 0 24px}}
+
+.tioga-hero-media{margin:0 0 22px;overflow:hidden;border:1px solid #d3dfd5;border-radius:19px;background:#e8ece6;box-shadow:0 12px 32px rgba(23,33,29,.08)}
+.tioga-hero-media img{display:block;width:100%;height:clamp(230px,34vw,410px);object-fit:cover;object-position:center 58%}
+.tioga-hero-media figcaption{font-size:12px;color:#52645b;background:#f9fbf9;padding:9px 15px}
+.tioga-hero-media figcaption a{font-weight:700}

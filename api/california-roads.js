@@ -9,11 +9,25 @@ module.exports=async function californiaRoads(req,res){
  if(req.method==='OPTIONS'){res.setHeader('Access-Control-Allow-Methods','GET,OPTIONS');res.statusCode=204;return res.end();}
  if(req.method!=='GET'){res.statusCode=405;return res.end(JSON.stringify({ok:false,error:'Use GET'}));}
  const kind=String(req.query?.kind||new URL(req.url,'https://example.test').searchParams.get('kind')||'').slice(0,20);
- if(!['coast','sierra'].includes(kind)){res.statusCode=400;return res.end(JSON.stringify({ok:false,error:'Choose coast or sierra'}));}
+ if(!['coast','sierra','geometry'].includes(kind)){res.statusCode=400;return res.end(JSON.stringify({ok:false,error:'Choose coast, sierra, or a pass geometry'}));}
+ const pass=String(req.query?.pass||new URL(req.url,'https://example.test').searchParams.get('pass')||'').slice(0,22);
+ if(kind==='geometry'&&!['sonora','ebbetts','carson','monitor','tioga','echo','donner'].includes(pass)){
+  res.statusCode=400;return res.end(JSON.stringify({ok:false,error:'Unsupported pass'}));
+ }
  try{
-  const {getCaliforniaRoads}=await import('../lib/california-roads.mjs');
-  const data=await getCaliforniaRoads(kind);
-  res.setHeader('Cache-Control','public,s-maxage=300,stale-while-revalidate=300');
+  let data;
+  if(kind==='geometry'){
+   const [{PASSES},{getSierraHighwayGeometry}]=await Promise.all([
+    import('../lib/california-roads.mjs'),import('../lib/california-sierra-geometry.mjs')]);
+   const record=PASSES.find(p=>p.id===pass);
+   const result=await getSierraHighwayGeometry(record);
+   data={kind:'geometry',pass,checkedAt:new Date().toISOString(),...result};
+   res.setHeader('Cache-Control','public,s-maxage=86400,stale-while-revalidate=86400');
+  }else{
+   const {getCaliforniaRoads}=await import('../lib/california-roads.mjs');
+   data=await getCaliforniaRoads(kind);
+   res.setHeader('Cache-Control','public,s-maxage=300,stale-while-revalidate=300');
+  }
   res.statusCode=200;return res.end(JSON.stringify(data));
  }catch(e){
   res.setHeader('Cache-Control','public,s-maxage=30');

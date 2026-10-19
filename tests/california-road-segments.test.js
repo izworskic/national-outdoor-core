@@ -71,3 +71,23 @@ test('generated interface exposes independent origin, destination, date, source 
  assert.ok(js.includes('coastPlan('),'evaluates all calendar days');
  assert.ok(js.includes('weatherFor('),'weather kept distinct');
 });
+
+
+test('live highway work near Rocky Creek affects a northern trip, while Mud Creek affects the southern approach',()=>{
+ const notes=['1-way controlled traffic 15.7 mi south of Monterey /at Rocky Creek Bridge/ (Monterey Co) - Due to construction',
+ '1-way controlled traffic at Mud Creek (Monterey Co) - Due to emergency work'];
+ const events=seg.geolocateHighwayNotices(notes,{checkedAt:NOW});
+ assert.equal(events.length,2);
+ const args={day:'2026-10-19',today:'2026-10-19',feedAvailable:true,now:NOW};
+ const north=seg.projectRoute(routes()[0],core.BIGSUR_STOPS,events,args);
+ const south=seg.projectRoute(routes()[3],core.BIGSUR_STOPS,events,args);
+ assert.equal(north.state,'CONTROLLED / WORK ZONES');
+ assert.equal(south.state,'CONTROLLED / WORK ZONES');
+ assert.equal(north.events.length,1);
+ assert.match(north.events[0].beginPlace,/Rocky Creek/);
+ assert.equal(south.events.length,1);
+ assert.match(south.events[0].beginPlace,/Mud Creek/);
+ const tomorrow=seg.projectRoute(routes()[0],core.BIGSUR_STOPS,events,{...args,day:'2026-10-20'});
+ assert.equal(tomorrow.state,'NO MATCHED PLANNED WORK','today highway note must not become a forecast');
+ assert.match(events[0].confidence,/approximate/);
+});

@@ -61,3 +61,17 @@ test('pages have real photos, schema, explicit controls, and official links',()=
  assert.match(js,/navigator\.geolocation/);
  assert.match(js,/cartocdn\.com/);
 });
+
+
+test('footer links and Yosemite notes cannot be counted as Sierra road restrictions',()=>{
+ const html='<h3>SR 108</h3><p>[IN THE CENTRAL CALIFORNIA AREA & SIERRA NEVADA]</p><p>No traffic restrictions are reported for this area.</p><p>[YOSEMITE NATL PARK]</p><p>For Yosemite road information call NPS</p><p>Accessibility</p><p>Contact Us</p>';
+ const report=roads.parseReport(html,108),a=roads.assessPass(report,roads.PASSES.find(x=>x.id==='sonora'));
+ assert.equal(a.state,'NO RESTRICTIONS REPORTED');
+ assert.deepEqual(a.notes,['No traffic restrictions are reported for this area.']);
+});
+test('Donner status ignores closures in the unrelated San Francisco Bay district',()=>{
+ const html='<h3>I 80</h3><p>[IN THE SAN FRANCISCO BAY AREA - SOLANO CO]</p><p>Is closed in San Francisco due to an accident.</p><p>[IN THE NORTHERN CALIFORNIA AREA & SIERRA NEVADA]</p><p>No traffic restrictions are reported for this area.</p><p>[BUSINESS 80 - CAPITAL CITY FREEWAY]</p><p>Road closed in downtown Sacramento.</p>';
+ const a=roads.assessPass(roads.parseReport(html,80),roads.PASSES.find(x=>x.id==='donner'));
+ assert.equal(a.state,'NO RESTRICTIONS REPORTED');
+ assert.equal(a.notes.length,1);
+});

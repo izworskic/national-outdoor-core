@@ -75,3 +75,13 @@ test('Donner status ignores closures in the unrelated San Francisco Bay district
  assert.equal(a.state,'NO RESTRICTIONS REPORTED');
  assert.equal(a.notes.length,1);
 });
+
+test('split Caltrans road-note lines are joined without losing Monterey work details',()=>{
+ const html='<h3>SR 1</h3><p>[IN THE CENTRAL CALIFORNIA AREA]</p><p>1-way controlled traffic at Mud Creek (Monterey Co) from 0630 hrs to</p><p>1200 hrs Monday thru Friday through 11/13/26 - Due to emergency work</p><p>1-way controlled traffic at Rocky Creek Bridge</p><p>(Monterey Co) 24 hrs a day 7 days a week - Due to construction</p><p>Back to Top</p><p>Accessibility</p>';
+ const a=roads.assessBigSur(roads.parseReport(html,1));
+ assert.equal(a.state,'WORK ZONES REPORTED');
+ assert.equal(a.notes.length,2);
+ assert.match(a.notes[0],/11\/13\/26/);
+ assert.match(a.notes[1],/24 hrs a day/);
+ assert.doesNotMatch(a.notes.join(' '),/Accessibility/);
+});

@@ -121,6 +121,47 @@
     section.innerHTML=`<div class="workbench-head"><div><p class="eyebrow">Crossing check</p><h2>West side + Logan Pass + east side must all work</h2></div><span class="workbench-note">Full road ≈ 50 miles / 2 hours nonstop</span></div><div class="crossing-grid"><article><span>West-side source</span><p>${esc(r.west)}</p></article><article><span>Logan Pass / alpine source</span><p>${esc(r.logan)}</p></article><article><span>East-side source</span><p>${esc(r.east)}</p></article></div><div class="restriction-box"><strong>Vehicle gate</strong><p>${esc(r.restriction)}</p></div>`;
   }
 
+  function renderTiogaPlanner(d){
+    if(id!=='tioga-road-status') return;
+    const wrap=$('#tiogaWorkbench'),picker=$('#tiogaTrip'),out=$('#tiogaRouteResult');
+    if(!wrap||!picker||!out) return;
+    const c=d.corridor||{}, unavailable=!d.corridor;
+    const safe=x=>String(x||'VERIFY').toUpperCase();
+    const park=safe(c.park),west=safe(c.west),caltrans=safe(c.caltrans);
+    const stale=/VERIFY NPS UPDATE DATE/.test(safe(d.status));
+    const note=$('#tiogaRoadNote'),parking=$('#tiogaParking');
+    if(note) note.textContent=c.parkNote||'No current road note could be confirmed. Use the NPS page.';
+    if(parking) parking.textContent=c.parking||'Check the park for current parking restrictions.';
+    [['tiogaPark',unavailable?'UNAVAILABLE':park],['tiogaWest',unavailable?'UNAVAILABLE':west],['tiogaEast',unavailable?'UNAVAILABLE':caltrans]].forEach(([key,value])=>{const el=$('#'+key);if(el) el.textContent=value;});
+    const draw=()=>{
+      const trip=picker.value;
+      const full=trip==='through',fromEast=trip==='east';
+      let title='Park segment not confirmed',body='Do not commit to the route until Yosemite confirms Tioga Road.',tone='verify';
+      if(unavailable){title='Live sources unavailable';body='Use NPS and Caltrans links, then call the Yosemite road line before leaving.';}
+      else if(park==='CLOSED'&&!stale){title='Do not use Tioga Road';body='NPS reports the park segment closed. Choose a same-side trip or verify a different Sierra crossing.';tone='stop';}
+      else if(stale){title='Verify NPS source freshness';body='The published NPS page date is missing or older than seven days. Call the road line before assuming the park segment is open.';}
+      else if(park==='OPEN'){
+        if(full){
+          title='Park segment open; approaches need verification';
+          body='NPS lists Tioga Road open. Big Oak Flat within the park is '+west+'. Caltrans SR 120 reports '+caltrans+'. Check the exact western and eastern approaches in QuickMap; the park status is not a route-wide guarantee.';
+          if(west==='CLOSED'){title='West-side park approach closed';body='Big Oak Flat Road is reported closed. This selected west-to-east drive cannot use that Yosemite approach.';tone='stop';}
+        }else if(fromEast){
+          title='Park segment open; check the east approach';
+          body='NPS lists Tioga Road open. The Lee Vining approach is outside the park; Caltrans SR 120 reports '+caltrans+'. Verify the eastern section and any chain controls before driving.';
+        }else{
+          title='Park road open for a Tuolumne visit';
+          body='NPS lists Tioga Road open. Review Yosemite Valley access, mountain weather and the park road note. Parking, trails and services require their own checks.';
+        }
+      }
+      out.className='tioga-result tioga-'+tone;
+      const chosen=full?'Groveland to Lee Vining':fromEast?'Lee Vining to Tuolumne Meadows':'Yosemite Valley to Tuolumne Meadows';
+      out.innerHTML='<strong>'+esc(title)+'</strong><p>'+esc(body)+'</p><small>Chosen route: '+esc(chosen)+'</small>';
+      window.va?.('event',{name:'breakout_workbench_change',data:{tool:id,route:trip,verdict:tone}});
+    };
+    if(!picker.dataset.bound){picker.addEventListener('change',()=>{if(wrap._drawTioga) wrap._drawTioga();});picker.dataset.bound='1';}
+    wrap._drawTioga=draw;draw();
+  }
+
   function renderPowellPriority(d){
     if(id!=='lake-powell-ramp-status'||!ramps||!Array.isArray(d.ramps)) return;
     const state=r=>{const t=String(r.current||'').toLowerCase();if(t.includes('closed')||r.aboveThreshold===false) return 'closed';if(/open|operable|launch/.test(t)&&r.aboveThreshold!==false) return 'candidate';if(r.aboveThreshold===true) return 'verify';return 'verify';};
@@ -146,11 +187,11 @@
       fresh.textContent=`Source check: ${new Date(d.updated).toLocaleString()}${d.rawUpdated?` · source observation ${new Date(d.rawUpdated).toLocaleString()}`:''}`;
       excerpt.textContent=d.sourceExcerpt||'No source excerpt returned.';source.href=d.source?.url||'#';source.textContent=`Open ${d.source?.name||'official source'} →`;
       if(ramps&&Array.isArray(d.ramps)) renderPowellPriority(d);
-      applyStatusTone(d);renderGlacierCrossing(d);renderYellowstoneRoutes(d);renderMeadLaunches(d);renderDecisionBrief(d);
+      applyStatusTone(d);renderGlacierCrossing(d);renderYellowstoneRoutes(d);renderMeadLaunches(d);renderTiogaPlanner(d);renderDecisionBrief(d);
       window.va?.('event',{name:'breakout_live_loaded',data:{tool:id,status:String(d.status||'unknown').slice(0,80)}});
     }catch(e){
       status.textContent='LIVE SOURCE UNAVAILABLE';headline.textContent='No substitute status is being shown. Use the official source before making the trip decision.';excerpt.textContent='The live data request failed.';fresh.textContent='Last attempt: '+new Date().toLocaleString();err.hidden=false;err.textContent=`Live refresh failed: ${e.message}`;
-      applyStatusTone({status:'UNAVAILABLE'});renderDecisionBrief({status:'UNAVAILABLE',facts:[],ramps:[]});window.va?.('event',{name:'breakout_live_failed',data:{tool:id}});
+      applyStatusTone({status:'UNAVAILABLE'});renderTiogaPlanner({status:'UNAVAILABLE'});renderDecisionBrief({status:'UNAVAILABLE',facts:[],ramps:[]});window.va?.('event',{name:'breakout_live_failed',data:{tool:id}});
     }
   }
   $('#refreshLive')?.addEventListener('click',load);load();

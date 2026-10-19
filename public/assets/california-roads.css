@@ -16,3 +16,16 @@
 #reachableResult p{margin:5px 0}
 @media(max-width:700px){.road-controls{grid-template-columns:1fr 1fr}.road-controls .picker:last-child{grid-column:1/-1}}
 @media(max-width:430px){.road-days{display:flex;overflow-x:auto;padding:4px 2px 9px;scroll-snap-type:x mandatory}.road-day{flex:0 0 83px;scroll-snap-align:start}}
+
+/* Official georeferenced road evidence and Caltrans camera stills */
+.spatial-evidence{margin:16px 0 20px;padding:16px;background:#f6f9f6;border:1px solid var(--edge);border-radius:14px}
+.spatial-evidence h4{font-size:1rem;margin:14px 0 6px}
+.spatial-evidence article p{margin:5px 0}
+.spatial-evidence article small{display:block;overflow-wrap:anywhere}
+.camera-gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:12px;margin:10px 0}
+.camera-card{border:1px solid var(--edge);background:#fff;border-radius:12px;padding:8px;text-decoration:none;color:var(--ink);min-width:0}
+.camera-card img{width:100%;height:132px;object-fit:cover;display:block;border-radius:7px;background:#e3e8e6}
+.camera-card strong,.camera-card small{display:block;line-height:1.35;margin-top:7px;overflow-wrap:anywhere}
+.camera-card small{font-size:.75rem;color:var(--muted)}
+.camera-card:hover{border-color:var(--green)}
+@media(max-width:580px){.camera-gallery{grid-template-columns:1fr 1fr;gap:8px}.camera-card img{height:102px}}

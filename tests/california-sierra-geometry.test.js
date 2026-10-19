@@ -64,3 +64,14 @@ test('client routes draw official geometry only after verified API success and p
  assert.ok(api.includes("s-maxage=86400"));
  assert.ok(api.includes('getSierraHighwayGeometry'));
 });
+
+test('I-80 centerline vertices near Donner are accepted by a measured summit radius',()=>{
+ const pass=passes().find(p=>p.id==='donner');
+ const near={type:'FeatureCollection',features:[{type:'Feature',properties:{Route:80,AlignCode:'Right'},
+  geometry:{type:'LineString',coordinates:[[-120.4054,39.322],[-120.3967,39.3238],[-120.388,39.323]]}}]};
+ const r=geometry.validateRoadGeometry(near,pass);
+ assert.equal(r.available,true,'Do not discard real Donner I-80 segments merely because no vertex is within six longitude hundredths');
+ const far={type:'FeatureCollection',features:[{...near.features[0],
+  geometry:{type:'LineString',coordinates:[[-120.55,39.32],[-120.53,39.31]]}}]};
+ assert.equal(geometry.validateRoadGeometry(far,pass).available,false,'faraway same route must not qualify as pass geometry');
+});

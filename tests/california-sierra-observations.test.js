@@ -78,3 +78,11 @@ test('client provides clickable camera stills and map markers without fake green
  assert.match(js,/Caltrans QuickMap/);
  assert.match(css,/\.camera-gallery/);
 });
+
+
+test('same-route camera 65+ km away must not be represented as summit camera',()=>{
+ const mountain=spatial.readSierraCameras({data:[camera({route:'SR-108',lat:38.3278,lng:-120.40})]},P());
+ assert.equal(mountain.sonora.length,0,'do not present distant Sierra foothills as Sonora Pass');
+ const local=spatial.readSierraCameras({data:[camera({route:'US-50',lat:38.8138,lng:-120.0306})]},P());
+ assert.equal(local.echo.length,1,'retain actual summit-area roadside cameras');
+});

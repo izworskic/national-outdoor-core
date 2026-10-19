@@ -2,7 +2,8 @@
  const root=document.querySelector('[data-california-road]');if(!root)return;
  const kind=root.dataset.californiaRoad,$=id=>document.getElementById(id);
  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- let map=null,markers={},routeLine=null,userPin=null,sierraOverlay=null,last=null,selectedPass='sonora';
+ let map=null,markers={},routeLine=null,userPin=null,sierraOverlay=null,officialRoadLine=null,roadRequestId=0,caltransAttribution=false,last=null,selectedPass='sonora';
+ const geometryCache={};
  const tone=s=>/CLOSURE REPORTED|CLOSED|UNAVAILABLE/.test(s)?'bad':/RESTRICTIONS|WORK|VERIFY|PARK CHECK|UNKNOWN/.test(s)?'warn':'calm';
  const date=d=>d?new Date(d).toLocaleString('en-US',{dateStyle:'medium',timeStyle:'short'}):'Not available';
  function mapInit(){
@@ -26,7 +27,7 @@
  function focus(id,pan=true){
   const marker=markers[id];if(marker&&map){if(pan)map.panTo(marker.getLatLng());marker.openPopup();}
   document.querySelectorAll('[data-place]').forEach(el=>el.classList.toggle('active',el.dataset.place===id));
-  if(kind==='sierra'){selectedPass=id;updateSierraDetail();}
+  if(kind==='sierra'){selectedPass=id;updateSierraDetail();drawPassHighway(id,{fit:pan});}
  }
  function link(url,label){return '<a href="'+esc(url)+'" target="_blank" rel="noopener noreferrer">'+esc(label)+' ↗</a>';}
  function setSummary(title,body,state,meta){
@@ -174,6 +175,76 @@
     link(c.imageUrl,'Open official camera still'));
   });
  }
+ const crossingOptions={
+  sonora:['carson','ebbetts','tioga','echo'],ebbetts:['carson','sonora','monitor','echo'],
+  carson:['echo','donner','ebbetts','sonora'],monitor:['carson','sonora','ebbetts','echo'],
+  tioga:['sonora','carson','echo','donner'],echo:['donner','carson','sonora','ebbetts'],
+  donner:['echo','carson','sonora','ebbetts']
+ };
+ function directionsUrl(p){
+  const origin=p.from+(p.from==='Minden'||p.from==='Topaz Lake'?', NV':', CA');
+  const dest=p.to+(p.to==='Minden'||p.to==='Topaz Lake'?', NV':', CA');
+  return 'https://www.google.com/maps/dir/?api=1&origin='+encodeURIComponent(origin)+
+   '&destination='+encodeURIComponent(dest)+'&travelmode=driving&waypoints='+
+   encodeURIComponent(p.lat+','+p.lng);
+ }
+ function crossingAlternatives(p){
+  const possibilities=(crossingOptions[p.id]||[]).map(id=>last?.passes?.find(x=>x.id===id)).filter(Boolean);
+  return '<section class="crossing-options"><h4>Other crossings to investigate</h4>'+
+   '<p class="fine">These are geographic candidates, not safe or confirmed-open detours. They may require very long drives, seasonal gates or chains. Check the entire route before departure.</p>'+
+   '<div class="crossing-choice-list">'+possibilities.map(x=>{
+    const status=String(x.crossingState||'GATE UNVERIFIED');
+    const closed=/CLOSED REPORTED|FULL ROAD CLOSURE NEAR PASS/i.test(status);
+    return '<article class="crossing-choice"><strong>'+esc(x.name)+' · '+esc(x.roadLabel)+'</strong>'+
+      '<p class="fine">'+esc(status)+(closed?' · Closure reported; do not assume passage.':' · Full-route travel not verified.')+'</p>'+
+      '<div class="source-links"><button type="button" class="button crossing-inspect" data-compare-pass="'+esc(x.id)+'">Inspect this crossing</button>'+
+      link(directionsUrl(x),'Preview in Google Maps')+'</div></article>';
+   }).join('')+'</div></section>';
+ }
+ async function drawPassHighway(id,{fit=false}={}){
+  if(kind!=='sierra')return;
+  const token=++roadRequestId;
+  if(officialRoadLine){officialRoadLine.remove();officialRoadLine=null;}
+  const status=$('sierraRoadLineStatus');
+  if(status)status.textContent='Loading Caltrans State Highway Network reference geometry…';
+  try{
+   let d=geometryCache[id];
+   if(!d){
+    const response=await fetch('/api/california-roads?kind=geometry&pass='+encodeURIComponent(id),{cache:'default'});
+    if(!response.ok)throw Error('Caltrans highway geometry temporarily unavailable');
+    d=await response.json();
+    if(!d.ok||!d.available||!Array.isArray(d.segments))throw Error(d.reason||'Caltrans centerline not identified');
+    geometryCache[id]=d;
+   }
+   if(token!==roadRequestId||id!==selectedPass)return;
+   const lines=[];
+   for(const points of d.segments){
+    if(!Array.isArray(points)||points.length<2||points.length>2500)continue;
+    const coords=points.map(x=>[x[1],x[0]]).filter(x=>Number.isFinite(x[0])&&Number.isFinite(x[1]));
+    if(coords.length>=2)lines.push(coords);
+   }
+   if(!lines.length)throw Error('No usable Caltrans centerline coordinates');
+   if(map&&window.L){
+    officialRoadLine=L.layerGroup().addTo(map);
+    lines.forEach(points=>L.polyline(points,{color:'#175aa0',weight:5,opacity:.83,interactive:false}).addTo(officialRoadLine));
+    if(!caltransAttribution&&map.attributionControl){
+      map.attributionControl.addAttribution('Highway reference: &copy; Caltrans');
+      caltransAttribution=true;
+    }
+    if(fit){
+     const bounds=L.latLngBounds(lines.flat());
+     if(bounds.isValid())map.fitBounds(bounds.pad(.17),{animate:false,maxZoom:10});
+    }
+   }
+   const note=$('sierraRoadLineStatus');
+   if(note)note.textContent='Official Caltrans state-highway geometry shown in blue ('+d.segmentCount+
+    ' reference segments; '+d.sourceYear+' baseline). It is NOT a connected, confirmed drivable route and can contain gaps. Road closures and actual driving directions must be verified separately.';
+  }catch(e){
+   if(token!==roadRequestId||id!==selectedPass)return;
+   const note=$('sierraRoadLineStatus');
+   if(note)note.textContent='Caltrans highway centerline is unavailable for this pass. No straight-line substitute is displayed. Use the official highway report and directions link.';
+  }
+ }
  function updateSierraDetail(){
   const p=last?.passes?.find(x=>x.id===selectedPass);if(!p)return;
   const report=p.report||{},gate=p.gate||{state:'GATE UNVERIFIED',evidence:[]},obs=p.observation||{};
@@ -183,6 +254,7 @@
    '<p><strong>Crossing verdict: '+esc(p.crossingState||'GATE UNVERIFIED')+'</strong> · '+esc(p.elevation)+
    ' · '+(p.seasonal?'Seasonal mountain pass':'Major year-round corridor')+'</p>'+
    '<p><strong>Gate evidence:</strong> '+esc(gate.state)+' — '+esc(gate.explanation||'The gate status cannot currently be established.')+'</p>'+
+   '<section class="highway-reference"><h4>Real highway geometry and route directions</h4><p id="sierraRoadLineStatus" class="fine" aria-live="polite">Checking official Caltrans roadway centerline…</p>'+link(directionsUrl(p),'Preview crossing in Google Maps')+'<p class="fine">Google Maps provides actual directions and navigation; its proposed route does not certify the seasonal gate, chain controls or current road opening. Blue map lines represent the Caltrans highway centerline, not navigable turn instructions.</p></section>'+
    '<p class="fine">'+esc(gate.confidence||'Official gate source unavailable')+(gate.sourceUpdated?' · Source date: '+esc(gate.sourceUpdated):'')+'</p>'+
    (gateNotes?'<div class="notes">'+gateNotes+'</div>':'')+
    '<section class="spatial-evidence" aria-label="Geolocated Caltrans conditions"><h4>Mapped work near this crossing</h4>'+
@@ -213,10 +285,12 @@
     '<article><strong>'+esc(c.status)+' · '+esc(c.name)+'</strong><small>'+
      esc(c.description)+' · '+esc(c.observedAt)+' · approx. '+esc(c.distanceKm)+' km from the pass</small></article>').join(''):'')+
     (report.notes?.length?report.notes.map(x=>'<article>'+esc(x)+'</article>').join(''):'<article>No other highway notice available.</article>')+'</div>'+
+   crossingAlternatives(p)+
    '<div class="source-links">'+link(gate.source||p.sourceUrl,gate.state.startsWith('NPS')?'NPS Tioga Road status':'Official pass gate evidence')+
    link(p.sourceUrl,'Caltrans '+p.roadLabel)+link('https://quickmap.dot.ca.gov/','Caltrans QuickMap')+
    (p.id==='tioga'?link('https://chrisizworski.com/national-tools/tioga-road-status/','Dedicated Tioga planner'):'')+'</div>';
   sierraObservedMap(p);
+  $('passDetail').querySelectorAll('[data-compare-pass]').forEach(button=>button.addEventListener('click',()=>focus(button.dataset.comparePass)));
   document.querySelectorAll('[data-place]').forEach(x=>x.classList.toggle('active',x.dataset.place===p.id));
  }
  function renderSierra(d){
@@ -238,6 +312,7 @@
   pointsMap(d.passes.map(p=>({...p,note:p.character})));
   if(!d.passes.some(x=>x.id===selectedPass))selectedPass=d.passes[0]?.id;
   updateSierraDetail();
+  drawPassHighway(selectedPass,{fit:false});
  }
  async function load(){
   $('loadError').hidden=true;

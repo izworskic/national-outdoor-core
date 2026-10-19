@@ -9,14 +9,14 @@ const out=path.join(root,'public','national-tools','haleakala-sunrise','index.ht
 fs.mkdirSync(path.dirname(out),{recursive:true});
 
 const canonical='https://chrisizworski.com/national-tools/haleakala-sunrise/';
-const title='Haleakalā Sunrise Conditions: Clouds, Wind & Summit Forecast | Chris Izworski';
+const title='Haleakalā Sunrise Weather & Clouds | Chris Izworski';
 const description='See Haleakalā sunrise visibility conditions using summit observations, vertical GFS moisture, wind, hazards, sunrise time, and reservation status.';
 const jsonLd=JSON.stringify({
   '@context':'https://schema.org',
   '@graph':[
     {'@type':'WebSite','@id':'https://chrisizworski.com/#website','url':'https://chrisizworski.com/','name':'Chris Izworski'},
     {'@type':'WebApplication','@id':`${canonical}#app`,'name':'Haleakalā Sunrise Conditions','applicationCategory':'TravelApplication','operatingSystem':'Any','url':canonical,description},
-    {'@type':'WebPage','@id':`${canonical}#page`,'url':canonical,'name':'Haleakalā Sunrise Conditions','isPartOf':{'@id':'https://chrisizworski.com/#website'},'mainEntity':{'@id':`${canonical}#app`},'dateModified':'2026-10-01','inLanguage':'en-US'}
+    {'@type':'WebPage','@id':`${canonical}#page`,'url':canonical,'name':'Haleakalā Sunrise Conditions','isPartOf':{'@id':'https://chrisizworski.com/#website'},'mainEntity':{'@id':`${canonical}#app`},'dateModified':'2026-10-19','inLanguage':'en-US'}
   ]
 }).replace(/</g,'\\u003c');
 

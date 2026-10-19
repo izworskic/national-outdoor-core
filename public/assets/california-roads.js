@@ -155,28 +155,47 @@
  }
  function updateSierraDetail(){
   const p=last?.passes?.find(x=>x.id===selectedPass);if(!p)return;
-  const report=p.report||{},t=tone(report.state||'VERIFY');
+  const report=p.report||{},gate=p.gate||{state:'GATE UNVERIFIED',evidence:[]};
+  const gateNotes=(gate.evidence||[]).map(x=>'<article>'+esc(x)+'</article>').join('');
   $('passDetail').className='detail';
-  $('passDetail').innerHTML='<h3>'+esc(p.name)+' · '+esc(p.roadLabel)+'</h3><p><strong>'+esc(report.state||'VERIFY')+'</strong> · '+esc(p.elevation)+' · '+(p.seasonal?'Seasonal mountain pass':'Major winter highway')+'</p>'+
-   '<p>'+esc(report.explanation||'Official data incomplete.')+'</p>'+
+  $('passDetail').innerHTML='<h3>'+esc(p.name)+' · '+esc(p.roadLabel)+'</h3>'+
+   '<p><strong>Crossing verdict: '+esc(p.crossingState||'GATE UNVERIFIED')+'</strong> · '+esc(p.elevation)+
+   ' · '+(p.seasonal?'Seasonal mountain pass':'Major year-round corridor')+'</p>'+
+   '<p><strong>Gate evidence:</strong> '+esc(gate.state)+' — '+esc(gate.explanation||'The gate status cannot currently be established.')+'</p>'+
+   '<p class="fine">'+esc(gate.confidence||'Official gate source unavailable')+(gate.sourceUpdated?' · Source date: '+esc(gate.sourceUpdated):'')+'</p>'+
+   (gateNotes?'<div class="notes">'+gateNotes+'</div>':'')+
+   '<p><strong>Separate Caltrans highway report:</strong> '+esc(report.state||'UNAVAILABLE')+
+   '. '+esc(report.explanation||'Official data incomplete.')+'</p>'+
+   '<p><strong>Separate chain-control check:</strong> '+esc(report.chainNote||'Coverage unavailable')+'</p>'+
    '<p>'+esc(p.character)+'</p>'+
-   '<p><strong>Caltrans source timestamp:</strong> '+esc(p.reportedAt||'Unavailable')+'</p>'+
-   '<p><strong>Current chain-control evidence:</strong> '+esc(report.chainNote||'No chain-control feed coverage')+'</p>'+   '<div class="notes">'+(report.chainControls?.length?report.chainControls.map(c=>'<article><strong>'+esc(c.status)+' · '+esc(c.name)+'</strong><small>'+esc(c.description)+' · '+esc(c.observedAt)+' · approx. '+esc(c.distanceKm)+' km from the pass</small></article>').join(''):'')+(report.notes?.length?report.notes.map(x=>'<article>'+esc(x)+'</article>').join(''):'<article>No additional highway note available.</article>')+'</div>'+
-   '<div class="source-links">'+link(p.sourceUrl,'Caltrans '+p.roadLabel)+
-   (p.id==='tioga'?link('https://chrisizworski.com/national-tools/tioga-road-status/','NPS Tioga gate planner'):'')+'</div>';
+   '<p class="fine"><strong>Highway report timestamp:</strong> '+esc(p.reportedAt||'Unavailable')+'</p>'+
+   '<div class="notes">'+(report.chainControls?.length?report.chainControls.map(c=>
+    '<article><strong>'+esc(c.status)+' · '+esc(c.name)+'</strong><small>'+
+     esc(c.description)+' · '+esc(c.observedAt)+' · approx. '+esc(c.distanceKm)+' km from the pass</small></article>').join(''):'')+
+    (report.notes?.length?report.notes.map(x=>'<article>'+esc(x)+'</article>').join(''):'<article>No other highway notice available.</article>')+'</div>'+
+   '<div class="source-links">'+link(gate.source||p.sourceUrl,gate.state.startsWith('NPS')?'NPS Tioga Road status':'Official pass gate evidence')+
+   link(p.sourceUrl,'Caltrans '+p.roadLabel)+link('https://quickmap.dot.ca.gov/','Caltrans QuickMap')+
+   (p.id==='tioga'?link('https://chrisizworski.com/national-tools/tioga-road-status/','Dedicated Tioga planner'):'')+'</div>';
   document.querySelectorAll('[data-place]').forEach(x=>x.classList.toggle('active',x.dataset.place===p.id));
  }
  function renderSierra(d){
-  const closed=d.passes.filter(x=>x.report.state==='CLOSURE REPORTED').length;
-  const uncertain=d.passes.filter(x=>['VERIFY','UNAVAILABLE','PARK CHECK REQUIRED'].includes(x.report.state)).length;
-  const headline=closed?'Closures appear in one or more Caltrans highway reports':uncertain?'Crossings require source-specific confirmation':'No confirmed complete pass route from a report alone';
-  setSummary(headline,'Choose a pass below. Caltrans road notices, seasonal summit gates and park access are separate questions.',closed?'CLOSURE REPORTED':'VERIFY',
-   d.availableReports+' of '+d.totalReports+' Caltrans highway feeds loaded · Retrieved: '+date(d.checkedAt));
-  $('chainSummary').textContent=(d.chain?.availableFeeds??0)+' of '+(d.chain?.totalFeeds??3)+' Caltrans chain-control datasets loaded. Active chain controls require recent status timestamps; inactive/old R-0 signs are not treated as verified clear roads.';
+  const closed=d.passes.filter(p=>p.crossingState==='CLOSED REPORTED').length;
+  const headline=closed?'One or more crossings have an official closure report':'Compare actual gate and road evidence for each Sierra crossing';
+  setSummary(headline,'Select a mountain pass. A Caltrans report without restrictions does not establish an open seasonal gate. NPS park status, seasonal reopening, road closures, and chain controls are separate evidence.',
+   closed?'CLOSURE REPORTED':'VERIFY',d.availableReports+' of '+d.totalReports+
+    ' highway feeds · NPS: '+(d.gateSources?.nps||'unavailable')+
+    ' · Caltrans season: '+(d.gateSources?.caltransSeason?'loaded':'unavailable')+
+    ' · Retrieved: '+date(d.checkedAt));
+  $('chainSummary').textContent=(d.chain?.availableFeeds??0)+' of '+(d.chain?.totalFeeds??3)+
+   ' Caltrans chain-control datasets loaded. Old R-0 signs and missing chain-control records never confirm a clear road.';
   const list=$('passList');
-  list.innerHTML=d.passes.map(p=>'<button type="button" class="pass" data-place="'+esc(p.id)+'"><span><strong>'+esc(p.name)+'</strong><small>'+esc(p.roadLabel)+' · '+esc(p.from)+' → '+esc(p.to)+'</small></span><em class="status-mini">'+esc(p.report.state)+'</em></button>').join('');
+  list.innerHTML=d.passes.map(p=>'<button type="button" class="pass" data-place="'+esc(p.id)+
+   '"><span><strong>'+esc(p.name)+'</strong><small>'+esc(p.roadLabel)+' · '+
+   esc(p.from)+' → '+esc(p.to)+'</small></span><em class="status-mini">'+
+   esc(p.crossingState||'GATE UNVERIFIED')+'</em></button>').join('');
   list.querySelectorAll('[data-place]').forEach(x=>x.addEventListener('click',()=>focus(x.dataset.place)));
-  pointsMap(d.passes.map(p=>({...p,note:p.character})));if(!d.passes.some(x=>x.id===selectedPass))selectedPass=d.passes[0]?.id;
+  pointsMap(d.passes.map(p=>({...p,note:p.character})));
+  if(!d.passes.some(x=>x.id===selectedPass))selectedPass=d.passes[0]?.id;
   updateSierraDetail();
  }
  async function load(){

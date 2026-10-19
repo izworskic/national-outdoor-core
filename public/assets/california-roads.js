@@ -2,7 +2,7 @@
  const root=document.querySelector('[data-california-road]');if(!root)return;
  const kind=root.dataset.californiaRoad,$=id=>document.getElementById(id);
  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- let map=null,markers={},routeLine=null,userPin=null,last=null,selectedPass='sonora';
+ let map=null,markers={},routeLine=null,userPin=null,sierraOverlay=null,last=null,selectedPass='sonora';
  const tone=s=>/CLOSURE REPORTED|CLOSED|UNAVAILABLE/.test(s)?'bad':/RESTRICTIONS|WORK|VERIFY|PARK CHECK|UNKNOWN/.test(s)?'warn':'calm';
  const date=d=>d?new Date(d).toLocaleString('en-US',{dateStyle:'medium',timeStyle:'short'}):'Not available';
  function mapInit(){
@@ -153,9 +153,30 @@
   if((d.availableDates||[]).includes(priorDay))days.value=priorDay;
   pointsMap(d.stops||[]);drawCoast();
  }
+ function sierraObservedMap(pass){
+  if(!map||!window.L)return;
+  if(sierraOverlay)sierraOverlay.remove();
+  sierraOverlay=L.layerGroup().addTo(map);
+  const obs=pass.observation||{};
+  (obs.work||[]).forEach((w,i)=>{
+   const marker=L.circleMarker([w.lat,w.lng],{radius:7,color:'#fff',weight:2,
+    fillColor:w.type==='full'?'#ac342f':'#b47b18',fillOpacity:.94}).addTo(sierraOverlay);
+   marker.bindPopup('<strong>'+esc(w.live?'Reported active':'Planned / unconfirmed')+' '+esc(w.type)+' roadwork</strong>'+
+    '<p>'+esc(w.begin)+(w.end?' → '+esc(w.end):'')+' · '+esc(w.area)+
+    ' · about '+esc(w.distanceKm)+' km from '+esc(pass.name)+'. Approximate location; does not prove gate status.</p>'+
+    '<p>'+esc(w.work)+'</p>'+link(w.source,'Caltrans QuickMap'));
+  });
+  (obs.cameras||[]).forEach(c=>{
+   const marker=L.circleMarker([c.lat,c.lng],{radius:7,color:'#fff',weight:2,
+    fillColor:'#2454a7',fillOpacity:.96}).addTo(sierraOverlay);
+   marker.bindPopup('<strong>'+esc(c.name)+'</strong><p>Caltrans camera still · '+esc(c.distanceKm)+
+    ' km from '+esc(pass.name)+'. Image freshness not guaranteed.</p>'+
+    link(c.imageUrl,'Open official camera still'));
+  });
+ }
  function updateSierraDetail(){
   const p=last?.passes?.find(x=>x.id===selectedPass);if(!p)return;
-  const report=p.report||{},gate=p.gate||{state:'GATE UNVERIFIED',evidence:[]};
+  const report=p.report||{},gate=p.gate||{state:'GATE UNVERIFIED',evidence:[]},obs=p.observation||{};
   const gateNotes=(gate.evidence||[]).map(x=>'<article>'+esc(x)+'</article>').join('');
   $('passDetail').className='detail';
   $('passDetail').innerHTML='<h3>'+esc(p.name)+' · '+esc(p.roadLabel)+'</h3>'+
@@ -164,6 +185,25 @@
    '<p><strong>Gate evidence:</strong> '+esc(gate.state)+' — '+esc(gate.explanation||'The gate status cannot currently be established.')+'</p>'+
    '<p class="fine">'+esc(gate.confidence||'Official gate source unavailable')+(gate.sourceUpdated?' · Source date: '+esc(gate.sourceUpdated):'')+'</p>'+
    (gateNotes?'<div class="notes">'+gateNotes+'</div>':'')+
+   '<section class="spatial-evidence" aria-label="Geolocated Caltrans conditions"><h4>Mapped work near this crossing</h4>'+
+   '<p><strong>'+esc(obs.state||'NOT VERIFIED')+'</strong> · '+esc(obs.explanation||'Georeferenced evidence unavailable.')+'</p>'+
+   '<p class="fine">'+esc((obs.laneFeeds??0)+' of 3 Caltrans regional lane-closure datasets loaded. Scheduled work is not an active closure.')+'</p>'+
+   '<div class="notes">'+((obs.work||[]).length?(obs.work||[]).map(w=>
+     '<article><strong>'+esc(w.live?'Reported active ':'Scheduled/unconfirmed ')+esc(w.type)+' · '+esc(w.area)+'</strong>'+
+     '<small>'+esc(w.begin)+(w.end?' → '+esc(w.end):'')+' · approx. '+esc(w.distanceKm)+' km from the pass'+
+      ' · '+esc(new Date(w.startEpoch*1000).toLocaleString('en-US',{timeZone:'America/Los_Angeles',dateStyle:'short',timeStyle:'short'}))+
+      '–'+esc(new Date(w.endEpoch*1000).toLocaleString('en-US',{timeZone:'America/Los_Angeles',dateStyle:'short',timeStyle:'short'}))+' Pacific</small>'+
+     '<p>'+esc(w.work)+' · '+esc(w.direction)+'</p>'+link(w.source,'Verify in Caltrans QuickMap')+'</article>').join(''):
+     '<article>No Caltrans lane work was matched near this pass. This does not verify an open gate or an unrestricted approach.</article>')+'</div>'+
+   '<h4>Roadside camera views</h4><p class="fine">'+esc(obs.cameraNote||'Availability is not verified.')+
+   ' Still frames are from official Caltrans cameras, not predictions of driving conditions.</p>'+
+   '<div class="camera-gallery">'+((obs.cameras||[]).length?(obs.cameras||[]).map(c=>
+      '<a class="camera-card" href="'+esc(c.imageUrl)+'" target="_blank" rel="noopener noreferrer">'+
+      '<img loading="lazy" decoding="async" alt="Official Caltrans road camera: '+esc(c.name)+'" src="'+esc(c.imageUrl)+'">'+
+      '<strong>'+esc(c.name)+'</strong><small>'+esc(c.route)+' · approximately '+esc(c.distanceKm)+
+      ' km from pass · Open still image ↗</small></a>').join(''):
+      '<p>Caltrans has no accessible in-service camera still on this route within the configured search area. Check QuickMap instead.</p>')+
+    '</div></section>'+
    '<p><strong>Separate Caltrans highway report:</strong> '+esc(report.state||'UNAVAILABLE')+
    '. '+esc(report.explanation||'Official data incomplete.')+'</p>'+
    '<p><strong>Separate chain-control check:</strong> '+esc(report.chainNote||'Coverage unavailable')+'</p>'+
@@ -176,6 +216,7 @@
    '<div class="source-links">'+link(gate.source||p.sourceUrl,gate.state.startsWith('NPS')?'NPS Tioga Road status':'Official pass gate evidence')+
    link(p.sourceUrl,'Caltrans '+p.roadLabel)+link('https://quickmap.dot.ca.gov/','Caltrans QuickMap')+
    (p.id==='tioga'?link('https://chrisizworski.com/national-tools/tioga-road-status/','Dedicated Tioga planner'):'')+'</div>';
+  sierraObservedMap(p);
   document.querySelectorAll('[data-place]').forEach(x=>x.classList.toggle('active',x.dataset.place===p.id));
  }
  function renderSierra(d){
@@ -186,7 +227,7 @@
     ' highway feeds · NPS: '+(d.gateSources?.nps||'unavailable')+
     ' · Caltrans season: '+(d.gateSources?.caltransSeason?'loaded':'unavailable')+
     ' · Retrieved: '+date(d.checkedAt));
-  $('chainSummary').textContent=(d.chain?.availableFeeds??0)+' of '+(d.chain?.totalFeeds??3)+
+  $('chainSummary').textContent=(d.spatialFeeds?.laneFeeds??0)+' of 3 spatial work feeds and '+(d.spatialFeeds?.cameraFeeds??0)+' of 3 camera feeds loaded. '+(d.chain?.availableFeeds??0)+' of '+(d.chain?.totalFeeds??3)+
    ' Caltrans chain-control datasets loaded. Old R-0 signs and missing chain-control records never confirm a clear road.';
   const list=$('passList');
   list.innerHTML=d.passes.map(p=>'<button type="button" class="pass" data-place="'+esc(p.id)+

@@ -23,6 +23,7 @@ function related(current){
   const region=regionFor(current);
   const same=(region?.toolIds||[]).filter(id=>id!==current);
   const rest=Object.keys(pages).filter(id=>id!==current&&!same.includes(id));
+  if(current==='tioga-road-status') return '<a href="/national-tools/sierra-pass-status/">Compare Sierra Pass Crossings</a><a href="/national-tools/big-sur-highway-1/">Plan Highway 1 Big Sur</a>'+[...same,...rest].slice(0,2).map(id=>`<a href="/national-tools/${id}/">${esc(nameOf(pages[id]))}</a>`).join('');
   return [...same,...rest].slice(0,4).map(id=>`<a href="/national-tools/${id}/">${esc(nameOf(pages[id]))}</a>`).join('');
 }
 function attribution(p){

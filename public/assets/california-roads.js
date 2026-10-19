@@ -43,9 +43,14 @@
   if(from<0||to<0||from===to)return {state:'VERIFY',reason:'Choose two different coastal destinations.',events:[],reachable:[],selected:[]};
   const step=from<to?1:-1,min=Math.min(from,to),max=Math.max(from,to);
   const selected=[];for(let i=from;step>0?i<=to:i>=to;i+=step)selected.push(stops[i]);
-  const relevant=[...(last?.events||[]),...(day===last?.availableDates?.[0]?(last?.currentNotices||[]):[])].filter(e=>e.from<max&&e.to>min&&(e.currentOnly||pacificDay(e.startEpoch)<=day&&pacificDay(e.endEpoch)>=day));
+  const today=last?.availableDates?.[0];
+  const relevant=[...(last?.events||[]),...(last?.currentNotices||[])].filter(e=>e.from<max&&e.to>min&&(
+   Array.isArray(e.scheduleDays)?e.scheduleDays.some(w=>w.day===day):
+   e.currentOnly?day===today:pacificDay(e.startEpoch)<=day&&pacificDay(e.endEpoch)>=day));
   const full=relevant.filter(e=>e.type==='full'),works=relevant.filter(e=>e.type!=='full');
-  const today=last?.availableDates?.[0],active=full.some(e=>day===today&&e.active&&Date.now()>=e.startEpoch*1000&&Date.now()<=e.endEpoch*1000);
+  const active=full.some(e=>day===today&&e.active&&(
+   Array.isArray(e.scheduleDays)?e.scheduleDays.some(w=>w.day===day&&new Date().toLocaleTimeString('en-GB',{timeZone:'America/Los_Angeles',hour:'2-digit',minute:'2-digit',hour12:false})>=w.start&&new Date().toLocaleTimeString('en-GB',{timeZone:'America/Los_Angeles',hour:'2-digit',minute:'2-digit',hour12:false})<w.end):
+   Date.now()>=e.startEpoch*1000&&Date.now()<=e.endEpoch*1000));
   const state=!last?.structured?.available?'VERIFY':active?'REPORTED FULL CLOSURE':full.length?'PLANNED FULL CLOSURE':works.length?'CONTROLLED WORK':'NO MATCHED PLANNED WORK';
   const blockage=full.sort((a,b)=>step>0?a.from-b.from:b.to-a.to)[0];
   const reachable=[];for(let i=from;step>0?i<=to:i>=to;i+=step){
@@ -70,28 +75,33 @@
   const known=/REPORTED FULL CLOSURE|PLANNED FULL CLOSURE/.test(plan.state);
   const title=plan.state==='REPORTED FULL CLOSURE'?'Active full closure reported on this selected corridor':
     plan.state==='PLANNED FULL CLOSURE'?'A full closure is scheduled for this selected travel day':
-    plan.state==='CONTROLLED WORK'?'Work zones overlap this selected coastal drive':
+    plan.state==='CONTROLLED WORK'?'Published work hours affect this selected coastal drive':
     plan.state==='VERIFY'?'Planned-work feed unavailable: verify before driving':
     'No matching approved work—not a confirmed open route';
   const details=plan.state==='VERIFY'?'Caltrans planned-work feed is unavailable. No trip-wide conclusion is possible.':
     known?'A georeferenced Caltrans mainline closure overlaps the selected section. Its exact roadway limits and live activation must be verified in QuickMap.':
-    plan.state==='CONTROLLED WORK'?'Official Caltrans lane closures or one-way work overlap this selected section. Passage may still be possible, with delays.':
-    'The lane-closure feed has no matching approved work. Current slide/incident restrictions can still close Highway 1; consult the highway report and QuickMap.';
-  const currentSource=d.state==='CLOSURE REPORTED'?' Separately, the current Caltrans highway report identifies a Monterey-area full closure; its exact limits must be verified.':
-    d.state==='WORK ZONES REPORTED'?' The separate current Caltrans road report contains Monterey-area work advisories, which might not align with the planned-work feed.':'';
+    plan.state==='CONTROLLED WORK'?'Caltrans reports work or one-way traffic controls along this route during published hours on the selected day. These are schedule-based cautions, not proof work is underway at your arrival time.':
+    'No published work window matched this route and date. This does not establish that Highway 1 is open; rockslides, incidents and emergency controls may occur without notice.';
+  const locatedReport=plan.relevant.some(e=>e.sourceKind==='current-highway-report');
+  const currentSource=d.state==='CLOSURE REPORTED'?' The separate Caltrans highway report lists a closure; verify its exact limits before driving.':
+    d.state==='WORK ZONES REPORTED'&&!locatedReport?' Separately, Caltrans reports Monterey-area work that might be outside this route or hours.':'';
   v.className='verdict '+(known?'bad':plan.state==='CONTROLLED WORK'||plan.state==='VERIFY'?'warn':'calm');
   v.innerHTML='<h3>'+esc(title)+'</h3><p>'+esc(details+currentSource)+'</p><p class="fine">'+esc(weatherFor(plan.day))+'</p>';
   $('routeType').textContent='Selected: '+plan.selected[0].name+' → '+plan.selected[plan.selected.length-1].name+
    ' · '+shortDay(plan.day)+' · planned work checked separately from live highway restrictions.';
   $('routeEvidence').innerHTML=plan.relevant.length?plan.relevant.slice(0,8).map(e=>{
     const t=e.type==='full'?'Full mainline':e.type==='controlled'?'Alternating/one-way':'Lane work';
-    const current=e.currentOnly;
+    const current=e.sourceKind==='current-highway-report';
+    const hours=(e.scheduleDays||[]).filter(w=>w.day===plan.day).map(w=>w.label).join(', ');
+    const evidenceStamp=current?
+      (hours?'Caltrans highway report recurring schedule: '+hours+' Pacific'+(e.scheduleExpires?' · listed through '+e.scheduleExpires.day:''):
+        'Current Caltrans Highway 1 notice; no verified future schedule'):
+      new Date(e.startEpoch*1000).toLocaleString('en-US',{timeZone:'America/Los_Angeles'})+' → '+new Date(e.endEpoch*1000).toLocaleString('en-US',{timeZone:'America/Los_Angeles'})+' Pacific';
     return '<article><strong>'+esc(t)+' · '+esc(e.beginPlace||'Unspecified location')+'</strong>'+
-      '<small>'+esc(current?'Current Caltrans Highway 1 report (not a seven-day LCS schedule)':
-        new Date(e.startEpoch*1000).toLocaleString('en-US',{timeZone:'America/Los_Angeles'})+' → '+new Date(e.endEpoch*1000).toLocaleString('en-US',{timeZone:'America/Los_Angeles'})+' Pacific')+
+      '<small>'+esc(evidenceStamp)+
       ' · '+esc(e.confidence)+' · '+esc(e.direction)+'</small><p class="note-copy">'+esc(e.work||'Scheduled Caltrans work')+
       (e.delayMinutes!==null?' · Reported delay estimate: '+esc(e.delayMinutes)+' min':'')+'</p></article>';
-  }).join(''):'<article>No mapped approved-work record intersects this selection. This is not proof of unobstructed through travel.</article>';
+  }).join(''):'<article>No published work window is matched to this route and day. Current conditions and unplanned closures still require checking.</article>';
   $('reachableResult').innerHTML=known?
     '<strong>Potential same-side visit</strong><p>Before the reported closure, the following stops may remain reachable from your selected starting end: '+
       esc(plan.reachable.map(p=>p.name).join(' → ')||'No intermediate stop confirmed')+
@@ -113,7 +123,10 @@
   }
   $('dayWindow').innerHTML=(d.availableDates||[]).map(day=>{
    const p=coastPlan(day),color=p.state==='REPORTED FULL CLOSURE'||p.state==='PLANNED FULL CLOSURE'?'danger':p.state==='CONTROLLED WORK'?'work':'unknown';
-   return '<button class="road-day '+(day===plan.day?'active ':'')+color+'" type="button" data-day="'+esc(day)+'"><strong>'+esc(shortDay(day))+'</strong><small>'+esc(p.state==='PLANNED FULL CLOSURE'?'Planned closure':p.state==='REPORTED FULL CLOSURE'?'Closure':p.state==='CONTROLLED WORK'?'Work / traffic control':'Verify route')+'</small></button>';
+   const windowLabels=[...new Set(p.relevant.flatMap(e=>(e.scheduleDays||[]).filter(w=>w.day===day).map(w=>w.label)))];
+   const label=p.state==='PLANNED FULL CLOSURE'?'Planned full closure':p.state==='REPORTED FULL CLOSURE'?'Closure reported':
+    p.state==='CONTROLLED WORK'?(windowLabels.length===1?windowLabels[0]+' work':p.works.length+' work controls'):'No work matched · verify';
+   return '<button class="road-day '+(day===plan.day?'active ':'')+color+'" type="button" data-day="'+esc(day)+'" aria-label="'+esc(shortDay(day)+' · '+label)+'"><strong>'+esc(shortDay(day))+'</strong><small>'+esc(label)+'</small></button>';
   }).join('');
   $('dayWindow').querySelectorAll('[data-day]').forEach(btn=>btn.addEventListener('click',()=>{$('travelDate').value=btn.dataset.day;drawCoast();}));
   window.va?.('event',{name:'california_road_plan_selected',data:{tool:'coast',from:plan.selected[0].id,to:plan.selected.at(-1).id,day:plan.day,state:plan.state}});

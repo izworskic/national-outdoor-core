@@ -33,30 +33,110 @@
   $('liveState').textContent=title;$('liveState').dataset.tone=tone(state);
   $('liveHeadline').textContent=body;$('liveFresh').textContent=meta;
  }
+ const pacificDay=e=>{
+  const parts=new Intl.DateTimeFormat('en-US',{timeZone:'America/Los_Angeles',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date(e*1000));
+  return ['year','month','day'].map(k=>parts.find(x=>x.type===k)?.value).join('-');
+ };
+ const shortDay=day=>new Date(day+'T12:00:00Z').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',timeZone:'UTC'});
+ function coastPlan(day=$('travelDate').value){
+  const stops=last?.stops||[],from=stops.findIndex(p=>p.id===$('coastFrom').value),to=stops.findIndex(p=>p.id===$('coastTo').value);
+  if(from<0||to<0||from===to)return {state:'VERIFY',reason:'Choose two different coastal destinations.',events:[],reachable:[],selected:[]};
+  const step=from<to?1:-1,min=Math.min(from,to),max=Math.max(from,to);
+  const selected=[];for(let i=from;step>0?i<=to:i>=to;i+=step)selected.push(stops[i]);
+  const relevant=(last?.events||[]).filter(e=>e.from<max&&e.to>min&&pacificDay(e.startEpoch)<=day&&pacificDay(e.endEpoch)>=day);
+  const full=relevant.filter(e=>e.type==='full'),works=relevant.filter(e=>e.type!=='full');
+  const today=last?.availableDates?.[0],active=full.some(e=>day===today&&e.active&&Date.now()>=e.startEpoch*1000&&Date.now()<=e.endEpoch*1000);
+  const state=!last?.structured?.available?'VERIFY':active?'REPORTED FULL CLOSURE':full.length?'PLANNED FULL CLOSURE':works.length?'CONTROLLED WORK':'NO MATCHED PLANNED WORK';
+  const blockage=full.sort((a,b)=>step>0?a.from-b.from:b.to-a.to)[0];
+  const reachable=[];for(let i=from;step>0?i<=to:i>=to;i+=step){
+    if(blockage&&(step>0?i>blockage.from:i<blockage.to))break;
+    reachable.push(stops[i]);
+  }
+  return {state,relevant,full,works,selected,reachable,from,to,step,day,blockage};
+ }
+ function weatherFor(day){
+  const weather=last?.weather;
+  if(!weather?.available)return 'NWS forecast unavailable; weather risk unverified.';
+  const periods=(weather.days||[]).filter(x=>x.day===day);
+  if(!periods.length)return 'No NWS daily forecast period available for this date.';
+  const wet=periods.some(p=>/rain|storm|shower|snow|flood/i.test(p.summary||'')||p.precipitationChance>=55);
+  return (wet?'NWS weather caution: ':'NWS regional forecast: ')+periods.map(p=>p.name+': '+p.summary).join('; ')+
+    '. This is a regional weather signal, not a highway closure observation.';
+ }
  function drawCoast(){
-  const tripId=$('tripPicker').value, trip=last?.trips?.find(t=>t.id===tripId),stops=last?.stops||[];
-  if(!trip)return;
-  const active=trip.stops.map(k=>stops.find(x=>x.id===k)).filter(Boolean);
-  const state=last.state||'VERIFY';
-  const problematic=state==='CLOSURE REPORTED',works=state==='WORK ZONES REPORTED';
-  const title=problematic?'A reported closure could interrupt this trip':works?'The drive may work, but expect road controls':state==='NO RESTRICTIONS REPORTED'?'No restrictions reported—not an all-clear':'This itinerary needs direct verification';
-  const body=(trip.explain||'')+' '+(problematic?'Caltrans reports a closure in the Big Sur / Monterey section. Confirm its specific endpoints before departing.':works?'Caltrans lists controlled traffic or construction in Monterey County; delays and new incidents remain possible.':last.reason||'Verify QuickMap.');
-  const v=$('routeVerdict');v.className='verdict '+(problematic?'bad':works?'warn':'');
-  v.innerHTML='<h3>'+esc(title)+'</h3><p>'+esc(body)+'</p>';
-  $('stopList').innerHTML=active.map((p,i)=>'<button class="stop" type="button" data-place="'+esc(p.id)+'"><span class="step">'+(i+1)+'</span><span><strong>'+esc(p.name)+'</strong><small>'+esc(p.note)+'</small></span></button>').join('');
+  if(!last)return;
+  const d=last,plan=coastPlan(),v=$('routeVerdict');
+  if(!plan.selected.length){v.innerHTML='<h3>Select a valid route</h3><p>Origin and destination must be different.</p>';return;}
+  const known=/REPORTED FULL CLOSURE|PLANNED FULL CLOSURE/.test(plan.state);
+  const title=plan.state==='REPORTED FULL CLOSURE'?'Active full closure reported on this selected corridor':
+    plan.state==='PLANNED FULL CLOSURE'?'A full closure is scheduled for this selected travel day':
+    plan.state==='CONTROLLED WORK'?'Work zones overlap this selected coastal drive':
+    plan.state==='VERIFY'?'Planned-work feed unavailable: verify before driving':
+    'No matching approved work—not a confirmed open route';
+  const details=plan.state==='VERIFY'?'Caltrans planned-work feed is unavailable. No trip-wide conclusion is possible.':
+    known?'A georeferenced Caltrans mainline closure overlaps the selected section. Its exact roadway limits and live activation must be verified in QuickMap.':
+    plan.state==='CONTROLLED WORK'?'Official Caltrans lane closures or one-way work overlap this selected section. Passage may still be possible, with delays.':
+    'The lane-closure feed has no matching approved work. Current slide/incident restrictions can still close Highway 1; consult the highway report and QuickMap.';
+  const currentSource=d.state==='CLOSURE REPORTED'?' Separately, the current Caltrans highway report identifies a Monterey-area full closure; its exact limits must be verified.':
+    d.state==='WORK ZONES REPORTED'?' The separate current Caltrans road report contains Monterey-area work advisories, which might not align with the planned-work feed.':'';
+  v.className='verdict '+(known?'bad':plan.state==='CONTROLLED WORK'||plan.state==='VERIFY'?'warn':'calm');
+  v.innerHTML='<h3>'+esc(title)+'</h3><p>'+esc(details+currentSource)+'</p><p class="fine">'+esc(weatherFor(plan.day))+'</p>';
+  $('routeType').textContent='Selected: '+plan.selected[0].name+' → '+plan.selected[plan.selected.length-1].name+
+   ' · '+shortDay(plan.day)+' · planned work checked separately from live highway restrictions.';
+  $('routeEvidence').innerHTML=plan.relevant.length?plan.relevant.slice(0,8).map(e=>{
+    const t=e.type==='full'?'Full mainline':e.type==='controlled'?'Alternating/one-way':'Lane work';
+    return '<article><strong>'+esc(t)+' · '+esc(e.beginPlace||'Unspecified location')+'</strong>'+
+      '<small>'+esc(new Date(e.startEpoch*1000).toLocaleString('en-US',{timeZone:'America/Los_Angeles'}))+
+      ' → '+esc(new Date(e.endEpoch*1000).toLocaleString('en-US',{timeZone:'America/Los_Angeles'}))+
+      ' Pacific · '+esc(e.confidence)+' · '+esc(e.direction)+'</small><p class="note-copy">'+esc(e.work||'Scheduled Caltrans work')+
+      (e.delayMinutes!==null?' · Reported delay estimate: '+esc(e.delayMinutes)+' min':'')+'</p></article>';
+  }).join(''):'<article>No mapped approved-work record intersects this selection. This is not proof of unobstructed through travel.</article>';
+  $('reachableResult').innerHTML=known?
+    '<strong>Potential same-side visit</strong><p>Before the reported closure, the following stops may remain reachable from your selected starting end: '+
+      esc(plan.reachable.map(p=>p.name).join(' → ')||'No intermediate stop confirmed')+
+      '. This is schematic only: verify road gates before driving. If the coast through-drive is blocked, consider returning to US-101 via established highways—not unverified inland shortcuts.</p>':
+    '<strong>Before departure</strong><p>Check Caltrans QuickMap and the latest Highway 1 report for rockslides, incidents, temporary gates, closures and direction-specific traffic controls. The map line is schematic, not navigation.</p>';
+  $('stopList').innerHTML=plan.selected.map((p,i)=>'<button class="stop" type="button" data-place="'+esc(p.id)+'"><span class="step">'+(i+1)+'</span><span><strong>'+esc(p.name)+'</strong><small>'+esc(p.note)+'</small></span></button>').join('');
   $('stopList').querySelectorAll('[data-place]').forEach(button=>button.addEventListener('click',()=>focus(button.dataset.place)));
-  if(map){if(routeLine)routeLine.remove();routeLine=L.polyline(active.map(x=>[x.lat,x.lng]),{weight:4,opacity:.7,color:'#247373',dashArray:'7 6'}).addTo(map);
-    map.fitBounds(L.latLngBounds(active.map(x=>[x.lat,x.lng])).pad(.13));}
-  $('routeType').textContent='Selected drive: '+trip.name;
-  window.va?.('event',{name:'california_road_plan_selected',data:{tool:kind,route:tripId,state}});
+  if(map){
+    if(routeLine)routeLine.remove();
+    const group=L.layerGroup().addTo(map);routeLine=group;
+    for(let i=0;i<plan.selected.length-1;i++){
+      const a=plan.selected[i],b=plan.selected[i+1];
+      const ia=d.stops.findIndex(x=>x.id===a.id),ib=d.stops.findIndex(x=>x.id===b.id);
+      const blocked=plan.relevant.some(e=>e.type==='full'&&e.from<Math.max(ia,ib)&&e.to>Math.min(ia,ib));
+      const controlled=plan.relevant.some(e=>e.type!=='full'&&e.from<Math.max(ia,ib)&&e.to>Math.min(ia,ib));
+      L.polyline([[a.lat,a.lng],[b.lat,b.lng]],{weight:6,opacity:.85,color:blocked?'#a23a37':controlled?'#aa761c':'#247373',dashArray:'6 5'}).addTo(group);
+    }
+    map.fitBounds(L.latLngBounds(plan.selected.map(x=>[x.lat,x.lng])).pad(.14));
+  }
+  $('dayWindow').innerHTML=(d.availableDates||[]).map(day=>{
+   const p=coastPlan(day),color=p.state==='REPORTED FULL CLOSURE'||p.state==='PLANNED FULL CLOSURE'?'danger':p.state==='CONTROLLED WORK'?'work':'unknown';
+   return '<button class="road-day '+(day===plan.day?'active ':'')+color+'" type="button" data-day="'+esc(day)+'"><strong>'+esc(shortDay(day))+'</strong><small>'+esc(p.state==='PLANNED FULL CLOSURE'?'Planned closure':p.state==='REPORTED FULL CLOSURE'?'Closure':p.state==='CONTROLLED WORK'?'Work listed':'Verify route')+'</small></button>';
+  }).join('');
+  $('dayWindow').querySelectorAll('[data-day]').forEach(btn=>btn.addEventListener('click',()=>{$('travelDate').value=btn.dataset.day;drawCoast();}));
+  window.va?.('event',{name:'california_road_plan_selected',data:{tool:'coast',from:plan.selected[0].id,to:plan.selected.at(-1).id,day:plan.day,state:plan.state}});
  }
  function renderCoast(d){
-  setSummary(d.state,d.reason,d.state,'Caltrans report: '+(d.reportedAt||'timestamp not parsed')+' · Retrieved: '+date(d.checkedAt));
+  last=d;
+  setSummary(d.state,d.reason,d.state,'Caltrans current highway report: '+(d.reportedAt||'unavailable')+
+   ' · LCS: '+(d.structured?.available?'available':'unavailable')+' · Retrieved: '+date(d.checkedAt));
   $('workNotes').innerHTML=d.notes?.length?d.notes.map(t=>'<article>'+esc(t)+'</article>').join(''):
-   '<article>Caltrans did not report a Big Sur work item in the selected section. This does not establish that the entire road is open.</article>';
-  const picker=$('tripPicker');const lastOption=picker.value;
-  picker.innerHTML=(d.trips||[]).map(t=>'<option value="'+esc(t.id)+'">'+esc(t.name)+'</option>').join('');
-  if(d.trips.some(x=>x.id===lastOption))picker.value=lastOption;
+   '<article>No Monterey-area Highway 1 notice was parsed. This is not proof that all road sections are open.</article>';
+  const picker=$('tripPicker'),oldPreset=picker.value;
+  picker.innerHTML=(d.trips||[]).map(t=>'<option value="'+esc(t.id)+'">'+esc(t.name)+'</option>').join('')+
+   '<option value="custom">Custom start and destination</option>';
+  if(d.trips.some(x=>x.id===oldPreset))picker.value=oldPreset;
+  const from=$('coastFrom'),to=$('coastTo'),had=from.options.length>0,
+        priorFrom=from.value,priorTo=to.value,priorDay=$('travelDate').value;
+  const options=d.stops.map(p=>'<option value="'+esc(p.id)+'">'+esc(p.name)+'</option>').join('');
+  from.innerHTML=options;to.innerHTML=options;
+  if(had&&d.stops.some(p=>p.id===priorFrom))from.value=priorFrom;
+  if(had&&d.stops.some(p=>p.id===priorTo))to.value=priorTo;
+  if(!had){const initial=d.trips.find(t=>t.id===picker.value)||d.trips[0];from.value=initial.stops[0];to.value=initial.stops.at(-1);}
+  const days=$('travelDate');
+  days.innerHTML=(d.availableDates||[]).map(x=>'<option value="'+esc(x)+'">'+esc(shortDay(x))+'</option>').join('');
+  if((d.availableDates||[]).includes(priorDay))days.value=priorDay;
   pointsMap(d.stops||[]);drawCoast();
  }
  function updateSierraDetail(){
@@ -67,7 +147,7 @@
    '<p>'+esc(report.explanation||'Official data incomplete.')+'</p>'+
    '<p>'+esc(p.character)+'</p>'+
    '<p><strong>Caltrans source timestamp:</strong> '+esc(p.reportedAt||'Unavailable')+'</p>'+
-   '<div class="notes">'+(report.notes?.length?report.notes.map(x=>'<article>'+esc(x)+'</article>').join(''):'<article>No highway note available for this source.</article>')+'</div>'+
+   '<p><strong>Current chain-control evidence:</strong> '+esc(report.chainNote||'No chain-control feed coverage')+'</p>'+   '<div class="notes">'+(report.chainControls?.length?report.chainControls.map(c=>'<article><strong>'+esc(c.status)+' · '+esc(c.name)+'</strong><small>'+esc(c.description)+' · '+esc(c.observedAt)+' · approx. '+esc(c.distanceKm)+' km from the pass</small></article>').join(''):'')+(report.notes?.length?report.notes.map(x=>'<article>'+esc(x)+'</article>').join(''):'<article>No additional highway note available.</article>')+'</div>'+
    '<div class="source-links">'+link(p.sourceUrl,'Caltrans '+p.roadLabel)+
    (p.id==='tioga'?link('https://chrisizworski.com/national-tools/tioga-road-status/','NPS Tioga gate planner'):'')+'</div>';
   document.querySelectorAll('[data-place]').forEach(x=>x.classList.toggle('active',x.dataset.place===p.id));
@@ -78,6 +158,7 @@
   const headline=closed?'Closures appear in one or more Caltrans highway reports':uncertain?'Crossings require source-specific confirmation':'No confirmed complete pass route from a report alone';
   setSummary(headline,'Choose a pass below. Caltrans road notices, seasonal summit gates and park access are separate questions.',closed?'CLOSURE REPORTED':'VERIFY',
    d.availableReports+' of '+d.totalReports+' Caltrans highway feeds loaded · Retrieved: '+date(d.checkedAt));
+  $('chainSummary').textContent=(d.chain?.availableFeeds??0)+' of '+(d.chain?.totalFeeds??3)+' Caltrans chain-control datasets loaded. Active chain controls require recent status timestamps; inactive/old R-0 signs are not treated as verified clear roads.';
   const list=$('passList');
   list.innerHTML=d.passes.map(p=>'<button type="button" class="pass" data-place="'+esc(p.id)+'"><span><strong>'+esc(p.name)+'</strong><small>'+esc(p.roadLabel)+' · '+esc(p.from)+' → '+esc(p.to)+'</small></span><em class="status-mini">'+esc(p.report.state)+'</em></button>').join('');
   list.querySelectorAll('[data-place]').forEach(x=>x.addEventListener('click',()=>focus(x.dataset.place)));
@@ -99,7 +180,20 @@
   }
  }
  $('refreshReports')?.addEventListener('click',load);
- $('tripPicker')?.addEventListener('change',()=>{if(last)drawCoast();});
+ $('tripPicker')?.addEventListener('change',()=>{
+  if(!last)return;
+  const preset=last.trips.find(x=>x.id===$('tripPicker').value);
+  if(preset){$('coastFrom').value=preset.stops[0];$('coastTo').value=preset.stops.at(-1);}
+  drawCoast();
+ });
+ for(const id of ['coastFrom','coastTo']){
+  $(id)?.addEventListener('change',()=>{
+   if(!last)return;
+   $('tripPicker').value='custom';
+   drawCoast();
+  });
+ }
+ $('travelDate')?.addEventListener('change',()=>{if(last)drawCoast();});
  $('myLocation')?.addEventListener('click',()=>{
   if(!navigator.geolocation){$('locationNote').textContent='Browser location is unavailable.';return;}
   $('locationNote').textContent='Requesting your position…';

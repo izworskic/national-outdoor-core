@@ -179,7 +179,7 @@
   async function load(){
     err.hidden=true;status.textContent='Checking live source…';headline.textContent='This page will not invent a live answer if the source fails.';facts.innerHTML='';
     try{
-      const r=await fetch(`/api/breakout-live?id=${encodeURIComponent(id)}`,{cache:'no-store'});
+      const r=await fetch(`/api/breakout-live?id=${encodeURIComponent(id)}`,{cache:'no-store',mode:'cors'});
       const d=await r.json();
       if(!r.ok||!d.ok) throw new Error(d.detail||d.error||`HTTP ${r.status}`);
       status.textContent=d.status||'Live source checked';headline.textContent=d.headline||'Current source is responding.';

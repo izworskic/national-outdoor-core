@@ -104,3 +104,12 @@ test('custom page generator exposes decision states and crawlable evidence bound
   assert.match(source,/href="\/national-tools\/kilauea-live\/"/);
   assert.doesNotMatch(source,/href="\/national-tools\/kilauea-volcano\/"/);
 });
+
+test('LCO summit query uses the form the API accepts: /query, no trailing slash, no milliseconds',async()=>{
+  const { lcoQueryUrl } = await import('../lib/haleakala-sunrise.mjs');
+  const u=new URL(lcoQueryUrl('Weather Humidity Value','2026-10-21T10:00:00.123Z','2026-10-21T13:00:00.456Z'));
+  assert.equal(u.origin+u.pathname,'https://weather-api.lco.global/query');
+  assert.equal(u.searchParams.get('start'),'2026-10-21T10:00:00Z');
+  assert.equal(u.searchParams.get('end'),'2026-10-21T13:00:00Z');
+  assert.equal(u.searchParams.get('site'),'ogg');
+});

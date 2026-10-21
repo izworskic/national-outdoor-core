@@ -16,7 +16,19 @@ module.exports = async function breakoutLiveHandler(req, res) {
     let payload=null;
     if (id === 'haleakala-sunrise') {
       const haleakala = await import('../lib/haleakala-sunrise-production.mjs');
-      payload = await haleakala.buildHaleakalaSunrise();
+      const date=(req.query?.date || new URL(req.url,'https://example.test').searchParams.get('date') || '').trim();
+      const planner = await import('../lib/haleakala-planner.mjs');
+      const core = await import('../lib/haleakala-sunrise.mjs');
+      const hst = (iso) => new Intl.DateTimeFormat('en-CA',{timeZone:'Pacific/Honolulu'}).format(new Date(iso));
+      const nextYmd = hst(core.nextSunrise(new Date()).iso);
+      if (date && !/^\d{4}-\d{2}-\d{2}$/.test(date)) { res.statusCode=400; res.setHeader('Content-Type','application/json; charset=utf-8'); return res.end(JSON.stringify({ok:false,error:'Bad date',detail:'Use YYYY-MM-DD'})); }
+      if (date && date !== nextYmd) {
+        payload = await planner.buildHaleakalaMorning(date);
+      } else {
+        payload = await haleakala.buildHaleakalaSunrise();
+        const ymd = payload?.astronomy?.sunriseIso ? hst(payload.astronomy.sunriseIso) : null;
+        if (ymd) { payload.date = ymd; payload.reservation = planner.reservationRelease(ymd); payload.climate = planner.climateForMonth(Number(ymd.slice(5,7))); }
+      }
     } else {
       const replacement = await import('../lib/breakout-live-replacements.mjs');
       const normalizers = await import('../lib/breakout-live-value-normalizers.mjs');
@@ -32,7 +44,7 @@ module.exports = async function breakoutLiveHandler(req, res) {
   } catch (error) {
     res.setHeader('Cache-Control','public, s-maxage=60, stale-while-revalidate=180');
     res.setHeader('Content-Type','application/json; charset=utf-8');
-    res.statusCode = 502;
+    res.statusCode = error?.status === 400 ? 400 : 502;
     return res.end(JSON.stringify({ok:false,error:'Live source unavailable',detail:String(error?.message||error),updated:new Date().toISOString()}));
   }
   const mod = await import('../lib/breakout-live-engine.mjs');

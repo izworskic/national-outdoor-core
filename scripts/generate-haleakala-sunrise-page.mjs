@@ -16,7 +16,7 @@ const jsonLd=JSON.stringify({
   '@graph':[
     {'@type':'WebSite','@id':'https://chrisizworski.com/#website','url':'https://chrisizworski.com/','name':'Chris Izworski'},
     {'@type':'WebApplication','@id':`${canonical}#app`,'name':'Haleakalā Sunrise Conditions','applicationCategory':'TravelApplication','operatingSystem':'Any','url':canonical,description},
-    {'@type':'WebPage','@id':`${canonical}#page`,'url':canonical,'name':'Haleakalā Sunrise Conditions','isPartOf':{'@id':'https://chrisizworski.com/#website'},'mainEntity':{'@id':`${canonical}#app`},'dateModified':'2026-10-19','inLanguage':'en-US'}
+    {'@type':'WebPage','@id':`${canonical}#page`,'url':canonical,'name':'Haleakalā Sunrise Conditions','isPartOf':{'@id':'https://chrisizworski.com/#website'},'mainEntity':{'@id':`${canonical}#app`},'dateModified':'2026-10-21','inLanguage':'en-US'}
   ]
 }).replace(/</g,'\\u003c');
 
@@ -56,12 +56,17 @@ const html=`<!doctype html>
 <section class="hero">
 <p class="eyebrow">Live destination decision · Haleakalā summit, Maui</p>
 <h1>Haleakalā Sunrise Conditions</h1>
-<p class="lede">The summit of Haleakalā stands 10,023 feet above the Pacific on the rim of a crater roughly seven miles long. The summit often sits above Maui&#8217;s low trade-wind cloud, but not every morning. This page reads where the moisture is, how the summit is behaving right now, and what that means for the next sunrise.</p>
+<p class="lede">Will the summit be above the clouds? Pick a morning for the odds, when reservations open, and what to bring.</p>
 </section>
 
 <section class="live-card" aria-labelledby="liveStatus">
+<div class="morning-picker" id="hs-morning-wrap">
+<label for="hs-morning">Which morning?</label>
+<select id="hs-morning" aria-controls="liveStatus"><option value="">Next sunrise</option></select>
+<input type="date" id="hs-date" aria-label="Pick any date in the next year" hidden>
+</div>
 <div class="live-row"><div>
-<p class="eyebrow">Next summit sunrise</p>
+<p class="eyebrow" id="liveEyebrow">Next summit sunrise</p>
 <p class="plain-odds" id="livePlain">Reading the summit…</p>
 <h2 class="status" id="liveStatus">Checking evidence…</h2>
 <p class="headline" id="liveHeadline">Comparing summit observations, vertical moisture, hazards and access.</p>
@@ -85,6 +90,30 @@ const html=`<!doctype html>
 </article>
 </section>
 
+<section class="release-section" id="hs-release" aria-labelledby="releaseHead">
+<p class="eyebrow">Reservation timing</p>
+<h2 id="releaseHead">When can you book this morning?</h2>
+<p class="release-status" id="hs-release-status">Checking the release schedule…</p>
+<dl class="release-grid">
+<div><dt>Main release</dt><dd id="hs-release-60">—</dd></div>
+<div><dt>Two-day release</dt><dd id="hs-release-2">—</dd></div>
+</dl>
+<ul class="release-rules">
+<li>NPS limits you to one sunrise reservation per 3-day period, so you cannot hold a backup morning in the same stretch.</li>
+<li>Reservations are not refunded or exchanged for weather, and the reservation holder must be present with ID.</li>
+<li>Calling or visiting in person will not get you a reservation.</li>
+</ul>
+<p class="method-note">Dates are computed from NPS&#8217;s rule (about 60 days ahead, plus a portion 2 days ahead, both at 7:00 a.m. HST). Recreation.gov shows the exact opening for your date. <a href="https://www.nps.gov/hale/planyourvisit/sunrise.htm" target="_blank" rel="noopener" data-track="haleakala_nps_sunrise">NPS sunrise page →</a></p>
+</section>
+
+<section class="climate-section" id="hs-climate" aria-labelledby="climateHead" hidden>
+<p class="eyebrow">How often is it clear?</p>
+<h2 id="climateHead">Summit humidity at sunrise in <span id="hs-climate-month">this month</span></h2>
+<div class="climate-bar" id="hs-climate-bar" role="img"></div>
+<p class="climate-legend" id="hs-climate-legend"></p>
+<p class="method-note" id="hs-climate-note"></p>
+</section>
+
 <section class="morning-section" aria-labelledby="morningHead">
 <p class="eyebrow">Plan the morning</p>
 <h2 id="morningHead">Your sunrise morning, in order</h2>
@@ -94,7 +123,7 @@ const html=`<!doctype html>
 <li><time id="haleSunriseTime">Loading…</time><div><strong>Sun clears the horizon</strong><p>Sunrise bearing <span id="haleAzimuth">—</span> from the summit.</p></div></li>
 <li><time>7:00 a.m. HST</time><div><strong>Reservation window ends</strong><p>Entry rules go back to normal after 7:00 a.m.</p></div></li>
 </ol>
-<p class="method-note">The road climbs a long series of switchbacks to the summit. Most visitors from the Kahului and south-shore resort areas allow roughly two hours of driving, and less from Upcountry. Check road and parking notices on the NPS page before leaving.</p>
+<p class="method-note">The road climbs a long series of switchbacks to the summit. Most visitors from the Kahului and south-shore resort areas allow roughly two hours of driving, and less from Upcountry. Parking is limited to designated lots and closes when full, and the entrance gate is about 30 minutes from the summit, so arrive early. Check road and parking notices on the NPS page before leaving.</p>
 </section>
 
 <section class="feel-section" aria-labelledby="feelHead">
@@ -113,10 +142,20 @@ const html=`<!doctype html>
 </div>
 </section>
 
+<section class="fallback-section" id="hs-fallback" aria-labelledby="fallbackHead">
+<p class="eyebrow">If it is clouded in</p>
+<h2 id="fallbackHead">Your plan B on the same road</h2>
+<div class="bring-grid">
+<article><h3>Go lower, not home</h3><p>NPS points to Leleiwi and Kalahaku overlooks as the quieter alternatives to the summit at dawn. They sit lower on the same road, so conditions there can differ from the summit. Nothing here predicts that, so look at the sky as you climb.</p></article>
+<article><h3>Decide where you are driving from</h3><p>Allow about two hours from Kahului and the south-shore resorts. Summit sensors count from eight hours before sunrise, so check this page when you wake and again before you leave the hotel, not at the gate.</p></article>
+<article><h3>Know what you cannot change</h3><p>The reservation is not refunded or exchanged for weather, and only one is allowed per 3-day period. If the call is poor, the choice is between going anyway for the crater at daylight or keeping the morning free.</p></article>
+</div>
+</section>
+
 <section class="sky-section" aria-labelledby="skyHead">
 <p class="eyebrow">Where the clouds are</p>
 <h2 id="skyHead">Moisture compared with the summit</h2>
-<p class="section-lede">Generic &#8220;cloudy&#8221; forecasts describe the lowlands. What matters up here is the humidity at three heights: below the summit, at summit level, and above it. Cloud that sits below you becomes a glowing sea; cloud at summit level means fog and wind.</p>
+<p class="section-lede">The summit of Haleakalā stands 10,023 feet above the Pacific on the rim of a crater roughly seven miles long. It often sits above Maui&#8217;s low trade-wind cloud, but not every morning. Generic &#8220;cloudy&#8221; forecasts describe the lowlands. What matters up here is the humidity at three heights: below the summit, at summit level, and above it. Cloud that sits below you becomes a glowing sea; cloud at summit level means fog and wind.</p>
 <div class="profile-band" id="haleProfile"><p>Loading the pressure-level moisture profile…</p></div>
 <article class="panel experimental">
 <span class="experimental-tag">Experimental</span>
@@ -153,7 +192,7 @@ const html=`<!doctype html>
 </div>
 </section>
 
-<section class="evidence-section">
+<section class="evidence-section live-only">
 <p class="eyebrow">For the curious and the cautious</p>
 <h2>The evidence behind the call</h2>
 <p class="section-lede">Everything above comes from these sources, using vertical GFS moisture, measured summit humidity and trend, hazards, access, sunrise geometry and live imagery. Each row shows what kind of evidence it is and how fresh it is.</p>
@@ -170,7 +209,7 @@ const html=`<!doctype html>
 <ul class="hazard-list" id="haleHazards"><li>Checking active NWS alerts for the summit point.</li></ul>
 <p class="method-note">An active high-impact wind or winter warning is a hard decision gate even if the visibility signal is otherwise favorable.</p>
 </article>
-<article class="panel camera-panel">
+<article class="panel camera-panel live-only">
 <p class="eyebrow">Live spatial evidence</p>
 <h2>Haleakalā all-sky camera</h2>
 <div id="haleImagery"><p>Checking whether the newest LCO image is fresh enough to use.</p></div>

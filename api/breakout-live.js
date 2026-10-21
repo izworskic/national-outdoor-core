@@ -1,10 +1,10 @@
 module.exports = async function breakoutLiveHandler(req, res) {
   res.setHeader('X-Robots-Tag', 'noindex, nofollow');
   const origin = req.headers?.origin || '';
-  if (origin === 'https://chrisizworski.com' || origin === 'https://www.chrisizworski.com') {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-    res.setHeader('Vary', 'Origin');
-  }
+  // Responses are shared-cached. A request without an Origin header (curl, bots, prefetch) must not prime the
+  // cache with a response the browser then rejects, so every response carries an allow-origin and Vary: Origin.
+  res.setHeader('Vary', 'Origin');
+  res.setHeader('Access-Control-Allow-Origin', origin === 'https://www.chrisizworski.com' ? origin : 'https://chrisizworski.com');
   if (req.method === 'OPTIONS') {
     res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');

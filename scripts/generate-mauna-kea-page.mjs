@@ -9,7 +9,7 @@ const out = path.join(root, 'public', 'national-tools', 'mauna-kea-tonight', 'in
 fs.mkdirSync(path.dirname(out), { recursive: true });
 
 const canonical = 'https://chrisizworski.com/national-tools/mauna-kea-tonight/';
-const title = 'Mauna Kea Tonight: Summit Sunset & Stargazing Go/No-Go | Chris Izworski';
+const title = 'Mauna Kea Stargazing Tonight: Go or No-Go | Chris Izworski';
 const description = 'One call for a Mauna Kea evening: is the summit road open, will the summit and Visitor Station be clear, how bright is the moon, and what to do about it.';
 const jsonLd = JSON.stringify({
   '@context': 'https://schema.org',

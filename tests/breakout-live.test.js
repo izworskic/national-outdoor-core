@@ -12,3 +12,14 @@ test('generator emits exactly ten distinct canonical pages plus hub',()=>{const 
 test('live destination hub exposes complete social metadata',()=>{const fs=require('node:fs');const html=fs.readFileSync('public/national-tools/live-decisions/index.html','utf8');const description='Destination-specific current conditions grouped by geography, with official evidence and truthful degraded states.';assert.match(html,/name="twitter:card" content="summary"/);assert.match(html,/name="twitter:title" content="Live Destination Decisions"/);assert.ok(html.includes(`name="twitter:description" content="${description}"`));assert.match(html,/property="og:title" content="Live Destination Decisions"/);assert.ok(html.includes(`property="og:description" content="${description}"`));});
 test('portfolio benchmark records cannibalization vetoes',()=>{const b=require('../benchmarks/breakout-live-portfolio.json');assert.equal(b.candidates.length,10);assert.ok(b.rejectedAfterOwnershipAudit.some(x=>x.id==='old-faithful-next-eruption'));assert.ok(b.rejectedAfterOwnershipAudit.some(x=>x.id==='trail-ridge-road-status'));assert.ok(b.rejectedAfterOwnershipAudit.some(x=>x.id==='blue-ridge-parkway-road-status'));});
 test('proxied pages call owner API instead of main-site API',()=>{const fs=require('node:fs');const js=fs.readFileSync('public/assets/breakout-live.js','utf8');const api=fs.readFileSync('api/breakout-live.js','utf8');assert.match(js,/national-outdoor-core\.vercel\.app/);assert.match(js,/mode:'cors'/);assert.match(api,/Access-Control-Allow-Origin/);assert.match(api,/https:\/\/chrisizworski\.com/);});
+
+test('CORS headers are set on every response and Vary: Origin keeps a no-Origin request from poisoning the cache',()=>{
+  const handler=require('../api/breakout-live.js');
+  const run=(origin)=>{const h={};const res={setHeader:(k,v)=>{h[k.toLowerCase()]=v;},end(){},statusCode:0};handler({method:'OPTIONS',headers:origin?{origin}:{},url:'/api/breakout-live'},res);return h;};
+  for(const origin of ['',undefined,'https://chrisizworski.com','https://evil.example']){
+    const h=run(origin);
+    assert.equal(h['access-control-allow-origin'],'https://chrisizworski.com',String(origin));
+    assert.equal(h.vary,'Origin');
+  }
+  assert.equal(run('https://www.chrisizworski.com')['access-control-allow-origin'],'https://www.chrisizworski.com');
+});

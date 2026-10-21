@@ -1,0 +1,141 @@
+{
+ "generated": "2026-10-21",
+ "years": "2023–2026",
+ "first": "2023-01-13",
+ "last": "2026-10-20",
+ "method": "Mean LCO OGG summit humidity within 30 minutes of sunrise. Dry <= 55%, moist >= 85%. Days with fewer than 2 readings skipped.",
+ "months": {
+  "1": {
+   "days": 81,
+   "dry": 57,
+   "mid": 14,
+   "moist": 10,
+   "possible": 112,
+   "noData": 31,
+   "dryPct": 70,
+   "moistPct": 12,
+   "midPct": 18
+  },
+  "2": {
+   "days": 95,
+   "dry": 73,
+   "mid": 12,
+   "moist": 10,
+   "possible": 113,
+   "noData": 18,
+   "dryPct": 77,
+   "moistPct": 11,
+   "midPct": 12
+  },
+  "3": {
+   "days": 106,
+   "dry": 78,
+   "mid": 19,
+   "moist": 9,
+   "possible": 124,
+   "noData": 18,
+   "dryPct": 74,
+   "moistPct": 8,
+   "midPct": 18
+  },
+  "4": {
+   "days": 102,
+   "dry": 64,
+   "mid": 29,
+   "moist": 9,
+   "possible": 120,
+   "noData": 18,
+   "dryPct": 63,
+   "moistPct": 9,
+   "midPct": 28
+  },
+  "5": {
+   "days": 110,
+   "dry": 81,
+   "mid": 21,
+   "moist": 8,
+   "possible": 124,
+   "noData": 14,
+   "dryPct": 74,
+   "moistPct": 7,
+   "midPct": 19
+  },
+  "6": {
+   "days": 83,
+   "dry": 74,
+   "mid": 6,
+   "moist": 3,
+   "possible": 120,
+   "noData": 37,
+   "dryPct": 89,
+   "moistPct": 4,
+   "midPct": 7
+  },
+  "7": {
+   "days": 86,
+   "dry": 72,
+   "mid": 11,
+   "moist": 3,
+   "possible": 124,
+   "noData": 38,
+   "dryPct": 84,
+   "moistPct": 3,
+   "midPct": 13
+  },
+  "8": {
+   "days": 80,
+   "dry": 65,
+   "mid": 13,
+   "moist": 2,
+   "possible": 124,
+   "noData": 44,
+   "dryPct": 81,
+   "moistPct": 3,
+   "midPct": 16
+  },
+  "9": {
+   "days": 81,
+   "dry": 59,
+   "mid": 15,
+   "moist": 7,
+   "possible": 120,
+   "noData": 39,
+   "dryPct": 73,
+   "moistPct": 9,
+   "midPct": 18
+  },
+  "10": {
+   "days": 78,
+   "dry": 63,
+   "mid": 11,
+   "moist": 4,
+   "possible": 113,
+   "noData": 35,
+   "dryPct": 81,
+   "moistPct": 5,
+   "midPct": 14
+  },
+  "11": {
+   "days": 80,
+   "dry": 68,
+   "mid": 8,
+   "moist": 4,
+   "possible": 90,
+   "noData": 10,
+   "dryPct": 85,
+   "moistPct": 5,
+   "midPct": 10
+  },
+  "12": {
+   "days": 77,
+   "dry": 64,
+   "mid": 11,
+   "moist": 2,
+   "possible": 93,
+   "noData": 16,
+   "dryPct": 83,
+   "moistPct": 3,
+   "midPct": 14
+  }
+ }
+}

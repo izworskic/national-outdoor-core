@@ -1,0 +1,16 @@
+{
+  "source": "LCO OGG all-sky frame nearest sunrise (chrisizworski-com data/haleakala-validation) joined with LCO summit RH within 30 min of sunrise. Labeled by eye by Claude on 2026-10-21.",
+  "caution": "19 mornings from one month. Enough to sanity-check a threshold, not enough to claim accuracy. 'wet-dome' = droplets on the camera dome, sky mostly unreadable; 'obscured' = washed-out cloud/fog frame. Both count as NOT clear.",
+  "days": [
+    {"date":"2026-10-02","label":"clear","rh":51.4},{"date":"2026-10-03","label":"clear","rh":48.0},
+    {"date":"2026-10-04","label":"clear","rh":16.7},{"date":"2026-10-05","label":"clear","rh":13.4},
+    {"date":"2026-10-06","label":"clear","rh":27.0},{"date":"2026-10-07","label":"clear","rh":34.0},
+    {"date":"2026-10-08","label":"obscured","rh":null},{"date":"2026-10-09","label":"wet-dome","rh":null},
+    {"date":"2026-10-10","label":"clear","rh":56.5},{"date":"2026-10-11","label":"clear","rh":21.2},
+    {"date":"2026-10-12","label":"clear","rh":73.4},{"date":"2026-10-13","label":"wet-dome","rh":93.4},
+    {"date":"2026-10-14","label":"clear","rh":81.7},{"date":"2026-10-15","label":"wet-dome","rh":86.4},
+    {"date":"2026-10-16","label":"wet-dome","rh":98.2},{"date":"2026-10-17","label":"clear","rh":24.8},
+    {"date":"2026-10-18","label":"clear","rh":23.0},{"date":"2026-10-19","label":"clear","rh":16.7},
+    {"date":"2026-10-20","label":"clear","rh":11.7}
+  ]
+}

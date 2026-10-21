@@ -1,0 +1,34 @@
+{
+  "label": "baseline-before-pr29",
+  "at": "2026-10-21T11:40:55.676Z",
+  "accuracy": {
+    "score": 0.8421052631578947,
+    "wrong": 0,
+    "abstain": 6,
+    "n": 19
+  },
+  "capabilities": {
+    "live_data_healthy": 0,
+    "decision_accuracy": 0.8421052631578947,
+    "honest_degraded": 1,
+    "pick_morning": 0,
+    "outlook_lead_honesty": 0,
+    "reservation_rules": 0.5,
+    "reservation_calendar": 0,
+    "fallback_if_cloudy": 0.4,
+    "gear_and_body": 1,
+    "morning_timeline": 1,
+    "logistics_arrival": 0.5,
+    "base_rate_for_month": 0,
+    "verdict_first_screen": 0.4431279620853081
+  },
+  "personas": {
+    "trip_planner_months_out": 15.8,
+    "tomorrow_decider": 30.8,
+    "one_am_go_no_go": 51.8,
+    "no_reservation_visitor": 28.8,
+    "family_or_older_visitor": 80,
+    "photographer": 38.3
+  },
+  "overall": 38.8
+}

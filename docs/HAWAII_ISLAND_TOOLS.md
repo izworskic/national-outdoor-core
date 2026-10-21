@@ -32,6 +32,8 @@ Not ranked: Kīlauea (exists), hurricane (Central Pacific season is June to Nove
 rental car and packing (guide content).
 
 ## Build order
+Tool 2 scores a point higher than tool 1, but 1 goes first: it reuses code already shipped, and the reservation windows for Christmas are opening now. Tool 2 is worth most in the week before travel.
+
 1. **What you need to book.** Reuses the release-date logic shipped with the Haleakalā work. A checker like the Michigan snowmobile
    one: pick an island and what you want to do, get what needs a reservation, when it opens, what it costs, what is closed which day.
    Every rule comes from the official page and carries its checked date.

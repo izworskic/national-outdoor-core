@@ -22,3 +22,7 @@
 .faq-section{margin:30px 0}.faq-section h2{font-size:clamp(24px,3vw,32px);line-height:1.1;margin:4px 0 14px}.faq-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.faq-grid article{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px}.faq-grid h3{font-size:18px;line-height:1.2;margin:0 0 6px}.faq-grid p{margin:0;color:#45524b}
 @media(max-width:820px){.mk-halves,.mk-road-grid,.faq-grid,.mk-grid3{grid-template-columns:1fr}.maunakea .facts,.mk-thresholds{grid-template-columns:repeat(2,minmax(0,1fr))}.source-list li{grid-template-columns:1fr}.mk-nights{grid-template-columns:repeat(7,minmax(0,1fr))}}
 @media(max-width:560px){.maunakea .hero .eyebrow{display:none}.maunakea .hero{padding:6px 0 4px}.maunakea h1{font-size:30px}.maunakea .lede{font-size:16px;margin:6px 0 0}.maunakea .crumbs{font-size:12px;margin:8px 0 0}.mk-picker label{width:100%}.maunakea .facts,.mk-thresholds{grid-template-columns:1fr}}
+
+/* far-off dates: the moon and daylight are the answer, so drop the weather-only sections */
+[data-horizon="far"] .mk-halves,[data-horizon="far"] .mk-road,[data-horizon="far"] .mk-forecaster{display:none}
+.live-card[data-state="info"]{border-color:#c4d3de;background:#fbfdff}.live-card[data-state="info"] .mk-plain{color:#274a6b}

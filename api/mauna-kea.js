@@ -16,7 +16,8 @@ module.exports = async function maunaKeaHandler(req, res) {
     const date = String(req.query?.date || new URL(req.url, 'https://example.test').searchParams.get('date') || '').trim();
     const engine = await import('../lib/mauna-kea.mjs');
     const payload = await engine.buildMaunaKea(date || undefined);
-    res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=900');
+    // "Tonight" changes at dawn and the data is time-sensitive, so keep shared caching short and never serve it long past expiry.
+    res.setHeader('Cache-Control', date ? 'public, s-maxage=300, stale-while-revalidate=300' : 'public, s-maxage=120, stale-while-revalidate=60');
     res.statusCode = 200;
     return res.end(JSON.stringify(payload));
   } catch (error) {

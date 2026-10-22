@@ -214,3 +214,75 @@ test('API handler: always sends Vary: Origin and an allow-origin, and 400s a bad
   assert.equal(headers.vary, 'Origin');
   assert.equal(headers['access-control-allow-origin'], 'https://chrisizworski.com');
 });
+
+function hourly(startIso, hours) {
+  const t0 = Date.parse(startIso);
+  return Array.from({ length: hours }, (_, i) => ({ ms: t0 + i * 3600000, rh600: 15, rh700: 40, temp600: 1, temp2m: 2, wind600: 8, wind10: 4, gust: 6, low: 0, mid: 0, high: 10, precip: 0, freezingM: 4800 }));
+}
+
+test('currentNightKey: "tonight" changes at dawn, not at midnight', async () => {
+  const m = await load();
+  const k = (iso) => m.currentNightKey(Date.parse(iso));
+  assert.equal(k('2026-10-22T13:00:00Z'), '2026-10-21'); // 3 a.m. HST: the night that began yesterday evening is still under way
+  assert.equal(k('2026-10-22T16:30:00Z'), '2026-10-21'); // 6:30 a.m. HST, minutes after sunrise
+  assert.equal(k('2026-10-22T20:00:00Z'), '2026-10-22'); // 10 a.m. HST: that night is over, next evening is tonight
+  assert.equal(k('2026-10-23T01:00:00Z'), '2026-10-22'); // 3 p.m. HST
+  assert.equal(k('2026-10-23T05:00:00Z'), '2026-10-22'); // 7 p.m. HST, after sunset
+});
+
+test('buildMaunaKea at 3 a.m. HST reports the night under way, not tomorrow evening', async () => {
+  const m = await load();
+  const now = Date.parse('2026-10-22T13:00:00Z');
+  const p = await m.buildMaunaKea(undefined, now, { road: async () => null, forecast: async () => null, gfs: async () => hourly('2026-10-22T00:00:00Z', 24 * 9) });
+  assert.equal(p.date, '2026-10-21');
+  assert.equal(p.today, '2026-10-21');
+  assert.equal(p.mode, 'tonight');
+  assert.equal(p.phase, 'night');
+  // and an evening that is already over is rejected, not shown
+  await assert.rejects(() => m.buildMaunaKea('2026-10-20', now, {}), (e) => e.status === 400 && /already passed/.test(e.message));
+});
+
+test('the last selectable evening (six days out) is covered by the model, not reported as missing data', async () => {
+  const m = await load();
+  const now = Date.parse('2026-10-22T20:00:00Z'); // 10 a.m. HST Oct 22: tonight is Oct 22
+  const six = '2026-10-28';
+  const p = await m.buildMaunaKea(six, now, { road: async () => null, forecast: async () => null, gfs: async () => hourly('2026-10-22T00:00:00Z', 24 * 9) });
+  assert.notEqual(p.decision.state, 'UNCERTAIN');
+  assert.notEqual(p.decision.state, 'TOO_FAR');
+  assert.ok(p.sunset && p.stars);
+  const seven = await m.buildMaunaKea('2026-10-29', now, { road: async () => null, forecast: async () => null, gfs: async () => { throw new Error('not called'); } });
+  assert.equal(seven.decision.state, 'TOO_FAR');
+});
+
+test('the model request asks for enough days to cover the last selectable evening', async () => {
+  const m = await load();
+  let url = '';
+  const orig = global.fetch;
+  global.fetch = async (u) => { url = String(u); return { ok: true, json: async () => ({ hourly: { time: ['2026-10-22T00:00'], relative_humidity_600hPa: [10] } }) }; };
+  try { await m.fetchGfs(); } finally { global.fetch = orig; }
+  assert.match(url, /forecast_days=9/);
+});
+
+test('summarizeNights finds the dark run and the moonlit run', async () => {
+  const m = await load();
+  const mk = (d, mins) => ({ date: d, moonFreeMinutes: mins, moonIllumination: 0.5 });
+  const s = m.summarizeNights([mk('2026-12-23', 20), mk('2026-12-24', 0), mk('2026-12-25', 30), mk('2026-12-26', 120), mk('2026-12-27', 300), mk('2026-12-28', 360), mk('2026-12-29', 420), mk('2026-12-30', 100)]);
+  assert.equal(s.best.from, '2026-12-27');
+  assert.equal(s.best.to, '2026-12-29');
+  assert.equal(s.best.label, 'Dec 27 to Dec 29');
+  assert.equal(s.bright.from, '2026-12-23');
+  assert.equal(s.bright.to, '2026-12-25');
+  assert.equal(s.bestNight.date, '2026-12-29');
+  assert.equal(m.summarizeNights([mk('2026-12-24', 0), mk('2026-12-25', 10)]).best, null);
+});
+
+test('a far-off date leads with the best nights for stars, not an error', async () => {
+  const m = await load();
+  const now = Date.parse('2026-10-22T20:00:00Z');
+  const p = await m.buildMaunaKea('2026-12-27', now, { road: async () => null, forecast: async () => null, gfs: async () => { throw new Error('not called'); } });
+  assert.equal(p.decision.state, 'TOO_FAR');
+  assert.match(p.decision.label, /^Best nights for stars: /);
+  assert.ok(p.planning.best);
+  assert.ok(p.nights[0].date >= '2026-10-22', 'the window never starts in the past');
+  assert.ok(p.nights.some((n) => n.date === '2026-12-27'), 'the picked night is inside the window');
+});

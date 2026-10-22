@@ -16,7 +16,7 @@ const jsonLd = JSON.stringify({
   '@graph': [
     { '@type': 'WebSite', '@id': 'https://chrisizworski.com/#website', url: 'https://chrisizworski.com/', name: 'Chris Izworski' },
     { '@type': 'WebApplication', '@id': `${canonical}#app`, name: 'Mauna Kea Tonight', applicationCategory: 'TravelApplication', operatingSystem: 'Any', url: canonical, description },
-    { '@type': 'WebPage', '@id': `${canonical}#page`, url: canonical, name: 'Mauna Kea Tonight', isPartOf: { '@id': 'https://chrisizworski.com/#website' }, mainEntity: { '@id': `${canonical}#app` }, dateModified: '2026-10-21', inLanguage: 'en-US' }
+    { '@type': 'WebPage', '@id': `${canonical}#page`, url: canonical, name: 'Mauna Kea Tonight', isPartOf: { '@id': 'https://chrisizworski.com/#website' }, mainEntity: { '@id': `${canonical}#app` }, dateModified: '2026-10-22', inLanguage: 'en-US' }
   ]
 }).replace(/</g, '\\u003c');
 

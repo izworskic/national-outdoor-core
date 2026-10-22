@@ -21,7 +21,7 @@
     NO_GO: 'Not tonight',
     CHECK: 'The forecaster and the model disagree',
     UNCERTAIN: 'No weather call available',
-    TOO_FAR: 'Past the weather horizon'
+    TOO_FAR: 'Moon and daylight are exact; the cloud call opens a week out'
   };
   const CONF = { MODERATE: 'Moderate confidence', LOW: 'Low confidence', NONE: 'No weather call' };
 
@@ -29,23 +29,25 @@
   let chosen = '';
   let loadSeq = 0;
 
-  function buildPicker() {
-    const today = ymdHst(new Date());
+  // "Tonight" is decided by the server (it changes at dawn, not at midnight), so the picker is built from its answer.
+  let serverToday = '';
+  function buildPicker(today) {
+    serverToday = today;
     let html = '<option value="">Tonight</option>';
     for (let i = 1; i < 7; i++) { const v = plusDays(today, i); html += `<option value="${v}">${esc(labelYmd(v))}</option>`; }
     html += '<option value="__other">Another date…</option>';
     sel.innerHTML = html;
     dateIn.min = today; dateIn.max = plusDays(today, 365);
     if (chosen) {
-      if ([...sel.options].some((o) => o.value === chosen)) sel.value = chosen;
+      if ([...sel.options].some((o) => o.value === chosen)) { sel.value = chosen; dateIn.hidden = true; }
       else { sel.value = '__other'; dateIn.hidden = false; dateIn.value = chosen; }
-    }
+    } else { sel.value = ''; dateIn.hidden = true; }
   }
   function setChosen(v, fromUser) {
-    chosen = v && DATE_RE.test(v) && v !== ymdHst(new Date()) ? v : '';
+    chosen = v && DATE_RE.test(v) && v !== serverToday ? v : '';
     try { history.replaceState(null, '', chosen ? `#date=${chosen}` : location.pathname + location.search); } catch {}
-    if (fromUser) event('maunakea_evening_picked', { days_ahead: chosen ? Math.round((Date.parse(chosen) - Date.parse(ymdHst(new Date()))) / 864e5) : 0 });
-    if (sel) { if ([...sel.options].some((o) => o.value === chosen)) { sel.value = chosen; dateIn.hidden = true; } else if (chosen) { sel.value = '__other'; dateIn.hidden = false; dateIn.value = chosen; } }
+    if (fromUser) event('maunakea_evening_picked', { days_ahead: chosen && serverToday ? Math.round((Date.parse(chosen) - Date.parse(serverToday)) / 864e5) : 0 });
+    if (serverToday) buildPicker(serverToday);
     load();
   }
   sel.addEventListener('change', () => {
@@ -53,7 +55,7 @@
     dateIn.hidden = true; setChosen(sel.value, true);
   });
   dateIn.addEventListener('change', () => { if (dateIn.value) setChosen(dateIn.value, true); });
-  $('#mkRefresh').addEventListener('click', () => { event('maunakea_refresh'); load(); });
+  $('#mkRefresh').addEventListener('click', () => { event('maunakea_refresh'); load(true); });
 
   function fact(label, value) { return `<div class="fact"><span>${esc(label)}</span><strong>${esc(value)}</strong></div>`; }
 
@@ -91,9 +93,12 @@
 
   function render(p) {
     const d = p.decision || {};
-    $('.live-card').setAttribute('data-state', CARD[d.state] || 'verify');
+    $('.live-card').setAttribute('data-state', d.state === 'TOO_FAR' ? 'info' : (CARD[d.state] || 'verify'));
     root.dataset.mode = p.mode;
-    $('#mkEyebrow').textContent = p.mode === 'tonight' ? `Tonight · ${labelYmd(p.date)}` : `Planned evening · ${labelYmd(p.date)}`;
+    if (p.today && p.today !== serverToday) buildPicker(p.today);
+    const evening = `evening of ${labelYmd(p.date)}`;
+    $('#mkEyebrow').textContent = p.mode === 'tonight' ? (p.phase === 'night' ? `Tonight, under way · ${evening}` : `Tonight · ${evening}`) : `Planned · ${evening}`;
+    root.dataset.horizon = p.decision?.state === 'TOO_FAR' ? 'far' : 'near';
     $('#mkStatus').textContent = d.label || 'No call';
     const conf = CONF[d.confidence];
     $('#mkPlain').textContent = `${PLAIN[d.state] || ''}${conf ? ` · ${conf}` : ''}`;
@@ -159,15 +164,27 @@
     $('#mkError').hidden = true;
   }
 
-  async function load() {
+  let lastLoaded = 0;
+  async function load(bust) {
     const seq = ++loadSeq;
-    const qs = chosen ? `&date=${encodeURIComponent(chosen)}` : '';
+    const qs = `${chosen ? `&date=${encodeURIComponent(chosen)}` : ''}${bust ? `&_=${Date.now()}` : ''}`;
     $('#mkStatus').textContent = 'Checking the summit…';
     try {
-      const res = await fetch(`${OWNER}/api/mauna-kea?_=1${qs}`, { headers: { Accept: 'application/json' } });
+      const res = await fetch(`${OWNER}/api/mauna-kea?v=2${qs}`, { headers: { Accept: 'application/json' } });
       const p = await res.json();
       if (seq !== loadSeq) return;
+      if (res.status === 400 && /already passed/i.test(p.detail || '')) {
+        // An old bookmark or a page left open past dawn: never show a past evening, fall back to tonight.
+        chosen = '';
+        try { history.replaceState(null, '', location.pathname + location.search); } catch {}
+        await load(true);
+        const f = $('#mkFresh'); if (f) f.textContent = 'That evening has passed, so this shows tonight. ' + f.textContent;
+        return;
+      }
       if (!res.ok || !p.ok) throw new Error(p.detail || p.error || `HTTP ${res.status}`);
+      // A shared cache can hand back an old copy. If what we got is more than 15 minutes old, ask once for a fresh one.
+      if (!bust && Date.now() - Date.parse(p.updated) > 15 * 60000) return load(true);
+      lastLoaded = Date.now();
       render(p);
       event('maunakea_loaded', { state: p.decision?.state, mode: p.mode });
     } catch (e) {
@@ -179,9 +196,13 @@
       err.textContent = `${String(e.message || e)}. Check the Maunakea Weather Center directly before you drive: mkwc.ifa.hawaii.edu.`;
     }
   }
+  // A tab left open must not keep showing yesterday's call.
+  const stale = () => lastLoaded && Date.now() - lastLoaded > 10 * 60000;
+  document.addEventListener('visibilitychange', () => { if (!document.hidden && stale()) load(true); });
+  setInterval(() => { if (!document.hidden && stale()) load(true); }, 60000);
 
   const hash = /#date=(\d{4}-\d{2}-\d{2})/.exec(location.hash)?.[1];
-  chosen = hash && hash > ymdHst(new Date()) ? hash : '';
-  buildPicker();
+  chosen = hash || '';
+  buildPicker(ymdHst(new Date())); // provisional until the server says what tonight is
   load();
 })();

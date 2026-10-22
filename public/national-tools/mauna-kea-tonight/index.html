@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mauna Kea Stargazing Tonight: Go or No-Go | Chris Izworski</title>
+<meta name="description" content="One call for a Mauna Kea evening: is the summit road open, will the summit and Visitor Station be clear, how bright is the moon, and what to do about it.">
+<link rel="canonical" href="https://chrisizworski.com/national-tools/mauna-kea-tonight/">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Mauna Kea Tonight: Go or No-Go">
+<meta property="og:description" content="One call for a Mauna Kea evening: is the summit road open, will the summit and Visitor Station be clear, how bright is the moon, and what to do about it.">
+<meta property="og:url" content="https://chrisizworski.com/national-tools/mauna-kea-tonight/">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Mauna Kea Tonight: Go or No-Go">
+<meta name="twitter:description" content="One call for a Mauna Kea evening: is the summit road open, will the summit and Visitor Station be clear, how bright is the moon, and what to do about it.">
+<meta name="google-adsense-account" content="ca-pub-8222782620788075">
+<link rel="stylesheet" href="https://national-outdoor-core.vercel.app/assets/breakout-live.css">
+<link rel="stylesheet" href="https://national-outdoor-core.vercel.app/assets/mauna-kea.css">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://chrisizworski.com/#website","url":"https://chrisizworski.com/","name":"Chris Izworski"},{"@type":"WebApplication","@id":"https://chrisizworski.com/national-tools/mauna-kea-tonight/#app","name":"Mauna Kea Tonight","applicationCategory":"TravelApplication","operatingSystem":"Any","url":"https://chrisizworski.com/national-tools/mauna-kea-tonight/","description":"One call for a Mauna Kea evening: is the summit road open, will the summit and Visitor Station be clear, how bright is the moon, and what to do about it."},{"@type":"WebPage","@id":"https://chrisizworski.com/national-tools/mauna-kea-tonight/#page","url":"https://chrisizworski.com/national-tools/mauna-kea-tonight/","name":"Mauna Kea Tonight","isPartOf":{"@id":"https://chrisizworski.com/#website"},"mainEntity":{"@id":"https://chrisizworski.com/national-tools/mauna-kea-tonight/#app"},"dateModified":"2026-10-22","inLanguage":"en-US"}]}</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Y5D2V2W7HN"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-Y5D2V2W7HN');</script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8222782620788075" crossorigin="anonymous"></script>
+<script defer src="/_vercel/insights/script.js"></script>
+<script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments)};</script>
+<script defer src="https://national-outdoor-core.vercel.app/assets/mauna-kea.js"></script>
+<script defer src="https://national-outdoor-core.vercel.app/assets/breakout-value.js"></script>
+</head>
+<body class="maunakea" data-tool-id="mauna-kea-tonight">
+<header class="site-header"><a class="brand" href="/">Chris Izworski</a><nav class="nav"><a href="/tools/">Tools</a><a href="/national-tools/">National tools</a><a href="/national-tools/live-decisions/">Live destinations</a></nav></header>
+<main class="wrap">
+<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/national-tools/">National tools</a> / Hawaii / Mauna Kea Tonight</nav>
+
+<section class="hero">
+<p class="eyebrow">Live destination decision · Mauna Kea, Hawaii Island</p>
+<h1>Mauna Kea Tonight</h1>
+<p class="lede">Should you drive up for sunset and stars? One call from the road, the summit cloud, the wind and the moon.</p>
+</section>
+
+<section class="live-card" aria-labelledby="mkStatus">
+<div class="mk-picker" id="mk-picker-wrap">
+<label for="mk-evening">Which evening?</label>
+<select id="mk-evening" aria-controls="mkStatus"><option value="">Tonight</option></select>
+<input type="date" id="mk-date" aria-label="Pick any date in the next year" hidden>
+</div>
+<div class="live-row"><div>
+<p class="eyebrow" id="mkEyebrow">Tonight</p>
+<h2 class="status" id="mkStatus">Checking the summit…</h2>
+<p class="mk-plain" id="mkPlain">Reading the road, the summit sky and the moon.</p>
+<p class="headline" id="mkPlan"></p>
+</div><button class="refresh" id="mkRefresh" type="button">Refresh</button></div>
+<ul class="mk-reasons" id="mkReasons"></ul>
+<div class="facts" id="mkFacts"></div>
+<p class="fresh" id="mkFresh">Loading source freshness…</p>
+<div class="error" id="mkError" hidden></div>
+</section>
+
+<section class="mk-halves" aria-label="The two halves of the evening">
+<article class="panel" id="mk-sunset">
+<p class="eyebrow">Half one</p>
+<h2>Sunset at the summit</h2>
+<p class="mk-chip" id="mkSunsetChip" data-call="">Checking…</p>
+<p id="mkSunsetWhy">Waiting for the model.</p>
+<p class="method-note" id="mkSunsetMeta"></p>
+</article>
+<article class="panel" id="mk-stars">
+<p class="eyebrow">Half two</p>
+<h2>Stars at the Visitor Station</h2>
+<p class="mk-chip" id="mkStarsChip" data-call="">Checking…</p>
+<p id="mkStarsWhy">Waiting for the model.</p>
+<p class="method-note" id="mkStarsMeta"></p>
+</article>
+</section>
+
+<section class="mk-road panel" aria-labelledby="mkRoadHead">
+<p class="eyebrow">The gate that overrides everything</p>
+<h2 id="mkRoadHead">Is the summit road open?</h2>
+<div class="mk-road-grid">
+<div><span>Official message (Maunakea Weather Center)</span><strong id="mkRoadOfficial">Checking…</strong><small id="mkRoadOfficialNote"></small></div>
+<div><span>What the model says about the road</span><strong id="mkRoadModel">Checking…</strong><small id="mkRoadModelNote"></small></div>
+</div>
+<p class="method-note">The road closes for any ice or snow, sustained winds above 55 mph for an hour or gusts above 65 mph, visibility under 50 feet, or any other unsafe condition. From April through November the weather center rarely updates its road message, so an old &#8220;Open&#8221; is a default, not a reading. Call (808) 935-6268 or ask at the Visitor Information Station before you climb.</p>
+</section>
+
+<section class="mk-moon-section" aria-labelledby="mkMoonHead">
+<p class="eyebrow">Plan the nights</p>
+<h2 id="mkMoonHead">How much dark sky each night gives you</h2>
+<p class="section-lede">Cloud is only half of a stargazing night. Each bar is the moon-free hours between the end of astronomical twilight and dawn. Tall means the moon is out of the way. Tap a night to see it. These are exact for any date in the next year.</p>
+<div class="mk-nights" id="mkNights" role="list"></div>
+<p class="method-note" id="mkNightsNote"></p>
+</section>
+
+<section class="mk-forecaster panel" id="mk-forecaster" aria-labelledby="mkFcHead" hidden>
+<p class="eyebrow">The forecaster&#8217;s own words</p>
+<h2 id="mkFcHead">Maunakea Weather Center forecast</h2>
+<blockquote id="mkFcText"></blockquote>
+<p class="method-note" id="mkFcMeta"></p>
+</section>
+
+<section class="mk-before" aria-labelledby="mkBeforeHead">
+<p class="eyebrow">Before you drive up</p>
+<h2 id="mkBeforeHead">What the rangers check, and what the altitude does</h2>
+<div class="bring-grid mk-grid3">
+<article><h3>Your vehicle</h3><p>Rangers screen vehicles at the Visitor Information Station. You need four-wheel drive, a vehicle free of mud and plant matter, and at least a half tank of fuel. Hot brakes are the number one safety problem on the way down, so shift to a low gear instead of riding the brakes.</p></article>
+<article><h3>Your body</h3><p>The summit is 13,796 feet. The weather center says it is unsafe for children under 13, anyone pregnant, anyone with a pre-existing health condition, and anyone who has scuba dived recently. Acclimatize at the Visitor Station (9,200 feet) for at least 30 minutes first.</p></article>
+<article><h3>Your timing</h3><p>Arrive at least one and a half to two hours before sunset. The cold arrives with the dark: dress for freezing temperatures and wind. Pets, drones, alcohol and off-trail walking are not allowed.</p></article>
+</div>
+</section>
+
+<section class="mk-method panel" aria-labelledby="mkMethodHead">
+<p class="eyebrow">How the call is made</p>
+<h2 id="mkMethodHead">The rules, published</h2>
+<p>No score and no hidden weighting. Four checks, in this order, and the first failure stops the call.</p>
+<ol class="mk-rules">
+<li><b>Road closed or at risk.</b> The official message says closed, or the model shows winds above the closure limit, or precipitation with the freezing level at or below the summit road. Result: NO-GO.</li>
+<li><b>Sunset at the summit.</b> Judged at sunset from the model&#8217;s humidity at about 14,000 feet and mid-level cloud. Saturated air or rain is NO-GO, damp air or mid cloud is PARTLY, dry and clear is GO. A dry summit over a low cloud deck is called out as an above-the-clouds sunset.</li>
+<li><b>Stars at the Visitor Station.</b> The share of dark hours that look clear: GO at 70 percent or more, PARTLY at 35 percent or more, otherwise NO-GO.</li>
+<li><b>Cross-check.</b> The Maunakea Weather Center forecaster&#8217;s own cloud paragraph is read for fog, precipitation, or dry and stable air. If the forecaster and the model disagree, the answer is CHECK, not a guess.</li>
+</ol>
+<div class="mk-thresholds" id="mkThresholds"></div>
+<p class="method-note"><b>Honest limit:</b> the sky thresholds are starting rules. They have not yet been scored against labeled nights the way the Haleakal&#257; sunrise tool was, so confidence never rises above MODERATE. Past a week the weather model runs out, and the tool shows only the exact moon and daylight. The moon is a separate dimension: a clear night can still be washed out, so it is reported next to the call, not folded into it.</p>
+</section>
+
+<section class="mk-sources panel" aria-labelledby="mkSrcHead">
+<p class="eyebrow">Source provenance</p>
+<h2 id="mkSrcHead">What the engine used</h2>
+<ul class="source-list" id="mkSources"><li><strong>Loading sources…</strong></li></ul>
+</section>
+
+<section class="faq-section">
+<p class="eyebrow">The questions visitors actually ask</p>
+<h2>Reading a Mauna Kea evening</h2>
+<div class="faq-grid">
+<article><h3>Can I just go to the Visitor Station and skip the summit?</h3><p>Yes, and most visitors do. The Visitor Information Station at 9,200 feet is where public stargazing happens. The summit is a separate, colder, higher step with its own vehicle and health rules.</p></article>
+<article><h3>Why can the summit be clear when Hilo is pouring?</h3><p>Hawaii&#8217;s trade-wind inversion caps most low cloud around 7,000 to 8,000 feet. The summit usually sits above it, which is why the observatories are there. The tool looks at humidity at summit height, not the cloud percentage at sea level.</p></article>
+<article><h3>What does PARTLY mean?</h3><p>One half of the evening should work and the other should not. The plan line tells you which, and what to decide once you can see the sky from the Visitor Station.</p></article>
+<article><h3>Does a full moon ruin it?</h3><p>It washes out the Milky Way and faint objects, but the moon itself, the planets and bright stars look fine, and the summit sunset is unaffected. The moon bars above show which nights give you real dark sky.</p></article>
+<article><h3>When is the road closed?</h3><p>Closures cluster in winter, usually from ice or snow, and occasionally for high wind. Check this page and the weather center before leaving.</p></article>
+<article><h3>How far ahead is the weather call good?</h3><p>About a week, and it gets less certain each day. Beyond that the page still shows exact moon and sunset times so you can pick your best night, then come back inside the week.</p></article>
+</div>
+</section>
+
+<section class="network">
+<p class="eyebrow">Hawaii decision tools</p>
+<h2>More live Hawaii planning</h2>
+<div class="network-grid"><a href="/national-tools/haleakala-sunrise/">Haleakal&#257; sunrise weather &amp; clouds</a><a href="/national-tools/kilauea-live/">K&#299;lauea live decision tool</a></div>
+<p class="disclaimer">This is decision support, not a safety system. The Maunakea Rangers and the weather center&#8217;s official road message control. An independent site, not affiliated with the University of Hawaii, the Office of Maunakea Management or any agency.</p>
+</section>
+</main>
+<footer><div class="wrap">© 2026 Chris Izworski · <a href="/about/">About</a> · <a href="/tools/">Tools</a></div></footer>
+</body>
+</html>

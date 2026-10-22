@@ -231,3 +231,20 @@ test('API handler sets CORS, Vary and cache headers and returns 502 JSON when th
   await handler({ headers: { origin: 'https://www.chrisizworski.com' }, method: 'OPTIONS', url: '/' }, opt);
   assert.equal(opt.statusCode, 204);
 });
+
+test('fetchSwan retries a stalled 503 and sends no custom User-Agent (the host rejects one)', async () => {
+  const coast = E.COASTS[0];
+  const seen = [];
+  const orig = global.fetch;
+  const csv = 'time,latitude[unit="degrees_north"],longitude[unit="degrees_east"],vertCoord[unit="meters"],shgt[unit="meters"],mper[unit="second"],pdir[unit="degrees"]\n2026-10-23T18:00:00Z,19.99,-155.83,0.0,0.5,10,300\n';
+  global.fetch = async (url, opts) => {
+    seen.push(opts.headers);
+    return seen.length === 1 ? { ok: false, status: 503 } : { ok: true, status: 200, text: async () => csv };
+  };
+  try {
+    const rows = await E.fetchSwan(coast, Date.parse('2026-10-23T18:00:00Z'), Date.parse('2026-10-24T04:00:00Z'));
+    assert.equal(rows.length, 1);
+    assert.equal(seen.length, 2, 'one retry after the 503');
+    assert.ok(seen.every((h) => !('User-Agent' in h)), 'no custom User-Agent to the wave host');
+  } finally { global.fetch = orig; }
+});

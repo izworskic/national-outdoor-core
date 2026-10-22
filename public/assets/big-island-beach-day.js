@@ -32,7 +32,7 @@
       <p class="bd-say">${esc(d.plain)}${CONF[d.confidence] ? ` · ${esc(CONF[d.confidence])}` : ''}</p>
       ${al}
       <dl class="bd-nums"><div><dt>NWS forecast</dt><dd>${esc(nws)}</dd></div><div><dt>Wave model</dt><dd>${esc(model)}</dd></div><div><dt>Daytime wind</dt><dd>${esc(w)}</dd></div></dl>
-      <ul class="bd-why">${(d.reasons || []).map((r) => `<li>${esc(r)}</li>`).join('')}</ul>
+      <ul class="bd-why">${(d.reasons || []).filter((r) => !/^(NWS surf forecast|Wave model): /.test(r)).map((r) => `<li>${esc(r)}</li>`).join('')}</ul>
       <p class="bd-ex">Beaches here: ${esc(c.examples)}</p>
     </article>`;
   }

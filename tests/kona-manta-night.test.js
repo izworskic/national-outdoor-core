@@ -160,3 +160,9 @@ test('a rare-for-this-site but still small sea is not called moderate or rough (
   assert.equal(E.decide({ sea: { peakM: 0.9, percentile: 95, maxPeriodS: 8, periodS: 8 } }).state, 'ROUGH');
   assert.equal(E.decide({ sea: { peakM: 0.3, percentile: 80, maxPeriodS: 16, periodS: 16 } }).state, 'GOOD', 'long-period nudge also needs a real height');
 });
+
+test('payload carries each site\'s own record for the comparison chart', async () => {
+  const p = await E.buildMantaNight(Date.parse('2026-10-22T20:00:00Z'), { srf: () => Promise.reject(new Error('x')), alerts: () => Promise.reject(new Error('x')), sea: () => Promise.reject(new Error('x')), wx: () => Promise.reject(new Error('x')) });
+  for (const s of p.nights[0].sites) assert.ok(s.record && s.record.p50 <= s.record.p90, s.id);
+  assert.ok(p.nights[0].sites[0].record.p90 < p.nights[0].sites[1].record.p90, 'Garden Eel Cove is the more sheltered site');
+});

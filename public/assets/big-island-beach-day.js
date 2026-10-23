@@ -47,6 +47,11 @@
     $('#bdHeadline').textContent = day.headline;
     $('#bdPlain').textContent = day.nwsCovered ? 'NWS forecast, alerts, wave model and wind, calmest coast first.' : 'This day is beyond the NWS surf forecast, so it rests on the wave model and wind. Treat it as a rough guide.';
     $('#bdCoasts').innerHTML = day.coasts.map((c) => coastCard(c, day.nwsCovered)).join('');
+    const HC = window.HawaiiCharts;
+    if (HC && $('#bdRuler')) {
+      $('#bdRuler').innerHTML = HC.ruler(day.coasts.map((c) => ({ name: c.name, value: c.model ? c.model.peakM : null, record: c.record })), 'm');
+      $('#bdGrid').innerHTML = HC.grid(data.days.map((d) => ({ label: d.label, states: d.coasts.map((c) => c.decision.state) })), day.coasts.map((c) => c.name));
+    }
     const t = data.thresholds || {};
     const set = (id, v) => { const el = $(id); if (el && v != null) el.textContent = v; };
     set('#bdModerateFt', t.nwsModerateFt); set('#bdLargeFt', t.nwsLargeFt); set('#bdModeratePct', t.modelModeratePct); set('#bdLargePct', t.modelLargePct);

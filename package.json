@@ -7,9 +7,9 @@
     ".": "./index.js"
   },
   "scripts": {
-    "build": "node scripts/generate-location-pages.mjs && node scripts/generate-breakout-live-pages.mjs && node scripts/generate-california-road-pages.mjs && node scripts/generate-haleakala-sunrise-page.mjs && node scripts/generate-mauna-kea-page.mjs && node scripts/generate-big-island-beach-day-page.mjs && node scripts/generate-kona-manta-ray-night-page.mjs && node scripts/inject-network-analytics.js",
+    "build": "node scripts/generate-location-pages.mjs && node scripts/generate-breakout-live-pages.mjs && node scripts/generate-california-road-pages.mjs && node scripts/generate-haleakala-sunrise-page.mjs && node scripts/generate-mauna-kea-page.mjs && node scripts/generate-big-island-beach-day-page.mjs && node scripts/generate-kona-manta-ray-night-page.mjs && node scripts/build-kilauea-client.mjs && node scripts/generate-kilauea-episode-watch-page.mjs && node scripts/inject-network-analytics.js",
     "vercel-build": "npm run build",
-    "test": "node scripts/generate-location-pages.mjs && node scripts/generate-breakout-live-pages.mjs && node scripts/generate-california-road-pages.mjs && node scripts/generate-haleakala-sunrise-page.mjs && node scripts/generate-mauna-kea-page.mjs && node scripts/generate-big-island-beach-day-page.mjs && node scripts/generate-kona-manta-ray-night-page.mjs && node --test tests/*.test.js",
+    "test": "node scripts/generate-location-pages.mjs && node scripts/generate-breakout-live-pages.mjs && node scripts/generate-california-road-pages.mjs && node scripts/generate-haleakala-sunrise-page.mjs && node scripts/generate-mauna-kea-page.mjs && node scripts/generate-big-island-beach-day-page.mjs && node scripts/generate-kona-manta-ray-night-page.mjs && node scripts/build-kilauea-client.mjs && node scripts/generate-kilauea-episode-watch-page.mjs && node --test tests/*.test.js",
     "verify:analytics": "node scripts/inject-network-analytics.js",
     "verify:smoke": "node scripts/verify-smoke.js",
     "verify:all": "npm run build && node --test tests/*.test.js && npm run verify:smoke"

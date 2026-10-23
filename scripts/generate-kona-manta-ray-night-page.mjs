@@ -46,6 +46,7 @@ const html = `<!doctype html>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8222782620788075" crossorigin="anonymous"></script>
 <script defer src="/_vercel/insights/script.js"></script>
 <script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments)};</script>
+<script defer src="https://national-outdoor-core.vercel.app/assets/hawaii-charts.js"></script>
 <script defer src="https://national-outdoor-core.vercel.app/assets/kona-manta-ray-night.js"></script>
 </head>
 <body class="beachday mantanight" data-tool-id="kona-manta-ray-night">
@@ -79,6 +80,7 @@ const html = `<!doctype html>
 <p>It also has no cancellation cutoffs to check against. Operators do not publish them. What the page can do is show how rough the sea is compared with that site&#8217;s own record, so you know whether a night is typical or unusually rough.</p>
 </section>
 
+<section class="hc-wrap panel" aria-labelledby="mnChartHead"><h2 id="mnChartHead">How rough is the sea, for each site?</h2><p>The black dot is the wave model's forecast peak for 6 to 9 p.m. on the night you picked. The bands are that site's own 2016 to 2025 evening record, so Garden Eel Cove (sheltered) and Manta Village (more exposed) are each judged against themselves.</p><div id="mnRuler"></div><div class="hc-key"><span><i style="background:#dcece3"></i>typical or smaller</span><span><i style="background:#f0e3c4"></i>bigger than typical</span><span><i style="background:#efd2d2"></i>roughest 10% of evenings</span></div><h2 id="mnGridHead" style="margin-top:22px">The next four nights at a glance</h2><div id="mnGrid"></div></section>
 <section class="bd-method panel" aria-labelledby="mnMethodHead">
 <p class="eyebrow">How the call is made</p>
 <h2 id="mnMethodHead">The rules, published</h2>

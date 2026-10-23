@@ -50,6 +50,11 @@
     $('#mnHeadline').textContent = data.headline;
     $('#mnPlain').textContent = night.nwsCovered ? 'Rating for the evening selected below. The headline covers all four nights.' : 'This evening is beyond the NWS surf forecast, so its rating rests on the wave model, wind and rain. Treat it as a rough guide.';
     $('#mnSites').innerHTML = night.sites.map((s) => siteCard(s, night.nwsCovered)).join('');
+    const HC = window.HawaiiCharts;
+    if (HC && $('#mnRuler')) {
+      $('#mnRuler').innerHTML = HC.ruler(night.sites.map((s) => ({ name: s.short || s.name, value: s.sea ? s.sea.peakM : null, record: s.record })), 'm');
+      $('#mnGrid').innerHTML = HC.grid(data.nights.map((d) => ({ label: d.label, states: d.sites.map((s) => s.decision.state) })), night.sites.map((s) => s.short || s.name));
+    }
     const t = data.thresholds || {};
     const set = (id, v) => { const el = $(id); if (el && v != null) el.textContent = v; };
     set('#mnNwsMod', 4); set('#mnNwsLarge', 7); set('#mnModPct', t.modelModeratePct); set('#mnLargePct', t.modelLargePct);

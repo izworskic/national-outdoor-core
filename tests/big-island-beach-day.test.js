@@ -248,3 +248,10 @@ test('fetchSwan retries a stalled 503 and sends no custom User-Agent (the host r
     assert.ok(seen.every((h) => !('User-Agent' in h)), 'no custom User-Agent to the wave host');
   } finally { global.fetch = orig; }
 });
+
+test('payload carries each coast\'s own record for the percentile ruler', async () => {
+  const p = await E.buildBeachDay(Date.parse('2026-10-22T20:00:00Z'), { srf: () => Promise.reject(new Error('x')), alerts: () => Promise.reject(new Error('x')), swan: () => Promise.reject(new Error('x')), wind: () => Promise.reject(new Error('x')) });
+  for (const c of p.days[0].coasts) {
+    assert.ok(c.record && c.record.p50 <= c.record.p70 && c.record.p70 <= c.record.p90 && c.record.p90 <= c.record.p99, c.id);
+  }
+});

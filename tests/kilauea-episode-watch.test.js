@@ -94,3 +94,28 @@ test('payload carries the record and flags stale history when HVO is past episod
   assert.equal(p.history.daysSinceLast, null);
   assert.equal(p.history.knownMisses.length, 2);
 });
+
+test('the browser bundle is current and runs with a fake fetch, with no Node-only code', async () => {
+  const fs = require('node:fs'), vm = require('node:vm'), path = require('node:path');
+  const B = await import('../scripts/build-kilauea-client.mjs');
+  const onDisk = fs.readFileSync(path.join(__dirname, '../public/assets/kilauea-engine.js'), 'utf8');
+  assert.equal(onDisk, B.bundle(), 'run: node scripts/build-kilauea-client.mjs');
+  const notice = wrap("The Halema'uma'u eruption of Kīlauea is currently paused after episode 55 fountaining ended on October 17. The preliminary forecast for episode 56 fountaining is between October 29 and November 5, 2026.");
+  const hours = Array.from({ length: 72 }, (_, i) => new Date(Date.UTC(2026, 9, 23, 0) + i * 3600000).toISOString().slice(0, 16));
+  const calls = [];
+  const fakeFetch = async (url, opts) => {
+    calls.push({ url, headers: opts && opts.headers });
+    const json = /getMonitoredVolcanoes/.test(url) ? [{ vnum: '332010', sent_utc: '2026-10-22 20:00:21', alert_level: 'ADVISORY', color_code: 'YELLOW', notice_data: 'https://volcanoes.usgs.gov/n', notice_url: 'https://u' }]
+      : /volcanoes\.usgs\.gov\/n/.test(url) ? { notice_html: notice }
+      : { hourly: { time: hours, cloud_cover_low: hours.map(() => 10), precipitation: hours.map(() => 0), visibility: hours.map(() => 24000), wind_speed_10m: hours.map(() => 8), wind_direction_10m: hours.map(() => 60) } };
+    return { ok: true, json: async () => json };
+  };
+  const win = {};
+  const ctx = vm.createContext({ window: win, fetch: fakeFetch, AbortController, URL, Date, Math, Number, JSON, Array, String, RegExp, Promise, setTimeout, clearTimeout, Intl });
+  vm.runInContext(onDisk, ctx);
+  const p = await win.KilaueaEngine.buildEpisodeWatch(Date.parse('2026-10-23T12:00:00Z'));
+  assert.equal(p.call.state, 'WAIT');
+  assert.equal(p.hvo.window.start, '2026-10-29');
+  assert.equal(p.conditions.goodHours, p.conditions.hours.length);
+  assert.ok(calls.length >= 3 && calls.every((c) => !c.headers), 'no custom headers, so no CORS preflight');
+});

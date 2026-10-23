@@ -1,7 +1,6 @@
 (() => {
   const root = document.querySelector('[data-tool-id="kilauea-episode-watch"]');
   if (!root) return;
-  const OWNER = 'https://national-outdoor-core.vercel.app';
   const TZ = 'Pacific/Honolulu';
   const $ = (s) => document.querySelector(s);
   const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -65,13 +64,19 @@
     renderCalc();
   }
 
+  // Everything is read in this browser straight from USGS and Open-Meteo: no server function. A 5-minute
+  // per-tab cache keeps repeat opens from re-calling them.
+  const CACHE = 'kv-watch-v1';
+  const cached = () => { try { const c = JSON.parse(sessionStorage.getItem(CACHE) || 'null'); return c && Date.now() - c.at < 300000 ? c.data : null; } catch { return null; } };
+  const keep = (d) => { try { sessionStorage.setItem(CACHE, JSON.stringify({ at: Date.now(), data: d })); } catch {} };
   async function load(bust) {
     const seq = ++loadSeq;
     try {
-      const res = await fetch(`${OWNER}/api/kilauea-episode-watch${bust ? `?_=${Date.now()}` : ''}`, { cache: 'no-store' });
-      const json = await res.json();
+      const hit = bust ? null : cached();
+      const json = hit || await window.KilaueaEngine.buildEpisodeWatch(Date.now());
       if (seq !== loadSeq) return;
-      if (!res.ok || !json.ok) throw new Error(json.detail || 'Live source unavailable');
+      if (!json || json.ok === false) throw new Error('Live source unavailable');
+      if (!hit) keep(json);
       data = json; lastLoaded = Date.now();
       $('#kvError').hidden = true;
       render();

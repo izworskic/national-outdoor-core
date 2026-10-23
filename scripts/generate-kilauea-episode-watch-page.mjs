@@ -47,6 +47,7 @@ const html = `<!doctype html>
 <script defer src="/_vercel/insights/script.js"></script>
 <script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments)};</script>
 <script defer src="https://national-outdoor-core.vercel.app/assets/hawaii-charts.js"></script>
+<script defer src="https://national-outdoor-core.vercel.app/assets/kilauea-engine.js"></script>
 <script defer src="https://national-outdoor-core.vercel.app/assets/kilauea-episode-watch.js"></script>
 </head>
 <body class="beachday kilaueawatch" data-tool-id="kilauea-episode-watch">

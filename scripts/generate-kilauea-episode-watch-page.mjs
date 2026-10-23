@@ -9,7 +9,7 @@ const out = path.join(root, 'public', 'national-tools', 'kilauea-episode-watch',
 fs.mkdirSync(path.dirname(out), { recursive: true });
 
 const canonical = 'https://chrisizworski.com/national-tools/kilauea-episode-watch/';
-const title = 'Kilauea Eruption: Next Episode & Viewing | Chris Izworski';
+const title = 'Kilauea Next Episode: USGS Forecast Window | Chris Izworski';
 const description = "Is Kilauea erupting, and when is the next fountaining episode? USGS's forecast window, summit weather hour by hour, and how often episodes have started.";
 const jsonLd = JSON.stringify({
   '@context': 'https://schema.org',
@@ -30,11 +30,11 @@ const html = `<!doctype html>
 <link rel="canonical" href="${canonical}">
 <meta name="robots" content="index,follow,max-image-preview:large">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Kilauea Eruption: Next Episode &amp; Viewing">
+<meta property="og:title" content="Kilauea Next Episode: USGS Forecast Window">
 <meta property="og:description" content="${description}">
 <meta property="og:url" content="${canonical}">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Kilauea Eruption: Next Episode &amp; Viewing">
+<meta name="twitter:title" content="Kilauea Next Episode: USGS Forecast Window">
 <meta name="twitter:description" content="${description}">
 <meta name="google-adsense-account" content="ca-pub-8222782620788075">
 <link rel="stylesheet" href="https://national-outdoor-core.vercel.app/assets/breakout-live.css">
@@ -57,8 +57,8 @@ const html = `<!doctype html>
 
 <section class="hero">
 <p class="eyebrow">Live destination decision &middot; Hawai&#699;i Volcanoes National Park</p>
-<h1>Kilauea Eruption: Next Episode &amp; Viewing</h1>
-<p class="lede">Kilauea&#8217;s summit erupts in short bursts of lava fountaining, a few hours long with weeks of quiet between. This shows what the USGS says is next, whether the summit is clear enough to see anything, and how often episodes have really started.</p>
+<h1>Kilauea&#8217;s Next Episode: USGS Forecast Window</h1>
+<p class="lede">Kilauea&#8217;s summit erupts in short bursts of lava fountaining, a few hours long with weeks of quiet between. This shows what the USGS says is next, whether the summit is clear enough to see anything, and how often episodes have really started. To decide whether to drive up right now, use <a href="/national-tools/kilauea-live/">K&#299;lauea Live</a>.</p>
 </section>
 
 <section class="live-card" aria-labelledby="kvHeadline">
@@ -151,7 +151,7 @@ const html = `<!doctype html>
 <section class="network">
 <p class="eyebrow">Hawaii decision tools</p>
 <h2>More live Hawaii planning</h2>
-<div class="network-grid"><a href="/national-tools/big-island-beach-day/">Big Island beach day: which coast is calm</a><a href="/national-tools/kona-manta-ray-night/">Kona manta night snorkel conditions</a><a href="/national-tools/mauna-kea-tonight/">Mauna Kea stargazing tonight</a></div>
+<div class="network-grid"><a href="/national-tools/kilauea-live/">K&#299;lauea Live: should you go right now</a><a href="/national-tools/big-island-beach-day/">Big Island beach day: which coast is calm</a><a href="/national-tools/kona-manta-ray-night/">Kona manta night snorkel conditions</a><a href="/national-tools/mauna-kea-tonight/">Mauna Kea stargazing tonight</a></div>
 <p class="disclaimer">This is decision support, not a safety system. The U.S. Geological Survey and the National Park Service control, and conditions at an active volcano change quickly. An independent site, not affiliated with any agency.</p>
 </section>
 </main>

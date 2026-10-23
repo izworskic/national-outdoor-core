@@ -69,7 +69,7 @@ test('weatherNight: onshore wind component, window rain, and prior-24h runoff', 
 
 test('alertsForSite: Kona zone and evening window only', () => {
   const f = (zone, event, onset, ends) => ({ properties: { event, onset, ends, geocode: { UGC: [zone] } } });
-  const fs = [f('HIZ023', 'High Surf Advisory', '2026-10-23T06:00:00Z', '2026-10-24T18:00:00Z'), f('HIZ053', 'High Surf Warning', '2026-10-22T00:00:00Z', '2026-10-30T00:00:00Z'), f('HIZ023', 'Red Flag Warning', '2026-10-22T00:00:00Z', '2026-10-30T00:00:00Z')];
+  const fs = [f('HIZ023', 'High Surf Advisory', '2026-10-23T08:00:00Z', '2026-10-24T18:00:00Z'), f('HIZ053', 'High Surf Warning', '2026-10-22T00:00:00Z', '2026-10-30T00:00:00Z'), f('HIZ023', 'Red Flag Warning', '2026-10-22T00:00:00Z', '2026-10-30T00:00:00Z')];
   assert.equal(E.alertsForSite(fs, '2026-10-22').length, 0, 'the advisory starts after the 6-9 pm window of Oct 22 HST');
   const d23 = E.alertsForSite(fs, '2026-10-23');
   assert.equal(d23.length, 1); assert.equal(d23[0].severe, true);
@@ -89,7 +89,7 @@ test('decide: wind, rain, runoff and long swell each lift a calm night', () => {
   assert.equal(E.decide({ ...base, weather: { wind: { onshoreMph: 2 }, rainWindowMm: 6, rainPrior24Mm: 0 } }).state, 'ROUGH');
   const runoff = E.decide({ ...base, weather: { wind: { onshoreMph: 2 }, rainWindowMm: 0, rainPrior24Mm: 14 } });
   assert.equal(runoff.state, 'WATCH'); assert.ok(runoff.reasons.some((r) => /runoff/.test(r)));
-  const swell = E.decide({ nws: { lowFt: 1, highFt: 3 }, sea: { peakM: 0.3, percentile: 65, maxPeriodS: 15, periodS: 15 } });
+  const swell = E.decide({ nws: { lowFt: 1, highFt: 3 }, sea: { peakM: 0.5, percentile: 65, maxPeriodS: 15, periodS: 15 } });
   assert.equal(swell.state, 'WATCH');
   assert.equal(E.decide({ ...base, weather: { wind: { onshoreMph: -12 }, rainWindowMm: 0, rainPrior24Mm: 0 } }).state, 'GOOD', 'offshore wind does not downgrade');
 });
@@ -151,4 +151,12 @@ test('API handler: CORS, Vary, JSON, 204 on OPTIONS', async () => {
   const opt = { setHeader() {}, end() {}, statusCode: 0 };
   await handler({ headers: { origin: 'https://www.chrisizworski.com' }, method: 'OPTIONS', url: '/' }, opt);
   assert.equal(opt.statusCode, 204);
+});
+
+test('a rare-for-this-site but still small sea is not called moderate or rough (absolute floors)', () => {
+  const small = E.decide({ nws: { lowFt: 1, highFt: 3 }, sea: { peakM: 0.3, percentile: 95, maxPeriodS: 8, periodS: 8 } });
+  assert.equal(small.state, 'GOOD');
+  assert.equal(E.decide({ sea: { peakM: 0.5, percentile: 80, maxPeriodS: 8, periodS: 8 } }).state, 'WATCH');
+  assert.equal(E.decide({ sea: { peakM: 0.9, percentile: 95, maxPeriodS: 8, periodS: 8 } }).state, 'ROUGH');
+  assert.equal(E.decide({ sea: { peakM: 0.3, percentile: 80, maxPeriodS: 16, periodS: 16 } }).state, 'GOOD', 'long-period nudge also needs a real height');
 });

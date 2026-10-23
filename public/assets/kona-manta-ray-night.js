@@ -53,7 +53,7 @@
     const t = data.thresholds || {};
     const set = (id, v) => { const el = $(id); if (el && v != null) el.textContent = v; };
     set('#mnNwsMod', 4); set('#mnNwsLarge', 7); set('#mnModPct', t.modelModeratePct); set('#mnLargePct', t.modelLargePct);
-    set('#mnWind', t.onshoreWatchMph); set('#mnWindRough', t.onshoreRoughMph); set('#mnRain', t.rainWatchMm); set('#mnRainRough', t.rainRoughMm); set('#mnRunoff', t.runoffWatchMm);
+    set('#mnFloorMod', t.seaMinModerateM); set('#mnFloorLarge', t.seaMinLargeM); set('#mnWind', t.onshoreWatchMph); set('#mnWindRough', t.onshoreRoughMph); set('#mnRain', t.rainWatchMm); set('#mnRainRough', t.rainRoughMm); set('#mnRunoff', t.runoffWatchMm);
     $('#mnSources').innerHTML = (data.sources || []).map((s) => `<li><strong>${esc(s.name)}</strong><span>${esc(s.note || (s.asOf ? `As of ${stamp(s.asOf)}` : ''))}</span><em>${s.ok ? 'OK' : 'DOWN'}</em></li>`).join('');
     $('#mnFresh').textContent = `Updated ${stamp(data.updated)}. The cutoffs are unvalidated starting rules.`;
     $('#mnError').hidden = true;

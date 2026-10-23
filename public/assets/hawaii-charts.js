@@ -39,5 +39,40 @@
     });
     return s + '</svg>';
   }
-  window.HawaiiCharts = { ruler, grid };
+
+  /** hours: [{hstHour, rating}] -> one cell per hour, night hours shaded, a label every six hours. */
+  function strip(hours) {
+    if (!hours.length) return '';
+    const W = 420, cw = W / hours.length, H = 64;
+    const RC = { GOOD: '#2e7d57', FAIR: '#c58a1f', POOR: '#b23b3b' };
+    let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Summit viewing conditions, hour by hour" class="hc-svg">`;
+    hours.forEach((h, i) => {
+      const night = h.hstHour < 6 || h.hstHour >= 18;
+      s += `<g><rect x="${(i * cw).toFixed(1)}" y="14" width="${Math.max(cw - 1, 1).toFixed(1)}" height="26" rx="2" fill="${RC[h.rating] || '#cfd5d1'}"${night ? ' opacity=".62"' : ''}/><title>${h.hstHour}:00 HST: ${esc(h.rating)}${h.lowCloud != null ? `, low cloud ${h.lowCloud}%` : ''}${h.mm ? `, rain ${h.mm} mm` : ''}</title></g>`;
+      if (h.hstHour % 6 === 0) {
+        const lab = h.hstHour === 0 ? '12a' : h.hstHour === 12 ? '12p' : h.hstHour < 12 ? `${h.hstHour}a` : `${h.hstHour - 12}p`;
+        s += `<text x="${(i * cw).toFixed(1)}" y="56" class="hc-tick">${lab}</text><line x1="${(i * cw).toFixed(1)}" x2="${(i * cw).toFixed(1)}" y1="40" y2="46" stroke="#7c8a82"/>`;
+      }
+    });
+    return s + '</svg>';
+  }
+
+  /** values/labels -> vertical bars; opts.highlight is an index drawn in the accent colour, opts.line a reference value. */
+  function bars(values, labels, opts = {}) {
+    const W = 420, H = 150, L = 26, B = 24, T = 12, n = values.length;
+    const max = Math.max(opts.max || 0, ...values, opts.line || 0, 1) * 1.1;
+    const bw = (W - L - 4) / n, y = (v) => T + (1 - v / max) * (H - T - B);
+    let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(opts.label || 'Bar chart')}" class="hc-svg">`;
+    s += `<line x1="${L}" x2="${W - 4}" y1="${H - B}" y2="${H - B}" stroke="#9aa89f"/>`;
+    const ticks = [0, Math.round(max / 2), Math.round(max)];
+    ticks.forEach((t) => { s += `<text x="${L - 4}" y="${y(t) + 4}" class="hc-tick" text-anchor="end">${t}</text>`; });
+    values.forEach((v, i) => {
+      const x = L + i * bw + 1, top = y(v);
+      s += `<g><rect x="${x.toFixed(1)}" y="${top.toFixed(1)}" width="${Math.max(bw - 2, 1).toFixed(1)}" height="${Math.max(H - B - top, 0).toFixed(1)}" rx="2" fill="${i === opts.highlight ? '#b23b3b' : '#3d7a63'}"/><title>${esc(labels[i])}: ${v}${opts.unit || ''}</title></g>`;
+      if (labels[i] != null && (!opts.everyLabel || i % opts.everyLabel === 0)) s += `<text x="${(x + (bw - 2) / 2).toFixed(1)}" y="${H - 8}" class="hc-tick" text-anchor="middle">${esc(labels[i])}</text>`;
+    });
+    if (opts.line) s += `<line x1="${L}" x2="${W - 4}" y1="${y(opts.line)}" y2="${y(opts.line)}" stroke="#14201a" stroke-dasharray="4 3"/><text x="${L + 4}" y="${y(opts.line) - 4}" class="hc-tick" font-weight="700">${esc(opts.lineLabel || '')}</text>`;
+    return s + '</svg>';
+  }
+  window.HawaiiCharts = { ruler, grid, strip, bars };
 })();

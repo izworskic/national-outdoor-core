@@ -54,7 +54,9 @@ test('NPS Powell columns override open words in ramp notes, and risk never becom
   assert.equal(d.level,3531.42);
   assert.equal(d.levelDay,'2026-10-29');
   assert.equal(d.levelAgeDays,4);
-  assert.ok(d.ramps.length>=14);
+  assert.equal(d.ramps.length,13);
+  assert.deepEqual(d.otherFacilities.map(x=>x.name),['Castle Rock Cut','UDOT Ferry','Rainbow Bridge National Monument']);
+  assert.equal(d.ramps.some(x=>x.name==='Rainbow Bridge National Monument'),false);
   const main=d.ramps.find(x=>x.name==='Wahweap Main Launch Ramp');
   assert.equal(main.motorized,'CLOSED');
   assert.equal(main.nonMotorized,'AT YOUR OWN RISK');
@@ -127,7 +129,8 @@ test('core API returns a complete vessel-specific Powell decision',async()=>{
     await handler({url:'/api/breakout-live?id=lake-powell-ramp-status',query:{id:'lake-powell-ramp-status'},headers:{}},data);
     assert.equal(data.statusCode,200);
     assert.equal(data.body.ok,true);
-    assert.equal(data.body.ramps.length,16);
+    assert.equal(data.body.ramps.length,13);
+    assert.equal(data.body.otherFacilities.length,3);
     assert.equal(data.body.status,'VERIFY ELEVATION DATE');
     assert.equal(data.body.ramps.find(x=>x.name==='Wahweap Main Launch Ramp').motorized,'CLOSED');
   }finally{global.fetch=orig;}

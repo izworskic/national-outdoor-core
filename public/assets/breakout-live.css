@@ -37,3 +37,10 @@
 .tioga-hero-media img{display:block;width:100%;height:clamp(230px,34vw,410px);object-fit:cover;object-position:center 58%}
 .tioga-hero-media figcaption{font-size:12px;color:#52645b;background:#f9fbf9;padding:9px 15px}
 .tioga-hero-media figcaption a{font-weight:700}
+
+/* Launch decisions: conflict and incomplete evidence cannot look like OPEN. */
+.launch-verify{background:#fff9ee;border-color:#e6d3ab}
+.launch-verify .launch-status{background:#f4e6c9;color:#76531c}
+.ramps .mode-toggle{flex-wrap:wrap;margin:12px 0 8px;max-width:max-content}
+.launch-workbench .mode-toggle{flex-wrap:wrap}
+.ramps .ramp small{line-height:1.5}

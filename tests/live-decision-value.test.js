@@ -53,12 +53,12 @@ test('Lake Mead normalization never silently overrides current NPS OPEN with a t
   };
   const out=normalizers.normalizeMeadPayload(payload);
   const callville=out.launches.find(x=>x.name==='Callville Bay');
-  assert.equal(callville.motorizedCandidate,true);
+  assert.equal(callville.motorizedCandidate,false);
   assert.equal(callville.thresholdConflict,true);
-  assert.equal(callville.aboveMin,null);
-  assert.match(callville.note,/VERIFY: NPS currently lists motorized access OPEN/i);
+  assert.equal(callville.aboveMin,false);
+  assert.match(callville.note,/VERIFY: NPS lists motorized OPEN/i);
   assert.match(out.headline,/threshold conflict/i);
-  assert.equal(out.facts.find(x=>x.label==='Motorized candidates').value,'2');
+  assert.equal(out.facts.find(x=>x.label==='Motorized candidates').value,'1');
 });
 
 test('Yellowstone route presets evaluate projected seasonal windows without claiming a live all-clear',()=>{

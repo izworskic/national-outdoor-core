@@ -9,7 +9,7 @@ const cleanTable=[
 'Temple Bar Open Open Open 950 feet',
 'South Cove Closed Open Open 1,035 feet via primitive ramp; concrete closed',
 'Boulder Harbor Closed Closed Closed --- closed in 2021',
-'Government Wash Closed Closed Closed --- nonmotorized primitive day-use described',
+'Government Wash Closed Closed Closed --- The concrete ramp closed in 2001. A primitive ramp for non-motorized vessels is available for day use.',
 'Las Vegas Bay Closed Closed Closed ---',
 'Overton Beach Closed Closed Closed ---',
 'Lake Mohave Current Water Level'
@@ -23,6 +23,8 @@ test('NPS row data preserves vessel differences and explicit closures',()=>{
  assert.equal(x.find(r=>r.name==='Echo Bay').houseboats,'CLOSED');
  assert.equal(x.find(r=>r.name==='Echo Bay').motorized,'OPEN');
  assert.equal(x.find(r=>r.name==='Boulder Harbor').motorized,'CLOSED');
+ assert.equal(x.find(r=>r.name==='Government Wash').nonMotorized,'CLOSED');
+ assert.equal(x.find(r=>r.name==='Government Wash').primitiveNonMotorizedMention,true);
  assert.equal(x.find(r=>r.name==='Boulder Harbor').aboveMin,null);
  assert.equal(x.find(r=>r.name==='South Cove').minSafe,1035);
 });

@@ -32,7 +32,7 @@ const mead=[
   'Temple Bar Open Open Open 950 feet Open via concession managed Mobi Mat.',
   'South Cove Closed Open Open 1,035 feet via primitive ramp. Concrete ramp is closed.',
   'Boulder Harbor Closed Closed Closed --- The harbor is too shallow.',
-  'Government Wash Closed Closed Closed --- Primitive paddle day use mentioned in notes.',
+  'Government Wash Closed Closed Closed --- The concrete ramp closed in 2001. A primitive ramp for non-motorized vessels is available for day use.',
   'Las Vegas Bay Closed Closed Closed --- Marina relocated.',
   'Overton Beach Closed Closed Closed --- Ramp closed.',
   'Lake Mohave Current Water Level',

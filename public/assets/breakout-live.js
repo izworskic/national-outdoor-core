@@ -58,13 +58,13 @@
     },
     'lake-mead-access':{
       label:'Launch decision',title:'Choose the ramp, not just the lake',
-      action(d){const rows=Array.isArray(d.launches)?d.launches:[];const candidates=rows.filter(x=>x.motorizedCandidate).map(x=>x.name);if(candidates.length) return `For a motorized launch, start with ${candidates.slice(0,3).join(', ')}. The workbench below separates current NPS ramp status from the elevation threshold so you do not tow to a closed concrete ramp.`;return 'The current data does not produce a clean motorized-launch candidate. Use the NPS launch table before towing.';},
+      action(d){const rows=Array.isArray(d.launches)?d.launches:[];const candidates=rows.filter(x=>x.motorizedCandidate).map(x=>x.name);const conflicts=rows.filter(x=>x.thresholdConflict).map(x=>x.name);if(candidates.length) return `NPS publishes motorized access at ${candidates.slice(0,3).join(', ')} without a measured elevation conflict. ${conflicts.length?`${conflicts.join(', ')} need direct verification because NPS OPEN and elevation disagree. `:''}Check the table publication date, ramp surface and weather before towing.`;return 'No unconflicted motorized launch candidate is confirmed by the retrieved evidence. Check the dated NPS table and live ramp notes before towing.';},
       flips:['Portable mats, construction or concession operations can change a ramp independent of elevation.','Wind and storms can make an open launch a poor on-water decision.','A ramp can be open for small craft but unsuitable for your vessel or trailer.'],
       checks:['Choose motorized or non-motorized below.','Read the exact ramp note, not only the lake elevation.','Check wind/weather before leaving with the boat.']
     },
     'lake-powell-ramp-status':{
       label:'Ramp decision',title:'Turn today’s elevation into a short list of launch options',
-      action(d){const rows=Array.isArray(d.ramps)?d.ramps:[];const open=rows.filter(r=>r.aboveThreshold===true&&!/closed/i.test(r.current||''));const explicit=open.filter(r=>/open|operable|launch/i.test(r.current||''));const candidates=(explicit.length?explicit:open).slice(0,3).map(r=>r.name);if(candidates.length) return `Start your verification with ${candidates.join(', ')}. They are the strongest ramp candidates from current elevation and threshold data, but the NPS status text still controls.`;if(rows.length) return 'The current ramp table does not produce a clean motorized-launch candidate. Verify the NPS ramp table before towing to the lake.';return 'Ramp data is incomplete. Use the official NPS changing-lake-levels page before choosing a launch.';},
+      action(d){const rows=Array.isArray(d.ramps)?d.ramps:[];const candidates=rows.filter(r=>r.motorizedCandidate).slice(0,3).map(r=>r.name);const risk=rows.filter(r=>r.motorizedRisk).map(r=>r.name);if(candidates.length)return `NPS publishes motorized AVAILABLE at ${candidates.join(', ')}. ${d.levelAgeDays>2?'The published elevation is more than two days old, so recheck level and ramp operations. ':''}${risk.length?`${risk.join(', ')} is marked at your own risk, not fully available. `:''}Do not infer motorboat permission from paddlecraft notes.`;return 'No unconflicted motorized AVAILABLE row was found. Check the NPS vessel-specific table before towing.';},
       flips:['A ramp can be above its minimum elevation and still be closed or limited.','Plate mats, vessel limits and construction can change the usable ramp.','A small lake-level change can matter near a threshold.'],
       checks:['Use current status and minimum elevation together.','Check vessel-size or surface limitations.','Verify again before towing to a distant ramp.']
     }
@@ -100,15 +100,21 @@
   function renderMeadLaunches(d){
     if(id!=='lake-mead-access'||!Array.isArray(d.launches)||!d.launches.length) return;
     const section=ensureSection('launch-workbench');
-    section.innerHTML=`<div class="workbench-head"><div><p class="eyebrow">Launch workbench</p><h2>Where can your boat actually launch?</h2></div><div class="mode-toggle" role="group" aria-label="Vessel type"><button type="button" data-mode="motorized" class="active">Motorized</button><button type="button" data-mode="nonMotorized">Paddle / small craft</button></div></div><div id="meadLaunchResult"></div>`;
+    section.innerHTML='<div class="workbench-head"><div><p class="eyebrow">Launch workbench</p><h2>Which Lake Mead ramp fits your craft?</h2></div><div class="mode-toggle" role="group" aria-label="Vessel type"><button type="button" data-mode="motorized" class="active">Motorized</button><button type="button" data-mode="nonMotorized">Paddle / small craft</button></div></div><div id="meadLaunchResult" aria-live="polite"></div>';
     const out=section.querySelector('#meadLaunchResult');let mode='motorized';
+    const verdict=(x,key)=>{
+      if(x[key]==='CLOSED') return 'closed';
+      if(x[key]!=='OPEN'||x.aboveMin!==true||x.thresholdConflict&&key==='motorized')return 'verify';
+      return 'candidate';
+    };
     const draw=()=>{
-      const key=mode==='motorized'?'motorized':'nonMotorized';
-      const rows=[...d.launches].sort((a,b)=>{
-        const score=x=>(x[key]==='OPEN'?0:2)+(x.aboveMin===false?2:0)+(x.motorizedCandidate&&key==='motorized'?-1:0);
-        return score(a)-score(b);
-      });
-      out.innerHTML=`<div class="launch-list">${rows.map(x=>{const open=x[key]==='OPEN'&&x.aboveMin!==false;const cls=open?'candidate':'closed';const threshold=x.minSafe?`${x.minSafe.toLocaleString()} ft min`:'No numeric threshold';return `<article class="launch-row launch-${cls}"><div><span class="launch-status">${esc(x[key])}</span><strong>${esc(x.name)}</strong><p>${esc(x.note||'See current NPS ramp note.')}</p></div><div><b>${esc(threshold)}</b><small>${x.aboveMin===true?'current level above minimum':x.aboveMin===false?'current level below minimum':'level comparison unavailable'}</small></div></article>`;}).join('')}</div><p class="workbench-foot">Open status and elevation are separate gates. Local mat, construction, trailer and weather conditions can still change the answer.</p>`;
+      const rows=[...d.launches].sort((a,b)=>({candidate:0,verify:1,closed:2}[verdict(a,mode)]-({candidate:0,verify:1,closed:2}[verdict(b,mode)])));
+      out.innerHTML='<div class="launch-list">'+rows.map(x=>{
+        const tone=verdict(x,mode),threshold=x.minSafe?x.minSafe.toLocaleString()+' ft min':'No published numeric minimum';
+        const label=x[mode]+(tone==='verify'?' — VERIFY':'');
+        const levelNote=x.aboveMin===true?'measured level above minimum':x.aboveMin===false?'measured level below minimum':'no recent level comparison';
+        return '<article class="launch-row launch-'+tone+'"><div><span class="launch-status">'+esc(label)+'</span><strong>'+esc(x.name)+'</strong><p>'+esc(x.note||'Check NPS ramp note.')+'</p></div><div><b>'+esc(threshold)+'</b><small>'+esc(levelNote)+'</small></div></article>';
+      }).join('')+'</div><p class="workbench-foot">NPS vessel-specific status controls. A threshold conflict, unavailable level, mat, construction, or weather concern must be verified before launching. NPS table published '+esc(d.sourcePublishedDate||'date unknown')+'.</p>';
       window.va?.('event',{name:'breakout_launch_mode',data:{tool:id,mode}});
     };
     section.querySelectorAll('[data-mode]').forEach(btn=>btn.addEventListener('click',()=>{mode=btn.dataset.mode;section.querySelectorAll('[data-mode]').forEach(x=>x.classList.toggle('active',x===btn));draw();}));draw();
@@ -164,10 +170,28 @@
 
   function renderPowellPriority(d){
     if(id!=='lake-powell-ramp-status'||!ramps||!Array.isArray(d.ramps)) return;
-    const state=r=>{const t=String(r.current||'').toLowerCase();if(t.includes('closed')||r.aboveThreshold===false) return 'closed';if(/open|operable|launch/.test(t)&&r.aboveThreshold!==false) return 'candidate';if(r.aboveThreshold===true) return 'verify';return 'verify';};
-    const order={candidate:0,verify:1,closed:2};
-    const rows=[...d.ramps].sort((a,b)=>order[state(a)]-order[state(b)]);
-    ramps.innerHTML=`<div class="ramp-key"><span><i class="dot candidate"></i>candidate</span><span><i class="dot verify"></i>verify</span><span><i class="dot closed"></i>closed/below threshold</span></div>`+rows.map(x=>{const s=state(x);return `<div class="ramp ramp-${s}"><div><strong>${esc(x.name)}</strong><br><small>${esc(x.current)}</small></div><div><span class="ramp-state">${esc(s)}</span><br><strong>${x.min?esc(x.min+' ft'):'—'}</strong><br><small>${x.aboveThreshold===true?'above threshold':x.aboveThreshold===false?'below threshold':'current NPS status controls'}</small></div></div>`;}).join('');
+    let mode='motorized';
+    const verdict=(r,key)=>{
+      if(r[key]==='CLOSED')return 'closed';
+      // Old/missing elevation must not produce a green numeric clearance.
+      if(r[key]==='OPEN'&&r.aboveThreshold===true&&d.levelAgeDays!==null&&d.levelAgeDays<=2)return 'candidate';
+      return 'verify'; // AT YOUR OWN RISK, OPEN/threshold conflict, or unknown.
+    };
+    const draw=()=>{
+      const order={candidate:0,verify:1,closed:2};
+      const rows=[...d.ramps].sort((a,b)=>order[verdict(a,mode)]-order[verdict(b,mode)]);
+      ramps.innerHTML='<div class="mode-toggle" role="group" aria-label="Lake Powell vessel type"><button type="button" data-powell-mode="motorized"'+(mode==='motorized'?' class="active"':'')+'>Motorized</button><button type="button" data-powell-mode="houseboats"'+(mode==='houseboats'?' class="active"':'')+'>Houseboat</button><button type="button" data-powell-mode="nonMotorized"'+(mode==='nonMotorized'?' class="active"':'')+'>Paddlecraft</button></div>'+
+        '<div class="ramp-key"><span><i class="dot candidate"></i>NPS available + checked threshold</span><span><i class="dot verify"></i>verify / at your own risk</span><span><i class="dot closed"></i>NPS closed</span></div>'+
+        rows.map(x=>{
+          const state=verdict(x,mode),label=x[mode]||'VERIFY';
+          const min=Number.isFinite(x.min)?x.min.toLocaleString()+' ft':'No numeric minimum';
+          const levelNote=x.aboveThreshold===true?'above published minimum':x.aboveThreshold===false?'below published minimum':'elevation comparison unavailable';
+          return '<div class="ramp ramp-'+state+'"><div><strong>'+esc(x.name)+'</strong><br><span class="ramp-state">'+esc(label)+'</span><br><small>'+esc(x.note||'Check NPS ramp instructions.')+'</small></div><div><strong>'+esc(min)+'</strong><br><small>'+esc(levelNote)+'</small></div></div>';
+        }).join('')+
+        '<p class="workbench-foot">NPS water-level reading '+esc(d.levelObservedDate||'date unavailable')+'. A paddlecraft permission is not motorboat permission. Check ramp mats, vessel size and construction before travel.</p>';
+      ramps.querySelectorAll('[data-powell-mode]').forEach(btn=>btn.addEventListener('click',()=>{mode=btn.dataset.powellMode;draw();}));
+    };
+    draw();
   }
 
   function applyStatusTone(d){

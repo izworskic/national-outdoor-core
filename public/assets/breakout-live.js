@@ -104,7 +104,7 @@
     const out=section.querySelector('#meadLaunchResult');let mode='motorized';
     const verdict=(x,key)=>{
       if(x[key]==='CLOSED') return 'closed';
-      if(x[key]!=='OPEN'||x.aboveMin!==true||x.thresholdConflict&&key==='motorized')return 'verify';
+      if(x[key]!=='OPEN'||x.aboveMin!==true||d.sourceAgeDays===null||d.sourceAgeDays>14||(x.thresholdConflict&&key==='motorized'))return 'verify';
       return 'candidate';
     };
     const draw=()=>{

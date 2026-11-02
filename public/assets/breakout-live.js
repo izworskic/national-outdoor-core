@@ -108,7 +108,8 @@
       return 'candidate';
     };
     const draw=()=>{
-      const rows=[...d.launches].sort((a,b)=>({candidate:0,verify:1,closed:2}[verdict(a,mode)]-({candidate:0,verify:1,closed:2}[verdict(b,mode)])));
+      const rank={candidate:0,verify:1,closed:2};
+      const rows=[...d.launches].sort((a,b)=>rank[verdict(a,mode)]-rank[verdict(b,mode)]);
       out.innerHTML='<div class="launch-list">'+rows.map(x=>{
         const tone=verdict(x,mode),threshold=x.minSafe?x.minSafe.toLocaleString()+' ft min':'No published numeric minimum';
         const label=x[mode]+(tone==='verify'?' — VERIFY':'');

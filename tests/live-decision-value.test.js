@@ -44,7 +44,7 @@ test('Lake Mead parser preserves named NPS ramp statuses and thresholds',()=>{
 
 test('Lake Mead normalization never silently overrides current NPS OPEN with a threshold calculation',()=>{
   const payload={
-    status:'MOTORIZED LAUNCH OPTIONS FOUND',headline:'raw',facts:[{label:'Motorized candidates',value:'2'},{label:'Start with',value:'Hemenway'}],
+    status:'MOTORIZED LAUNCH OPTIONS FOUND',sourceFresh:true,headline:'raw',facts:[{label:'Motorized candidates',value:'2'},{label:'Start with',value:'Hemenway'}],
     launches:[
       {name:'Callville Bay',motorized:'OPEN',nonMotorized:'OPEN',minSafe:1065,aboveMin:false,motorizedCandidate:false,note:'NPS says open via Mobi Mat.'},
       {name:'Hemenway Harbor',motorized:'OPEN',nonMotorized:'OPEN',minSafe:1030,aboveMin:true,motorizedCandidate:true,note:'Pipe mat.'},

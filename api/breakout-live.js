@@ -36,13 +36,13 @@ module.exports = async function breakoutLiveHandler(req, res) {
       payload = rawPayload ? normalizers.normalizeReplacementPayload(id,rawPayload) : null;
     }
     if (payload) {
-      res.setHeader('Cache-Control','public, s-maxage=180, stale-while-revalidate=900');
+      res.setHeader('Cache-Control',id==='lake-mead-access'?'public, s-maxage=60, must-revalidate':'public, s-maxage=180, stale-while-revalidate=900');
       res.setHeader('Content-Type','application/json; charset=utf-8');
       res.statusCode = 200;
       return res.end(JSON.stringify(payload));
     }
   } catch (error) {
-    res.setHeader('Cache-Control','public, s-maxage=60, stale-while-revalidate=180');
+    res.setHeader('Cache-Control',id==='lake-mead-access'?'no-store':'public, s-maxage=60, stale-while-revalidate=180');
     res.setHeader('Content-Type','application/json; charset=utf-8');
     res.statusCode = error?.status === 400 ? 400 : 502;
     return res.end(JSON.stringify({ok:false,error:'Live source unavailable',detail:String(error?.message||error),updated:new Date().toISOString()}));

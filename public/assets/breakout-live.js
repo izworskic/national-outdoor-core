@@ -112,7 +112,9 @@
       const rows=[...d.launches].sort((a,b)=>rank[verdict(a,mode)]-rank[verdict(b,mode)]);
       out.innerHTML='<div class="launch-list">'+rows.map(x=>{
         const tone=verdict(x,mode),threshold=x.minSafe?x.minSafe.toLocaleString()+' ft min':'No published numeric minimum';
-        const label=x[mode]+(tone==='verify'?' — VERIFY':'');
+        const label=x.primitiveNonMotorizedMention&&mode==='nonMotorized'
+          ?'CONCRETE RAMP CLOSED · PRIMITIVE PADDLE OPTION NOTED'
+          :x[mode]+(tone==='verify'?' — VERIFY':'');
         const levelNote=x.aboveMin===true?'measured level above minimum':x.aboveMin===false?'measured level below minimum':'no recent level comparison';
         return '<article class="launch-row launch-'+tone+'"><div><span class="launch-status">'+esc(label)+'</span><strong>'+esc(x.name)+'</strong><p>'+esc(x.note||'Check NPS ramp note.')+'</p></div><div><b>'+esc(threshold)+'</b><small>'+esc(levelNote)+'</small></div></article>';
       }).join('')+'</div><p class="workbench-foot">NPS vessel-specific status controls. A threshold conflict, unavailable level, mat, construction, or weather concern must be verified before launching. NPS table published '+esc(d.sourcePublishedDate||'date unknown')+'.</p>';

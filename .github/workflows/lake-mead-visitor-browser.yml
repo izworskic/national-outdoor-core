@@ -1,0 +1,41 @@
+name: Lake Mead access visitor browser QA
+on:
+  pull_request:
+    paths:
+      - 'lib/lake-ramp-decisions.mjs'
+      - 'lib/breakout-live-value-normalizers.mjs'
+      - 'api/breakout-live.js'
+      - 'public/assets/breakout-live.js'
+      - 'tests/lake-ramp-source-reliability.test.js'
+      - 'scripts/verify-lake-mead-visitor-browser.cjs'
+      - '.github/workflows/lake-mead-visitor-browser.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  mobile-and-desktop:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Exercise source freshness, vessel and closure fixtures
+        run: node --test tests/lake-ramp-source-reliability.test.js
+      - name: Install isolated Chromium browser harness
+        run: |
+          mkdir -p /tmp/mead-playwright
+          npm install --prefix /tmp/mead-playwright --no-save --ignore-scripts playwright@1.58.2
+          echo "NODE_PATH=/tmp/mead-playwright/node_modules" >> "$GITHUB_ENV"
+          echo "CHROME_PATH=$(command -v google-chrome || command -v chromium-browser)" >> "$GITHUB_ENV"
+      - name: Verify Mead stale decisions and primitive paddling on mobile and desktop
+        run: node scripts/verify-lake-mead-visitor-browser.cjs
+      - name: Upload browser screenshots and report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lake-mead-visitor-browser
+          path: artifacts/lake-mead-visitor/
+          retention-days: 14
+          if-no-files-found: warn

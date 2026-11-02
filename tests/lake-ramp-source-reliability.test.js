@@ -81,7 +81,7 @@ test('dated USBR Lake Mead records ignore future NaN and do not pick unrelated l
   assert.equal(parseMeadElevation(usbr.replace('LAKE MEAD','LAKE MOHAVE')),null);
 });
 
-test('Mead NPS OPEN below 1065 ft is VERIFY, while distinct lower-threshold ramps remain candidates',async()=>{
+test('Mead NPS OPEN below 1065 ft is VERIFY, and dated lower-threshold OPEN ramps stay unconfirmed',async()=>{
   const {combineMeadEvidence}=await import('../lib/lake-ramp-decisions.mjs');
   const d=combineMeadEvidence(mead,usbr,new Date('2026-11-02T14:00:00Z'));
   assert.equal(d.launches.length,9);
@@ -95,9 +95,11 @@ test('Mead NPS OPEN below 1065 ft is VERIFY, while distinct lower-threshold ramp
   const south=d.launches.find(x=>x.name==='South Cove');
   assert.equal(south.houseboats,'CLOSED');
   assert.equal(south.motorized,'OPEN');
-  assert.equal(south.motorizedCandidate,true);
+  assert.equal(south.motorizedCandidate,false);
+  assert.equal(d.sourceFresh,false);
   const candidateNames=d.launches.filter(x=>x.motorizedCandidate).map(x=>x.name);
-  assert.deepEqual(candidateNames,['Echo Bay','Hemenway Harbor','Temple Bar','South Cove']);
+  assert.deepEqual(candidateNames,[]);
+  assert.equal(d.launches.find(x=>x.name==='Government Wash').primitiveNonMotorizedMention,true);
 });
 
 test('USBR outage does not erase NPS ramp rows or assert threshold clearance',async()=>{

@@ -1,0 +1,28 @@
+name: Lake Mead public access decision smoke
+on:
+  pull_request:
+    paths:
+      - 'scripts/check-mead-production-safety.mjs'
+      - '.github/workflows/lake-mead-production-smoke.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/check-mead-production-safety.mjs'
+      - '.github/workflows/lake-mead-production-smoke.yml'
+      - 'lib/lake-ramp-decisions.mjs'
+      - 'lib/breakout-live-value-normalizers.mjs'
+      - 'api/breakout-live.js'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate-public-visitors:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check both public endpoints and refuse stale ramp all-clear
+        run: node scripts/check-mead-production-safety.mjs

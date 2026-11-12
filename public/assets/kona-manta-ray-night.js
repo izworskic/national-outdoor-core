@@ -1,7 +1,7 @@
 (() => {
   const root = document.querySelector('[data-tool-id="kona-manta-ray-night"]');
   if (!root) return;
-  const OWNER = 'https://national-outdoor-core.vercel.app';
+  const OWNER = document.currentScript?.src ? new URL(document.currentScript.src).origin : 'https://national-outdoor-core.vercel.app';
   const TZ = 'Pacific/Honolulu';
   const $ = (s) => document.querySelector(s);
   const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -17,8 +17,9 @@
 
   let data = null, picked = '', loadSeq = 0, lastLoaded = 0;
 
+  $('#mnDays').setAttribute('role', 'group');
   function renderDays() {
-    $('#mnDays').innerHTML = data.nights.map((d) => `<button type="button" role="tab" class="bd-day${d.date === picked ? ' on' : ''}" aria-selected="${d.date === picked}" data-date="${esc(d.date)}"><b>${esc(d.label)}</b><small>${esc(dateLabel(d.date))}</small></button>`).join('');
+    $('#mnDays').innerHTML = data.nights.map((d) => `<button type="button"  class="bd-day${d.date === picked ? ' on' : ''}" aria-pressed="${d.date === picked}" data-date="${esc(d.date)}"><b>${esc(d.label)}</b><small>${esc(dateLabel(d.date))}</small></button>`).join('');
     $('#mnDays').querySelectorAll('.bd-day').forEach((b) => b.addEventListener('click', () => { picked = b.dataset.date; event('manta_night_picked', { days_ahead: data.nights.findIndex((d) => d.date === picked) }); render(); }));
   }
 
@@ -47,8 +48,9 @@
     const best = Math.min(...night.sites.map((s) => RANK[s.decision.state]));
     $('.live-card').setAttribute('data-state', best === 0 ? 'go' : night.sites.every((s) => s.decision.state === 'ROUGH') ? 'stop' : 'verify');
     $('#mnEyebrow').textContent = `${night.label} · ${dateLabel(night.date)} · 6 to 9 p.m. HST`;
-    $('#mnHeadline').textContent = data.headline;
-    $('#mnPlain').textContent = night.nwsCovered ? 'Rating for the evening selected below. The headline covers all four nights.' : 'This evening is beyond the NWS surf forecast, so its rating rests on the wave model, wind and rain. Treat it as a rough guide.';
+    const names = night.sites.filter((s) => RANK[s.decision.state] === best).map((s) => s.short || s.name).join(' and ');
+    $('#mnHeadline').textContent = best === 0 ? `${night.label}: calmer modeled seas at ${names}` : best === 1 ? `${night.label}: ask your operator about ${names}` : best === 3 ? `${night.label}: rough conditions at both sites` : `${night.label}: no clear recommendation`;
+    $('#mnPlain').textContent = night.nwsCovered ? 'This rating is for the selected evening, 6–9 p.m. HST. Your operator decides whether the trip runs; this does not predict manta sightings.' : 'This evening is beyond the NWS surf forecast, so its rating rests on the wave model, wind and rain. Treat it as a rough guide.';
     $('#mnSites').innerHTML = night.sites.map((s) => siteCard(s, night.nwsCovered)).join('');
     const HC = window.HawaiiCharts;
     if (HC && $('#mnRuler')) {
@@ -66,12 +68,23 @@
 
   async function load(bust) {
     const seq = ++loadSeq;
+    data = null;
+    $('.live-card').setAttribute('data-state', 'verify');
+    for (const id of ['mnSites', 'mnDays', 'mnRuler', 'mnGrid', 'mnSources']) $('#' + id).replaceChildren();
+    $('#mnHeadline').textContent = 'Updating the forecast…';
+    $('#mnFresh').textContent = 'Checking for a current forecast.';
+    $('#mnError').hidden = true;
     try {
-      const res = await fetch(`${OWNER}/api/kona-manta-ray-night?v=1${bust ? `&_=${Date.now()}` : ''}`, { headers: { Accept: 'application/json' } });
+      const res = await fetch(`${OWNER}/api/kona-manta-ray-night?v=1${bust ? `&_=${Date.now()}` : ''}`, { headers: { Accept: 'application/json' }, signal: AbortSignal.timeout(25000) });
       const p = await res.json();
       if (seq !== loadSeq) return;
       if (!res.ok || !p.ok) throw new Error(p.detail || p.error || `HTTP ${res.status}`);
-      if (!bust && Date.now() - Date.parse(p.updated) > 15 * 60000) return load(true);
+      const age = Date.now() - Date.parse(p.updated);
+      if (!Number.isFinite(age) || age < -5 * 60000 || age > 15 * 60000) {
+        if (!bust) return load(true);
+        throw new Error('The forecast could not be refreshed. Older ratings are hidden');
+      }
+      if (!Array.isArray(p.nights) || !p.nights.length) throw new Error('No forecast dates were returned');
       lastLoaded = Date.now();
       data = p;
       // Never keep showing a night that has passed: if the picked night is no longer offered, go to the first.
@@ -81,7 +94,8 @@
     } catch (e) {
       if (seq !== loadSeq) return;
       $('#mnHeadline').textContent = 'Could not load the sea conditions';
-      $('#mnPlain').textContent = 'Sources unreachable';
+      $('#mnPlain').textContent = 'No current rating is available. Use the official checks below.';
+      $('#mnFresh').textContent = 'Forecast unavailable; previous ratings have been removed.';
       const err = $('#mnError'); err.hidden = false;
       err.textContent = `${String(e.message || e)}. Check the National Weather Service Honolulu surf forecast (weather.gov/hfo) and ask your operator.`;
     }

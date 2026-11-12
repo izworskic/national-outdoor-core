@@ -172,5 +172,8 @@ const html = `<!doctype html>
 </body>
 </html>`;
 
-fs.writeFileSync(out, html);
+// Branch previews must exercise their own assets and API, not the production build.
+const assetOrigin = process.env.VERCEL_ENV === 'preview' && process.env.VERCEL_URL
+  ? new URL('https://' + process.env.VERCEL_URL).origin : 'https://national-outdoor-core.vercel.app';
+fs.writeFileSync(out, html.replaceAll('https://national-outdoor-core.vercel.app', assetOrigin));
 console.log('Generated Mauna Kea Tonight page.');

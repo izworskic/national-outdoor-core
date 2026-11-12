@@ -26,3 +26,5 @@
 /* far-off dates: the moon and daylight are the answer, so drop the weather-only sections */
 [data-horizon="far"] .mk-halves,[data-horizon="far"] .mk-road,[data-horizon="far"] .mk-forecaster{display:none}
 .live-card[data-state="info"]{border-color:#c4d3de;background:#fbfdff}.live-card[data-state="info"] .mk-plain{color:#274a6b}
+/* Explicitly hide withheld forecasts even where layout classes use display:grid. */
+.maunakea [hidden]{display:none!important}

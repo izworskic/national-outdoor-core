@@ -61,7 +61,7 @@ const html = `<!doctype html>
 </section>
 
 <section class="live-card" aria-labelledby="mnHeadline">
-<div class="bd-days" id="mnDays" role="tablist" aria-label="Choose an evening"></div>
+<div class="bd-days" id="mnDays" role="group" aria-label="Choose an evening"></div>
 <div class="live-row"><div>
 <p class="eyebrow" id="mnEyebrow">Checking the sea</p>
 <h2 class="status" id="mnHeadline">Reading the surf forecast&hellip;</h2>
@@ -126,5 +126,8 @@ const html = `<!doctype html>
 </body>
 </html>`;
 
-fs.writeFileSync(out, html);
+// Branch previews must exercise their own assets and API, not the production build.
+const assetOrigin = process.env.VERCEL_ENV === 'preview' && process.env.VERCEL_URL
+  ? new URL('https://' + process.env.VERCEL_URL).origin : 'https://national-outdoor-core.vercel.app';
+fs.writeFileSync(out, html.replaceAll('https://national-outdoor-core.vercel.app', assetOrigin));
 console.log('Generated Kona Manta Night page.');

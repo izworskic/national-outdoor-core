@@ -24,7 +24,8 @@
       plan: 'Walk the cultural grounds, then take a picnic to the designated picnic area. Follow the park’s walking tour at your own pace.',
       access: 'Park at the national historical park. Ocean entry is not allowed inside the park; nearby Two Step is outside its grounds. This is a land-based visit.',
       source: 'https://www.nps.gov/puho/planyourvisit/things2do.htm',
-      check: 'https://www.nps.gov/puho/planyourvisit/conditions.htm', map: '19.422750,-155.909873'
+      check: 'https://www.nps.gov/puho/planyourvisit/conditions.htm', map: '19.422750,-155.909873',
+      tool: '#south-kona-access?plan=twostep', toolLabel: 'Looking for Two Step? Check its separate access'
     },
     {
       id: 'kaloko', name: 'Kaloko-Honokōhau', region: 'Kailua-Kona', interests: ['culture', 'shore'],

@@ -41,4 +41,21 @@ Full `npm run verify:all` passed locally (231 tests plus the smoke gate) on Node
 
 Known limits: six places is a starter collection, not comprehensive island coverage. Closure sources require the visitor's fresh check. No live road ETA, entrance capacity or beach-level swimming clearance. The long-range Kīlauea episode-history model and Haleakalā engine are outside this change.
 
-Next action: complete mobile and desktop acceptance on the protected preview, then merge PR #45. The next expansion candidate is South Kona shore access, including separate Kealakekua kayak launch/landing permissions, before adding a snorkeling-specific recommender.
+## South Kona expansion: research translated into six visit plans
+
+The second pass adds `#south-kona-access` within Beach Day. Visitors select a rental, guided tour, private vessel, hike, Two Step snorkeling visit, or national park cultural visit. Each result explains the relevant approach, permission, parking limits and next action. The Puʻuhonua outing links directly to the separate Two Step plan. Selections are shareable and same-page links restore the selected plan.
+
+The module remains independent of forecast availability. Generated HTML includes readable access essentials for visitors without JavaScript; existing mirrored shells receive the chooser through the owner-hosted beach script. No extra canonical page, live access assertion, invented self-launch pin, or vendor endorsement. Only the cultural park visit gets the previously verified NPS entrance coordinates. The guide carries its review date and explicitly requests an updated review after 30 days; this is an age warning, not an automated source refresh.
+
+### Source reconciliation, November 12, 2026
+
+- State Parks manager page: https://dlnr.hawaii.gov/dsp/parks/hawaii/kealakekua-bay-state-historical-park/ . Establishes rental permit verification and the upland trail approach. Its narrative mentions three tour companies, but its table lists two. Do not publish a count or infer a missing company. Link the authority's list and have the visitor confirm their exact booking.
+- DLNR permit portal: https://outdoor.hawaii.gov/state-parks/permit/ . Its Kealakekua section expressly separates vessel transit from written landing approval and requests applications at least 14 days ahead. The application is not an approval. Unrelated placeholder text elsewhere on that portal is not used.
+- State Parks permit guidance: https://dlnr.hawaii.gov/dsp/parks/state-parks-special-use-permit/ . Explains guided-tour permission to launch at the wharf and land under conditions. This is an exception for authorized tours, not a blanket launch recommendation for rentals or private vessels.
+- The park page's form introduction says 2025, while non-commercial links say 2027 and commercial links say 2026. No form is copied or labeled current by this tool. Visitors use official instructions and contact the permit office when visit-year requirements are unclear.
+- NPS: https://www.nps.gov/puho/planyourvisit/snorkeling.htm . Separates County-managed Hōnaunau Bay access from national park entry, describes the signed one-way approach and requests snorkeling parking outside the park gate. The linked County shoreline page returned 403 to retrieval; no individual roadside stall, availability, fee or current facility status is asserted. The old sunscreen paragraph is not used.
+- DLNR 2023 master plan and historical enforcement releases corroborate the transit/landing distinction but do not establish today's operator permissions. Obsolete third-party permit PDFs are excluded.
+
+Seven additional regression tests exercise all six decisions, replace/reset behavior, bookmark and same-page link restoration, malformed input, review expiry, restricted map destinations and progressive enhancement of generated HTML. Browser layout verification remains blocked by preview access. Next release action is mobile/desktop acceptance on an accessible preview, then review PR #45 for merge.
+
+Second-pass validation: `npm run verify:all` passed with all 238 tests and smoke score 100, no failures. `git diff --check` passed. Seven new tests supplement the original 11 Hawaii behavior tests. Unrelated generated Haleakalā, smoke and other tool output is excluded from the commit.

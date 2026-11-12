@@ -109,5 +109,8 @@
   const outingScript = document.createElement('script');
   outingScript.src = OWNER + '/assets/big-island-outings.js';
   document.head.append(outingScript);
+  const accessScript = document.createElement('script');
+  accessScript.src = OWNER + '/assets/south-kona-access.js';
+  document.head.append(accessScript);
   load();
 })();

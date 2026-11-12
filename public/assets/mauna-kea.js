@@ -200,6 +200,10 @@
       event('maunakea_loaded', { state: p.decision?.state, mode: p.mode });
     } catch (e) {
       if (seq !== loadSeq) return;
+      lastLoaded = Date.now();
+      $('.live-card').setAttribute('data-state', 'verify');
+      for (const id of ['mkFacts', 'mkReasons', 'mkPlan', 'mkSources']) $('#' + id).replaceChildren();
+      for (const css of ['.mk-halves', '.mk-road', '.mk-moon-section', '#mk-forecaster']) $(css).hidden = true;
       $('#mkStatus').textContent = 'Could not load the evening';
       $('#mkPlain').textContent = 'No current rating is available. Check the official road and visitor information before leaving.';
       $('#mkPlan').textContent = '';

@@ -17,7 +17,7 @@
 
   $('#bdDays').setAttribute('role', 'group');
   function renderDays() {
-    $('#bdDays').innerHTML = data.days.map((d) => `<button type="button"  class="bd-day${d.date === picked ? ' on' : ''}" aria-pressed="${d.date === picked}" data-date="${esc(d.date)}"><b>${esc(d.label)}</b><small>${esc(dateLabel(d.date))}</small></button>`).join('');
+    $('#bdDays').innerHTML = data.days.map((d) => `<button type="button" class="bd-day${d.date === picked ? ' on' : ''}" aria-pressed="${d.date === picked}" data-date="${esc(d.date)}"><b>${esc(d.label)}</b><small>${esc(dateLabel(d.date))}</small></button>`).join('');
     $('#bdDays').querySelectorAll('.bd-day').forEach((b) => b.addEventListener('click', () => { picked = b.dataset.date; event('beachday_day_picked', { days_ahead: data.days.findIndex((d) => d.date === picked) }); render(); }));
   }
 
@@ -67,6 +67,7 @@
     $('.live-card').setAttribute('data-state', 'verify');
     for (const id of ['bdCoasts', 'bdDays', 'bdRuler', 'bdGrid', 'bdSources']) $('#' + id).replaceChildren();
     $('#bdHeadline').textContent = 'Updating the forecast…';
+    $('#bdPlain').textContent = 'Checking the selected date.';
     $('#bdFresh').textContent = 'Checking for a current forecast.';
     $('#bdError').hidden = true;
     try {
@@ -89,11 +90,16 @@
       event('beachday_loaded', { calm: data.days[0].coasts.filter((c) => c.decision.state === 'CALM').length });
     } catch (e) {
       if (seq !== loadSeq) return;
+      lastLoaded = Date.now();
+      data = null;
+      $('.live-card').setAttribute('data-state', 'verify');
+      for (const id of ['bdCoasts', 'bdDays', 'bdRuler', 'bdGrid', 'bdSources']) $('#' + id).replaceChildren();
       $('#bdHeadline').textContent = 'Could not load the surf';
       $('#bdPlain').textContent = 'No current rating is available. Use the official checks below.';
       $('#bdFresh').textContent = 'Forecast unavailable; previous ratings have been removed.';
       const err = $('#bdError'); err.hidden = false;
       err.textContent = `${String(e.message || e)}. Check the National Weather Service Honolulu surf forecast (weather.gov/hfo) and look at the water.`;
+      err.append(' ', Object.assign(document.createElement('a'), { href: 'https://www.weather.gov/hfo/', textContent: 'Open the official Honolulu forecast' }));
     }
   }
   $('#bdRefresh').addEventListener('click', () => { event('beachday_refresh'); load(true); });

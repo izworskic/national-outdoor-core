@@ -125,3 +125,13 @@ test('outing chooser restores sharable filters and explains an empty match', () 
     assert.equal(doc.querySelectorAll('#island-outings').length, 1);
   } finally { dom.window.close(); }
 });
+test('a render error cannot leave partially rendered favorable coast cards', async () => {
+  const p = beach(); p.sources = [{ name: 'Bad timestamp', asOf: 'invalid', ok: true }];
+  const dom = page('big-island-beach-day', async () => response(p));
+  try {
+    dom.window.eval(asset('big-island-beach-day')); await flush();
+    assert.equal(dom.window.document.querySelector('#bdCoasts').textContent, '');
+    assert.equal(dom.window.document.querySelector('.live-card').dataset.state, 'verify');
+    assert.equal(dom.window.document.querySelector('#bdError').hidden, false);
+  } finally { dom.window.close(); }
+});

@@ -122,6 +122,7 @@
       if(p.hourlyVersion!==1||!p.days?.length){clear('Hourly samples are not available in this forecast. Use the daily comparison below.');return;}
       payload=p;day=p.days.find(d=>d.date===date)||p.days[0];
       if(!initialized){applyHash();initialized=true;}
+      else if(win.location.hash.startsWith('#coast-hours?'))save();
       render();
     }
     dateSelect.addEventListener('change',()=>{if(!payload)return;day=payload.days.find(d=>d.date===dateSelect.value)||day;save();render();onDate(day.date);});

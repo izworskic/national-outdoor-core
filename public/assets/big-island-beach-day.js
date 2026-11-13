@@ -13,7 +13,7 @@
   const DIRS = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
   const compass = (deg) => DIRS[Math.round((((deg % 360) + 360) % 360) / 22.5) % 16];
 
-  let data = null, picked = '', loadSeq = 0, lastLoaded = 0;
+  let data = null, picked = '', loadSeq = 0, lastLoaded = 0, hourlyView = null;
 
   $('#bdDays').setAttribute('role', 'group');
   function renderDays() {
@@ -59,11 +59,13 @@
     $('#bdSources').innerHTML = (data.sources || []).map((s) => `<li><strong>${esc(s.name)}</strong><span>${esc(s.note || (s.asOf ? `As of ${stamp(s.asOf)}` : ''))}</span><em>${s.ok ? 'OK' : 'DOWN'}</em></li>`).join('');
     $('#bdFresh').textContent = `Updated ${stamp(data.updated)}. The step cutoffs are unvalidated starting rules.`;
     $('#bdError').hidden = true;
+    hourlyView?.update(data, picked);
   }
 
   async function load(bust) {
     const seq = ++loadSeq;
     data = null;
+    hourlyView?.clear();
     $('.live-card').setAttribute('data-state', 'verify');
     for (const id of ['bdCoasts', 'bdDays', 'bdRuler', 'bdGrid', 'bdSources']) $('#' + id).replaceChildren();
     $('#bdHeadline').textContent = 'Updating the forecast…';
@@ -85,6 +87,10 @@
       lastLoaded = Date.now();
       data = p;
       // Never keep showing a day that has passed: if the picked day is no longer offered, go to the first.
+      if (!picked && location.hash.startsWith('#coast-hours?')) {
+        const date = new URLSearchParams(location.hash.split('?')[1]).get('date');
+        if (data.days.some(d => d.date === date)) picked = date;
+      }
       if (!picked || !data.days.some((d) => d.date === picked)) picked = data.days[0].date;
       render();
       event('beachday_loaded', { calm: data.days[0].coasts.filter((c) => c.decision.state === 'CALM').length });
@@ -92,6 +98,7 @@
       if (seq !== loadSeq) return;
       lastLoaded = Date.now();
       data = null;
+      hourlyView?.clear('Hourly forecasts could not be refreshed. Previous charts have been removed.');
       $('.live-card').setAttribute('data-state', 'verify');
       for (const id of ['bdCoasts', 'bdDays', 'bdRuler', 'bdGrid', 'bdSources']) $('#' + id).replaceChildren();
       $('#bdHeadline').textContent = 'Could not load the surf';
@@ -112,5 +119,13 @@
   const accessScript = document.createElement('script');
   accessScript.src = OWNER + '/assets/south-kona-access.js';
   document.head.append(accessScript);
+  const hourlyScript = document.createElement('script');
+  hourlyScript.src = OWNER + '/assets/coast-hourly.js';
+  hourlyScript.onload = () => {
+    hourlyView = window.CoastHourly?.create(document, date => { if (data && picked !== date) { picked = date; render(); } });
+    if (data) hourlyView?.update(data, picked);
+    else hourlyView?.clear('Hourly forecasts are unavailable while the forecast loads.');
+  };
+  document.head.append(hourlyScript);
   load();
 })();

@@ -71,7 +71,7 @@ const html = `<!doctype html>
 <div class="error" id="bdError" hidden></div>
 </section>
 
-<section class="bd-coasts" aria-label="Coasts, calmest first"><div id="bdCoasts" class="bd-grid"></div></section>
+<section id="coast-hours" class="coast-hours" aria-labelledby="hourly-heading"><h2 id="hourly-heading">Which coast, which hour?</h2><p>Compare hourly wave and wind model samples for six Big Island coasts. The interactive charts load with the forecast.</p><noscript><p>JavaScript is needed to load the charts. Check the <a href="https://www.weather.gov/hfo/">official surf forecast and alerts</a> and <a href="https://www.pacioos.hawaii.edu/waves/model-hawaiiisland/">PacIOOS wave forecast</a>.</p></noscript></section>\n\n<section class="bd-coasts" aria-label="Coasts, calmest first"><div id="bdCoasts" class="bd-grid"></div></section>
 
 <section class="hc-wrap panel" aria-labelledby="bdChartHead"><h2 id="bdChartHead">How big is the swell, for each coast?</h2><p>The black dot is the wave model's forecast peak for the day you picked. The bands are that coast's own 2016 to 2025 daytime record: green is a typical day, tan is bigger than typical, red is in its roughest tenth of days. A coast can look small in feet and still be unusual for it.</p><div id="bdRuler"></div><div class="hc-key"><span><i style="background:#dcece3"></i>typical or smaller</span><span><i style="background:#f0e3c4"></i>bigger than typical</span><span><i style="background:#efd2d2"></i>roughest 10% of days</span></div><h2 id="bdGridHead" style="margin-top:22px">The next four days at a glance</h2><div id="bdGrid"></div></section>
 ${access.shell()}

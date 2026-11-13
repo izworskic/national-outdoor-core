@@ -1,7 +1,7 @@
 (() => {
   const root = document.querySelector('[data-tool-id="mauna-kea-tonight"]');
   if (!root) return;
-  const OWNER = 'https://national-outdoor-core.vercel.app';
+  const OWNER = document.currentScript?.src ? new URL(document.currentScript.src).origin : 'https://national-outdoor-core.vercel.app';
   const TZ = 'Pacific/Honolulu';
   const $ = (s) => document.querySelector(s);
   const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -169,8 +169,14 @@
     const seq = ++loadSeq;
     const qs = `${chosen ? `&date=${encodeURIComponent(chosen)}` : ''}${bust ? `&_=${Date.now()}` : ''}`;
     $('#mkStatus').textContent = 'Checking the summit…';
+    $('.live-card').setAttribute('data-state', 'verify');
+    for (const id of ['mkFacts', 'mkReasons', 'mkPlan', 'mkSources']) $('#' + id).replaceChildren();
+    for (const css of ['.mk-halves', '.mk-road', '.mk-moon-section', '#mk-forecaster']) $(css).hidden = true;
+    $('#mkPlain').textContent = 'Checking the selected evening.';
+    $('#mkFresh').textContent = 'Refreshing the forecast; previous ratings are hidden.';
+    $('#mkError').hidden = true;
     try {
-      const res = await fetch(`${OWNER}/api/mauna-kea?v=2${qs}`, { headers: { Accept: 'application/json' } });
+      const res = await fetch(`${OWNER}/api/mauna-kea?v=2${qs}`, { headers: { Accept: 'application/json' }, signal: AbortSignal.timeout(25000) });
       const p = await res.json();
       if (seq !== loadSeq) return;
       if (res.status === 400 && /already passed/i.test(p.detail || '')) {
@@ -183,14 +189,23 @@
       }
       if (!res.ok || !p.ok) throw new Error(p.detail || p.error || `HTTP ${res.status}`);
       // A shared cache can hand back an old copy. If what we got is more than 15 minutes old, ask once for a fresh one.
-      if (!bust && Date.now() - Date.parse(p.updated) > 15 * 60000) return load(true);
+      const age = Date.now() - Date.parse(p.updated);
+      if (!Number.isFinite(age) || age < -5 * 60000 || age > 15 * 60000) {
+        if (!bust) return load(true);
+        throw new Error('The forecast could not be refreshed. Older ratings are hidden');
+      }
       lastLoaded = Date.now();
       render(p);
+      for (const css of ['.mk-halves', '.mk-road', '.mk-moon-section']) $(css).hidden = false;
       event('maunakea_loaded', { state: p.decision?.state, mode: p.mode });
     } catch (e) {
       if (seq !== loadSeq) return;
+      lastLoaded = Date.now();
+      $('.live-card').setAttribute('data-state', 'verify');
+      for (const id of ['mkFacts', 'mkReasons', 'mkPlan', 'mkSources']) $('#' + id).replaceChildren();
+      for (const css of ['.mk-halves', '.mk-road', '.mk-moon-section', '#mk-forecaster']) $(css).hidden = true;
       $('#mkStatus').textContent = 'Could not load the evening';
-      $('#mkPlain').textContent = 'Sources unreachable';
+      $('#mkPlain').textContent = 'No current rating is available. Check the official road and visitor information before leaving.';
       $('#mkPlan').textContent = '';
       const err = $('#mkError'); err.hidden = false;
       err.textContent = `${String(e.message || e)}. Check the Maunakea Weather Center directly before you drive: mkwc.ifa.hawaii.edu.`;
@@ -204,5 +219,10 @@
   const hash = /#date=(\d{4}-\d{2}-\d{2})/.exec(location.hash)?.[1];
   chosen = hash || '';
   buildPicker(ymdHst(new Date())); // provisional until the server says what tonight is
+  const visit = document.createElement('section');
+  visit.className = 'panel';
+  visit.setAttribute('aria-labelledby', 'mkVisitHeading');
+  visit.innerHTML = `<h2 id="mkVisitHeading">Sunset up high. Stars at the visitor station.</h2><p>The summit road requires four-wheel drive, and summit visiting hours end 30 minutes after sunset. Plan your stargazing at the Onizuka Visitor Information Station, at 9,200 feet. Its published daily hours are 9 a.m. to 9 p.m.; check for changes before leaving.</p><p><a href="https://hilo.hawaii.edu/maunakea/visitor-information/station">Visitor station hours and road updates</a> · <a href="https://www.google.com/maps/search/?api=1&amp;query=Onizuka+Center+for+International+Astronomy">Find the visitor station on Google Maps</a></p><p>The moon chart describes the whole astronomical night, including hours outside visitor access. A long moon-free night is not permission to remain after closing.</p>`;
+  $('.mk-moon-section').before(visit);
   load();
 })();

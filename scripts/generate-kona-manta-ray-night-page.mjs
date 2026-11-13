@@ -61,7 +61,7 @@ const html = `<!doctype html>
 </section>
 
 <section class="live-card" aria-labelledby="mnHeadline">
-<div class="bd-days" id="mnDays" role="tablist" aria-label="Choose an evening"></div>
+<div class="bd-days" id="mnDays" role="group" aria-label="Choose an evening"></div>
 <div class="live-row"><div>
 <p class="eyebrow" id="mnEyebrow">Checking the sea</p>
 <h2 class="status" id="mnHeadline">Reading the surf forecast&hellip;</h2>
@@ -87,7 +87,7 @@ const html = `<!doctype html>
 <p>No score and no hidden weighting. Each site gets one of three steps for the 6 to 9 p.m. window, from the worst signal available.</p>
 <ol class="bd-rules">
 <li><b>An active High Surf Advisory or Warning, or a Flash Flood Warning</b>, for Kona is a rough night. The National Weather Service decides this, not the tool.</li>
-<li><b>The NWS Surf Zone Forecast</b> for west-facing leeward shores gives feet for the day. A high end of <span id="mnNwsMod">4</span> feet or more is moderate and <span id="mnNwsLarge">7</span> feet or more is large.</li>
+<li><b>The NWS Surf Zone Forecast</b> for west-facing leeward shores gives a daytime or overnight range. The period is labeled on each site card. A high end of <span id="mnNwsMod">4</span> feet or more is moderate and <span id="mnNwsLarge">7</span> feet or more is large.</li>
 <li><b>The wave model</b> (PacIOOS SWAN) peak height from 6 to 9 p.m. is compared with every evening at that site from 2016 to 2025. Rougher than <span id="mnModPct">70</span> percent of them is moderate and rougher than <span id="mnLargePct">90</span> percent is large, but only if the wave is also at least <span id="mnFloorMod">0.4</span> m (moderate) or <span id="mnFloorLarge">0.8</span> m (large). Garden Eel Cove is so sheltered that its roughest evenings are still small, and the floors stop a small sea being called rough.</li>
 <li><b>Wind, rain and runoff.</b> Wind blowing onto the shore at <span id="mnWind">15</span> mph or more raises the step, and <span id="mnWindRough">25</span> mph or more makes it rough. Rain in the evening window at <span id="mnRain">0.5</span> mm or more raises it, and <span id="mnRainRough">4</span> mm or more makes it rough. More than <span id="mnRunoff">10</span> mm in the 24 hours before raises it, because runoff can cloud the water.</li>
 <li><b>Long-period swell</b> of 14 seconds or more nudges a calm night to moderate, because surge outruns the wave height.</li>
@@ -126,5 +126,8 @@ const html = `<!doctype html>
 </body>
 </html>`;
 
-fs.writeFileSync(out, html);
+// Branch previews must exercise their own assets and API, not the production build.
+const assetOrigin = process.env.VERCEL_ENV === 'preview' && process.env.VERCEL_URL
+  ? new URL('https://' + process.env.VERCEL_URL).origin : 'https://national-outdoor-core.vercel.app';
+fs.writeFileSync(out, html.replaceAll('https://national-outdoor-core.vercel.app', assetOrigin));
 console.log('Generated Kona Manta Night page.');

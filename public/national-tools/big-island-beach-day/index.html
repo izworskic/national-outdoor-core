@@ -17,13 +17,15 @@
 <meta name="google-adsense-account" content="ca-pub-8222782620788075">
 <link rel="stylesheet" href="https://national-outdoor-core.vercel.app/assets/breakout-live.css">
 <link rel="stylesheet" href="https://national-outdoor-core.vercel.app/assets/big-island-beach-day.css">
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://chrisizworski.com/#website","url":"https://chrisizworski.com/","name":"Chris Izworski"},{"@type":"WebApplication","@id":"https://chrisizworski.com/national-tools/big-island-beach-day/#app","name":"Big Island Beach Day","applicationCategory":"TravelApplication","operatingSystem":"Any","url":"https://chrisizworski.com/national-tools/big-island-beach-day/","description":"Which Big Island coast has calm water today? One call per coast from the NWS surf forecast, high surf alerts, the wave model and the wind."},{"@type":"WebPage","@id":"https://chrisizworski.com/national-tools/big-island-beach-day/#page","url":"https://chrisizworski.com/national-tools/big-island-beach-day/","name":"Big Island Beach Day","isPartOf":{"@id":"https://chrisizworski.com/#website"},"mainEntity":{"@id":"https://chrisizworski.com/national-tools/big-island-beach-day/#app"},"dateModified":"2026-10-22","inLanguage":"en-US"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://chrisizworski.com/#website","url":"https://chrisizworski.com/","name":"Chris Izworski"},{"@type":"WebApplication","@id":"https://chrisizworski.com/national-tools/big-island-beach-day/#app","name":"Big Island Beach Day","applicationCategory":"TravelApplication","operatingSystem":"Any","url":"https://chrisizworski.com/national-tools/big-island-beach-day/","description":"Which Big Island coast has calm water today? One call per coast from the NWS surf forecast, high surf alerts, the wave model and the wind."},{"@type":"WebPage","@id":"https://chrisizworski.com/national-tools/big-island-beach-day/#page","url":"https://chrisizworski.com/national-tools/big-island-beach-day/","name":"Big Island Beach Day","isPartOf":{"@id":"https://chrisizworski.com/#website"},"mainEntity":{"@id":"https://chrisizworski.com/national-tools/big-island-beach-day/#app"},"dateModified":"2026-11-12","inLanguage":"en-US"}]}</script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y5D2V2W7HN"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-Y5D2V2W7HN');</script>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8222782620788075" crossorigin="anonymous"></script>
 <script defer src="/_vercel/insights/script.js"></script>
 <script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments)};</script>
+<script defer src="https://national-outdoor-core.vercel.app/assets/hawaii-charts.js"></script>
 <script defer src="https://national-outdoor-core.vercel.app/assets/big-island-beach-day.js"></script>
+<script defer src="https://national-outdoor-core.vercel.app/assets/breakout-value.js"></script>
 </head>
 <body class="beachday" data-tool-id="big-island-beach-day">
 <header class="site-header"><a class="brand" href="/">Chris Izworski</a><nav class="nav"><a href="/tools/">Tools</a><a href="/national-tools/">National tools</a><a href="/national-tools/live-decisions/">Live destinations</a></nav></header>
@@ -37,7 +39,7 @@
 </section>
 
 <section class="live-card" aria-labelledby="bdHeadline">
-<div class="bd-days" id="bdDays" role="tablist" aria-label="Choose a day"></div>
+<div class="bd-days" id="bdDays" role="group" aria-label="Choose a day"></div>
 <div class="live-row"><div>
 <p class="eyebrow" id="bdEyebrow">Checking the water</p>
 <h2 class="status" id="bdHeadline">Reading the surf forecast&hellip;</h2>
@@ -49,6 +51,8 @@
 
 <section class="bd-coasts" aria-label="Coasts, calmest first"><div id="bdCoasts" class="bd-grid"></div></section>
 
+<section class="hc-wrap panel" aria-labelledby="bdChartHead"><h2 id="bdChartHead">How big is the swell, for each coast?</h2><p>The black dot is the wave model's forecast peak for the day you picked. The bands are that coast's own 2016 to 2025 daytime record: green is a typical day, tan is bigger than typical, red is in its roughest tenth of days. A coast can look small in feet and still be unusual for it.</p><div id="bdRuler"></div><div class="hc-key"><span><i style="background:#dcece3"></i>typical or smaller</span><span><i style="background:#f0e3c4"></i>bigger than typical</span><span><i style="background:#efd2d2"></i>roughest 10% of days</span></div><h2 id="bdGridHead" style="margin-top:22px">The next four days at a glance</h2><div id="bdGrid"></div></section>
+<section id="south-kona-access" class="south-kona-access" aria-labelledby="kona-access-heading"><div class="outing-intro"><p class="eyebrow">Two bays. Different ways in.</p><h2 id="kona-access-heading">Plan your South Kona shore visit</h2><p>For Kealakekua Bay, crossing the water, launching a kayak and landing near the monument are separate permissions. At Hōnaunau, Two Step snorkeling and a national park visit use different access.</p></div><div class="kona-access-controls"></div><div class="kona-access-result"></div><details class="kona-access-basics"><summary>Read the access essentials</summary><p>A Kealakekua rental needs a permitted vessel and a lawful launch. A transit permit alone does not authorize a Kaʻawaloa landing. Start with <a href="https://dlnr.hawaii.gov/dsp/parks/hawaii/kealakekua-bay-state-historical-park/">State Parks’ access rules and authorized guided tours</a>.</p><p>Two Step is outside the national park. Use <a href="https://www.nps.gov/puho/planyourvisit/snorkeling.htm">NPS coastal access directions</a>; the park’s lot is for visiting the cultural grounds.</p></details><p class="outing-note kona-access-review">Official sources reviewed November 12, 2026. Recheck the linked authority before your visit. This is not a live access or ocean-conditions report.</p></section>
 <section class="bd-method panel" aria-labelledby="bdMethodHead">
 <p class="eyebrow">How the call is made</p>
 <h2 id="bdMethodHead">The rules, published</h2>

@@ -135,3 +135,23 @@ test('a render error cannot leave partially rendered favorable coast cards', asy
     assert.equal(dom.window.document.querySelector('#bdError').hidden, false);
   } finally { dom.window.close(); }
 });
+
+test('manta distinguishes overnight outlook from daytime context, including old page shells', async () => {
+  const site = period => ({ id: 'village', short: 'Manta Village', nws: { lowFt: 3, highFt: 5, period }, decision: { state: 'WATCH', label: 'Watch', plain: 'Ask the operator' } });
+  const p = { ok: true, updated: new Date().toISOString(), sources: [], nights: [
+    { date: '2026-11-12', label: 'Tonight', sites: [site('night')], nwsCovered: true },
+    { date: '2026-11-13', label: 'Tomorrow', sites: [site('day')], nwsCovered: true }
+  ] };
+  const dom = page('kona-manta-ray-night', async () => response(p));
+  try {
+    const doc = dom.window.document;
+    const li = doc.querySelector('#mnNwsMod').closest('li');
+    li.innerHTML = '<b>The NWS Surf Zone Forecast</b> for west-facing leeward shores gives feet for the day. <span id="mnNwsMod">4</span>';
+    dom.window.eval(asset('kona-manta-ray-night')); await flush();
+    assert.match(doc.querySelector('#mnSites').textContent, /overnight outlook/);
+    assert.match(li.textContent, /daytime or overnight range/);
+    doc.querySelectorAll('#mnDays button')[1].click();
+    assert.match(doc.querySelector('#mnSites').textContent, /daytime context/);
+    assert.doesNotMatch(doc.querySelector('#mnSites').textContent, /overnight outlook/);
+  } finally { dom.window.close(); }
+});

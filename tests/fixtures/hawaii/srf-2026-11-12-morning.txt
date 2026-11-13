@@ -1,0 +1,98 @@
+HIZ052>054-132000-
+Big Island Windward and Southeast-
+848 AM HST Thu Nov 12 2026
+
+__________________________________________________________________
+                       Today                     Friday
+
+Shores                  Surf                       Surf
+                     AM     PM                  AM     PM
+__________________________________________________________________
+
+North Facing       10-14   8-12                 5-7    4-6
+East Facing          5-7    5-7                 5-7    5-7
+South Facing         2-4    2-4                 1-3    1-3
+
+
+.REST OF TODAY...
+Weather.....................Partly sunny. Numerous showers.
+High Temperature............In the lower 80s.
+Winds.......................Northeast winds around 10 mph.
+Tides...
+   Hilo Bay.................Low 0.9 feet 12:00 PM HST.
+                            High 1.2 feet 03:48 PM HST.
+Sunrise.....................6:26 AM HST.
+Sunset......................5:42 PM HST.
+
+.TONIGHT...
+Weather.....................Mostly cloudy. Numerous showers.
+Low Temperature.............Around 70.
+Winds.......................Northeast winds around 10 mph.
+Tides...
+   Hilo Bay.................Low 0.1 feet 10:03 PM HST.
+                            High 2.5 feet 05:49 AM HST.
+
+.FRIDAY...
+Weather.....................Mostly sunny. Scattered showers.
+High Temperature............In the lower 80s.
+Winds.......................Northeast winds around 10 mph.
+Tides...
+   Hilo Bay.................Low 0.9 feet 12:53 PM HST.
+                            High 1.1 feet 04:18 PM HST.
+Sunrise.....................6:27 AM HST.
+Sunset......................5:42 PM HST.
+
+$$
+
+HIZ023-026-051-132000-
+Big Island Leeward-
+848 AM HST Thu Nov 12 2026
+
+__________________________________________________________________
+                       Today                     Friday
+
+Shores                  Surf                       Surf
+                     AM     PM                  AM     PM
+__________________________________________________________________
+
+West Facing          3-5    4-6                 3-5    2-4
+South Facing         2-4    2-4                 1-3    1-3
+
+
+.REST OF TODAY...
+Weather.....................Mostly sunny. Isolated showers.
+High Temperature............In the mid 80s.
+Winds.......................Southwest winds around 5 mph, becoming
+                            west in the afternoon.
+Tides...
+   Kona.....................Low 0.6 feet 12:37 PM HST.
+                            High 1.0 feet 04:26 PM HST.
+   Kawaihae.................Low 0.4 feet 01:17 PM HST.
+                            High 0.7 feet 05:29 PM HST.
+Sunrise.....................6:30 AM HST.
+Sunset......................5:46 PM HST.
+
+.TONIGHT...
+Weather.....................Mostly cloudy until 12 AM, then partly
+                            cloudy. Scattered showers.
+Low Temperature.............In the upper 60s.
+Winds.......................East winds around 5 mph.
+Tides...
+   Kona.....................Low 0.0 feet 10:40 PM HST.
+   Kawaihae.................Low 0.2 feet 10:47 PM HST.
+
+.FRIDAY...
+Weather.....................Sunny.
+High Temperature............In the mid 80s.
+Winds.......................Light and variable winds, becoming west
+                            around 5 mph in the afternoon.
+Tides...
+   Kona.....................High 2.0 feet 06:27 AM HST.
+                            Low 0.6 feet 01:30 PM HST.
+                            High 0.9 feet 04:56 PM HST.
+   Kawaihae.................High 2.3 feet 06:29 AM HST.
+                            Low 0.4 feet 02:07 PM HST.
+Sunrise.....................6:31 AM HST.
+Sunset......................5:46 PM HST.
+
+$$

@@ -23,9 +23,14 @@
     $('#mnDays').querySelectorAll('.bd-day').forEach((b) => b.addEventListener('click', () => { picked = b.dataset.date; event('manta_night_picked', { days_ahead: data.nights.findIndex((d) => d.date === picked) }); render(); }));
   }
 
+  // Older production HTML shells also load this owner-hosted client.
+  const nwsMethod = $('#mnNwsMod')?.closest('li');
+  for (const node of nwsMethod?.childNodes || []) {
+    if (node.nodeType === 3) node.textContent = node.textContent.replace('for west-facing leeward shores gives feet for the day.', 'for west-facing leeward shores gives a daytime or overnight range. The period is labeled on each site card.');
+  }
   function siteCard(s, covered) {
     const d = s.decision;
-    const nws = s.nws ? `${s.nws.lowFt}–${s.nws.highFt} ft (west-facing, whole day)` : (covered ? 'not listed' : 'not available for this date');
+    const nws = s.nws ? `${s.nws.lowFt}–${s.nws.highFt} ft (west-facing, ${s.nws.period === 'night' ? 'overnight outlook' : 'daytime context'})` : (covered ? 'not listed' : 'not available for this date');
     const m = s.sea;
     const sea = m ? `${m.peakM.toFixed(2)} m${m.periodS ? `, ${m.periodS} s` : ''}${m.dirDeg != null ? ` from ${compass(m.dirDeg)}` : ''} · rougher than ${m.percentile}% of evenings` : 'no reading';
     const w = s.wind ? `${s.wind.mph} mph from ${compass(s.wind.fromDeg)}${s.wind.onshoreMph >= 15 ? ' (onshore)' : ''}` : 'no reading';
@@ -50,7 +55,7 @@
     $('#mnEyebrow').textContent = `${night.label} · ${dateLabel(night.date)} · 6 to 9 p.m. HST`;
     const names = night.sites.filter((s) => RANK[s.decision.state] === best).map((s) => s.short || s.name).join(' and ');
     $('#mnHeadline').textContent = best === 0 ? `${night.label}: calmer conditions at ${names}` : best === 1 ? `${night.label}: ask your operator about ${names}` : best === 3 ? `${night.label}: rough conditions reported; check each site below` : `${night.label}: no clear recommendation`;
-    $('#mnPlain').textContent = night.nwsCovered ? 'This rating is for the selected evening, 6–9 p.m. HST. Your operator decides whether the trip runs; this does not predict manta sightings.' : 'An NWS surf forecast could not be matched to this date. Ask your operator about the available model, wind and rain outlook; this is not a trip confirmation.';
+    $('#mnPlain').textContent = night.nwsCovered ? 'The wave model covers 6–9 p.m. HST. NWS surf covers a broader period, labeled below. Your operator decides whether the trip runs; this does not predict manta sightings.' : 'An NWS surf forecast could not be matched to this date. Ask your operator about the available model, wind and rain outlook; this is not a trip confirmation.';
     $('#mnSites').innerHTML = night.sites.map((s) => siteCard(s, night.nwsCovered)).join('');
     const HC = window.HawaiiCharts;
     if (HC && $('#mnRuler')) {

@@ -113,6 +113,9 @@
   const stale = () => lastLoaded && Date.now() - lastLoaded > 10 * 60000;
   document.addEventListener('visibilitychange', () => { if (!document.hidden && stale()) load(true); });
   setInterval(() => { if (!document.hidden && stale()) load(true); }, 60000);
+  const dayToolsScript = document.createElement('script');
+  dayToolsScript.src = OWNER + '/assets/hawaii-day-tools.js';
+  document.head.append(dayToolsScript);
   const outingScript = document.createElement('script');
   outingScript.src = OWNER + '/assets/big-island-outings.js';
   document.head.append(outingScript);

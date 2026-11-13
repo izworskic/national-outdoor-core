@@ -1,0 +1,2 @@
+# Developer-only independent comparator. Not part of the site runtime.
+astral==3.2

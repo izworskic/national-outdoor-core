@@ -1,0 +1,1074 @@
+{
+  "summary": {
+    "schemaVersion": 1,
+    "comparator": "Astral 3.2; sea-level observer; civil twilight 6 degrees",
+    "cases": 6594,
+    "coverage": "Every day 2026\u20132028, six Hawaii places; 2020/2040 and leap boundaries",
+    "maxAbsoluteMinutes": {
+      "sunrise": 1.43,
+      "sunset": 2.05,
+      "dawn": 1.841,
+      "dusk": 1.833
+    },
+    "toleranceMinutes": 5,
+    "note": "Agreement between calculations, not observed sunrise or weather/terrain visibility accuracy."
+  },
+  "samples": [
+    {
+      "date": "2026-01-01",
+      "place": "kona",
+      "sunrise": 418.75,
+      "sunset": 1076.8167,
+      "dawn": 394.4,
+      "dusk": 1101.15
+    },
+    {
+      "date": "2026-01-01",
+      "place": "hilo",
+      "sunrise": 415.2667,
+      "sunset": 1073.0167,
+      "dawn": 390.9167,
+      "dusk": 1097.3667
+    },
+    {
+      "date": "2026-01-01",
+      "place": "volcano",
+      "sunrise": 415.4,
+      "sunset": 1074.2667,
+      "dawn": 391.1,
+      "dusk": 1098.5667
+    },
+    {
+      "date": "2026-01-01",
+      "place": "honolulu",
+      "sunrise": 429.4,
+      "sunset": 1081.0667,
+      "dawn": 404.7667,
+      "dusk": 1105.6833
+    },
+    {
+      "date": "2026-01-01",
+      "place": "kahului",
+      "sunrise": 423.0333,
+      "sunset": 1076.3167,
+      "dawn": 398.4833,
+      "dusk": 1100.8667
+    },
+    {
+      "date": "2026-01-01",
+      "place": "lihue",
+      "sunrise": 436.75,
+      "sunset": 1085.8,
+      "dawn": 412.0,
+      "dusk": 1110.55
+    },
+    {
+      "date": "2026-03-15",
+      "place": "kona",
+      "sunrise": 392.2333,
+      "sunset": 1113.5167,
+      "dawn": 369.8667,
+      "dusk": 1135.8833
+    },
+    {
+      "date": "2026-03-15",
+      "place": "hilo",
+      "sunrise": 388.6,
+      "sunset": 1109.8667,
+      "dawn": 366.2333,
+      "dusk": 1132.25
+    },
+    {
+      "date": "2026-03-15",
+      "place": "volcano",
+      "sunrise": 389.2667,
+      "sunset": 1110.6,
+      "dawn": 366.9333,
+      "dusk": 1132.9333
+    },
+    {
+      "date": "2026-03-15",
+      "place": "honolulu",
+      "sunrise": 399.9,
+      "sunset": 1120.7667,
+      "dawn": 377.3,
+      "dusk": 1143.3833
+    },
+    {
+      "date": "2026-03-15",
+      "place": "kahului",
+      "sunrise": 394.2833,
+      "sunset": 1115.2667,
+      "dawn": 371.75,
+      "dusk": 1137.8167
+    },
+    {
+      "date": "2026-03-15",
+      "place": "lihue",
+      "sunrise": 406.0167,
+      "sunset": 1126.7333,
+      "dawn": 383.3167,
+      "dusk": 1149.45
+    },
+    {
+      "date": "2026-06-15",
+      "place": "kona",
+      "sunrise": 345.4167,
+      "sunset": 1143.8,
+      "dawn": 320.4833,
+      "dusk": 1168.75
+    },
+    {
+      "date": "2026-06-15",
+      "place": "hilo",
+      "sunrise": 341.6167,
+      "sunset": 1140.3333,
+      "dawn": 316.65,
+      "dusk": 1165.3
+    },
+    {
+      "date": "2026-06-15",
+      "place": "volcano",
+      "sunrise": 342.9,
+      "sunset": 1140.4333,
+      "dawn": 318.0,
+      "dusk": 1165.35
+    },
+    {
+      "date": "2026-06-15",
+      "place": "honolulu",
+      "sunrise": 349.5,
+      "sunset": 1154.6167,
+      "dawn": 324.1833,
+      "dusk": 1179.9333
+    },
+    {
+      "date": "2026-06-15",
+      "place": "kahului",
+      "sunrise": 344.8,
+      "sunset": 1148.2167,
+      "dawn": 319.5833,
+      "dusk": 1173.4333
+    },
+    {
+      "date": "2026-06-15",
+      "place": "lihue",
+      "sunrise": 354.1667,
+      "sunset": 1162.0333,
+      "dawn": 328.7,
+      "dusk": 1187.5167
+    },
+    {
+      "date": "2026-09-15",
+      "place": "kona",
+      "sunrise": 371.7333,
+      "sunset": 1106.1,
+      "dawn": 349.3,
+      "dusk": 1128.5
+    },
+    {
+      "date": "2026-09-15",
+      "place": "hilo",
+      "sunrise": 368.0667,
+      "sunset": 1102.4833,
+      "dawn": 345.6333,
+      "dusk": 1124.9
+    },
+    {
+      "date": "2026-09-15",
+      "place": "volcano",
+      "sunrise": 368.8333,
+      "sunset": 1103.1,
+      "dawn": 346.4333,
+      "dusk": 1125.4833
+    },
+    {
+      "date": "2026-09-15",
+      "place": "honolulu",
+      "sunrise": 378.7667,
+      "sunset": 1113.9333,
+      "dawn": 356.0833,
+      "dusk": 1136.5833
+    },
+    {
+      "date": "2026-09-15",
+      "place": "kahului",
+      "sunrise": 373.3167,
+      "sunset": 1108.2833,
+      "dawn": 350.7,
+      "dusk": 1130.8667
+    },
+    {
+      "date": "2026-09-15",
+      "place": "lihue",
+      "sunrise": 384.6333,
+      "sunset": 1120.1167,
+      "dawn": 361.85,
+      "dusk": 1142.8833
+    },
+    {
+      "date": "2026-12-15",
+      "place": "kona",
+      "sunrise": 410.8667,
+      "sunset": 1067.7333,
+      "dawn": 386.4667,
+      "dusk": 1092.15
+    },
+    {
+      "date": "2026-12-15",
+      "place": "hilo",
+      "sunrise": 407.4,
+      "sunset": 1063.9333,
+      "dawn": 382.9667,
+      "dusk": 1088.3667
+    },
+    {
+      "date": "2026-12-15",
+      "place": "volcano",
+      "sunrise": 407.5167,
+      "sunset": 1065.2,
+      "dawn": 383.15,
+      "dusk": 1089.5667
+    },
+    {
+      "date": "2026-12-15",
+      "place": "honolulu",
+      "sunrise": 421.5833,
+      "sunset": 1071.9167,
+      "dawn": 396.8833,
+      "dusk": 1096.6167
+    },
+    {
+      "date": "2026-12-15",
+      "place": "kahului",
+      "sunrise": 415.2,
+      "sunset": 1067.1833,
+      "dawn": 390.5833,
+      "dusk": 1091.8167
+    },
+    {
+      "date": "2026-12-15",
+      "place": "lihue",
+      "sunrise": 428.95,
+      "sunset": 1076.6333,
+      "dawn": 404.1333,
+      "dusk": 1101.4667
+    },
+    {
+      "date": "2026-12-31",
+      "place": "kona",
+      "sunrise": 418.3167,
+      "sunset": 1076.05,
+      "dawn": 393.9667,
+      "dusk": 1100.4167
+    },
+    {
+      "date": "2026-12-31",
+      "place": "hilo",
+      "sunrise": 414.85,
+      "sunset": 1072.25,
+      "dawn": 390.4833,
+      "dusk": 1096.6333
+    },
+    {
+      "date": "2026-12-31",
+      "place": "volcano",
+      "sunrise": 414.9833,
+      "sunset": 1073.5167,
+      "dawn": 390.65,
+      "dusk": 1097.8333
+    },
+    {
+      "date": "2026-12-31",
+      "place": "honolulu",
+      "sunrise": 429.0,
+      "sunset": 1080.2833,
+      "dawn": 404.35,
+      "dusk": 1104.9333
+    },
+    {
+      "date": "2026-12-31",
+      "place": "kahului",
+      "sunrise": 422.6333,
+      "sunset": 1075.55,
+      "dawn": 398.05,
+      "dusk": 1100.1167
+    },
+    {
+      "date": "2026-12-31",
+      "place": "lihue",
+      "sunrise": 436.35,
+      "sunset": 1085.0167,
+      "dawn": 411.5833,
+      "dusk": 1109.7833
+    },
+    {
+      "date": "2027-01-01",
+      "place": "kona",
+      "sunrise": 418.6667,
+      "sunset": 1076.6667,
+      "dawn": 394.3167,
+      "dusk": 1101.0
+    },
+    {
+      "date": "2027-01-01",
+      "place": "hilo",
+      "sunrise": 415.1833,
+      "sunset": 1072.8667,
+      "dawn": 390.8333,
+      "dusk": 1097.2167
+    },
+    {
+      "date": "2027-01-01",
+      "place": "volcano",
+      "sunrise": 415.3167,
+      "sunset": 1074.1167,
+      "dawn": 391.0167,
+      "dusk": 1098.4167
+    },
+    {
+      "date": "2027-01-01",
+      "place": "honolulu",
+      "sunrise": 429.3333,
+      "sunset": 1080.9,
+      "dawn": 404.6833,
+      "dusk": 1105.5333
+    },
+    {
+      "date": "2027-01-01",
+      "place": "kahului",
+      "sunrise": 422.9667,
+      "sunset": 1076.1667,
+      "dawn": 398.4,
+      "dusk": 1100.7167
+    },
+    {
+      "date": "2027-01-01",
+      "place": "lihue",
+      "sunrise": 436.6833,
+      "sunset": 1085.65,
+      "dawn": 411.9167,
+      "dusk": 1110.4
+    },
+    {
+      "date": "2027-03-15",
+      "place": "kona",
+      "sunrise": 392.4333,
+      "sunset": 1113.45,
+      "dawn": 370.0833,
+      "dusk": 1135.8167
+    },
+    {
+      "date": "2027-03-15",
+      "place": "hilo",
+      "sunrise": 388.8167,
+      "sunset": 1109.8,
+      "dawn": 366.45,
+      "dusk": 1132.1833
+    },
+    {
+      "date": "2027-03-15",
+      "place": "volcano",
+      "sunrise": 389.4667,
+      "sunset": 1110.5333,
+      "dawn": 367.1333,
+      "dusk": 1132.8667
+    },
+    {
+      "date": "2027-03-15",
+      "place": "honolulu",
+      "sunrise": 400.1167,
+      "sunset": 1120.7,
+      "dawn": 377.5167,
+      "dusk": 1143.3167
+    },
+    {
+      "date": "2027-03-15",
+      "place": "kahului",
+      "sunrise": 394.5,
+      "sunset": 1115.2,
+      "dawn": 371.9667,
+      "dusk": 1137.75
+    },
+    {
+      "date": "2027-03-15",
+      "place": "lihue",
+      "sunrise": 406.2333,
+      "sunset": 1126.65,
+      "dawn": 383.5333,
+      "dusk": 1149.3667
+    },
+    {
+      "date": "2027-06-15",
+      "place": "kona",
+      "sunrise": 345.4,
+      "sunset": 1143.7333,
+      "dawn": 320.45,
+      "dusk": 1168.6833
+    },
+    {
+      "date": "2027-06-15",
+      "place": "hilo",
+      "sunrise": 341.5833,
+      "sunset": 1140.2667,
+      "dawn": 316.6333,
+      "dusk": 1165.2333
+    },
+    {
+      "date": "2027-06-15",
+      "place": "volcano",
+      "sunrise": 342.8667,
+      "sunset": 1140.3667,
+      "dawn": 317.9667,
+      "dusk": 1165.2667
+    },
+    {
+      "date": "2027-06-15",
+      "place": "honolulu",
+      "sunrise": 349.4667,
+      "sunset": 1154.55,
+      "dawn": 324.1667,
+      "dusk": 1179.8667
+    },
+    {
+      "date": "2027-06-15",
+      "place": "kahului",
+      "sunrise": 344.7667,
+      "sunset": 1148.15,
+      "dawn": 319.55,
+      "dusk": 1173.3667
+    },
+    {
+      "date": "2027-06-15",
+      "place": "lihue",
+      "sunrise": 354.1333,
+      "sunset": 1161.9667,
+      "dawn": 328.6667,
+      "dusk": 1187.45
+    },
+    {
+      "date": "2027-09-15",
+      "place": "kona",
+      "sunrise": 371.6833,
+      "sunset": 1106.3167,
+      "dawn": 349.25,
+      "dusk": 1128.7333
+    },
+    {
+      "date": "2027-09-15",
+      "place": "hilo",
+      "sunrise": 368.0333,
+      "sunset": 1102.7,
+      "dawn": 345.5833,
+      "dusk": 1125.1167
+    },
+    {
+      "date": "2027-09-15",
+      "place": "volcano",
+      "sunrise": 368.8,
+      "sunset": 1103.3333,
+      "dawn": 346.3833,
+      "dusk": 1125.7
+    },
+    {
+      "date": "2027-09-15",
+      "place": "honolulu",
+      "sunrise": 378.7,
+      "sunset": 1114.1667,
+      "dawn": 356.0167,
+      "dusk": 1136.8167
+    },
+    {
+      "date": "2027-09-15",
+      "place": "kahului",
+      "sunrise": 373.2667,
+      "sunset": 1108.5167,
+      "dawn": 350.65,
+      "dusk": 1131.1
+    },
+    {
+      "date": "2027-09-15",
+      "place": "lihue",
+      "sunrise": 384.5667,
+      "sunset": 1120.3667,
+      "dawn": 361.7833,
+      "dusk": 1143.1167
+    },
+    {
+      "date": "2027-12-15",
+      "place": "kona",
+      "sunrise": 410.7333,
+      "sunset": 1067.6333,
+      "dawn": 386.3333,
+      "dusk": 1092.05
+    },
+    {
+      "date": "2027-12-15",
+      "place": "hilo",
+      "sunrise": 407.25,
+      "sunset": 1063.8333,
+      "dawn": 382.8333,
+      "dusk": 1088.25
+    },
+    {
+      "date": "2027-12-15",
+      "place": "volcano",
+      "sunrise": 407.3833,
+      "sunset": 1065.1,
+      "dawn": 383.0167,
+      "dusk": 1089.4667
+    },
+    {
+      "date": "2027-12-15",
+      "place": "honolulu",
+      "sunrise": 421.45,
+      "sunset": 1071.8167,
+      "dawn": 396.75,
+      "dusk": 1096.5167
+    },
+    {
+      "date": "2027-12-15",
+      "place": "kahului",
+      "sunrise": 415.0667,
+      "sunset": 1067.0833,
+      "dawn": 390.45,
+      "dusk": 1091.7167
+    },
+    {
+      "date": "2027-12-15",
+      "place": "lihue",
+      "sunrise": 428.8167,
+      "sunset": 1076.5333,
+      "dawn": 403.9833,
+      "dusk": 1101.3667
+    },
+    {
+      "date": "2027-12-31",
+      "place": "kona",
+      "sunrise": 418.2333,
+      "sunset": 1075.9,
+      "dawn": 393.8667,
+      "dusk": 1100.2667
+    },
+    {
+      "date": "2027-12-31",
+      "place": "hilo",
+      "sunrise": 414.7667,
+      "sunset": 1072.1167,
+      "dawn": 390.3833,
+      "dusk": 1096.4833
+    },
+    {
+      "date": "2027-12-31",
+      "place": "volcano",
+      "sunrise": 414.8833,
+      "sunset": 1073.3667,
+      "dawn": 390.5667,
+      "dusk": 1097.6833
+    },
+    {
+      "date": "2027-12-31",
+      "place": "honolulu",
+      "sunrise": 428.9167,
+      "sunset": 1080.1333,
+      "dawn": 404.2667,
+      "dusk": 1104.7833
+    },
+    {
+      "date": "2027-12-31",
+      "place": "kahului",
+      "sunrise": 422.55,
+      "sunset": 1075.4,
+      "dawn": 397.9667,
+      "dusk": 1099.9667
+    },
+    {
+      "date": "2027-12-31",
+      "place": "lihue",
+      "sunrise": 436.2667,
+      "sunset": 1084.8667,
+      "dawn": 411.4833,
+      "dusk": 1109.65
+    },
+    {
+      "date": "2028-01-01",
+      "place": "kona",
+      "sunrise": 418.5833,
+      "sunset": 1076.5167,
+      "dawn": 394.2333,
+      "dusk": 1100.85
+    },
+    {
+      "date": "2028-01-01",
+      "place": "hilo",
+      "sunrise": 415.1,
+      "sunset": 1072.7167,
+      "dawn": 390.7333,
+      "dusk": 1097.0667
+    },
+    {
+      "date": "2028-01-01",
+      "place": "volcano",
+      "sunrise": 415.2333,
+      "sunset": 1073.9667,
+      "dawn": 390.9167,
+      "dusk": 1098.2833
+    },
+    {
+      "date": "2028-01-01",
+      "place": "honolulu",
+      "sunrise": 429.25,
+      "sunset": 1080.75,
+      "dawn": 404.6,
+      "dusk": 1105.3833
+    },
+    {
+      "date": "2028-01-01",
+      "place": "kahului",
+      "sunrise": 422.8833,
+      "sunset": 1076.0167,
+      "dawn": 398.3167,
+      "dusk": 1100.5667
+    },
+    {
+      "date": "2028-01-01",
+      "place": "lihue",
+      "sunrise": 436.6,
+      "sunset": 1085.4833,
+      "dawn": 411.8333,
+      "dusk": 1110.25
+    },
+    {
+      "date": "2028-02-29",
+      "place": "kona",
+      "sunrise": 403.85,
+      "sunset": 1109.0,
+      "dawn": 381.3333,
+      "dusk": 1131.5333
+    },
+    {
+      "date": "2028-02-29",
+      "place": "hilo",
+      "sunrise": 400.2667,
+      "sunset": 1105.3167,
+      "dawn": 377.7333,
+      "dusk": 1127.85
+    },
+    {
+      "date": "2028-02-29",
+      "place": "volcano",
+      "sunrise": 400.7833,
+      "sunset": 1106.1833,
+      "dawn": 378.3,
+      "dusk": 1128.6667
+    },
+    {
+      "date": "2028-02-29",
+      "place": "honolulu",
+      "sunrise": 412.2667,
+      "sunset": 1115.5,
+      "dawn": 389.5167,
+      "dusk": 1138.2667
+    },
+    {
+      "date": "2028-02-29",
+      "place": "kahului",
+      "sunrise": 406.4667,
+      "sunset": 1110.2,
+      "dawn": 383.7833,
+      "dusk": 1132.9
+    },
+    {
+      "date": "2028-02-29",
+      "place": "lihue",
+      "sunrise": 418.7,
+      "sunset": 1121.1667,
+      "dawn": 395.8333,
+      "dusk": 1144.0333
+    },
+    {
+      "date": "2028-03-15",
+      "place": "kona",
+      "sunrise": 391.7833,
+      "sunset": 1113.6667,
+      "dawn": 369.4333,
+      "dusk": 1136.0333
+    },
+    {
+      "date": "2028-03-15",
+      "place": "hilo",
+      "sunrise": 388.1667,
+      "sunset": 1110.0167,
+      "dawn": 365.8,
+      "dusk": 1132.4
+    },
+    {
+      "date": "2028-03-15",
+      "place": "volcano",
+      "sunrise": 388.8167,
+      "sunset": 1110.7333,
+      "dawn": 366.5,
+      "dusk": 1133.0833
+    },
+    {
+      "date": "2028-03-15",
+      "place": "honolulu",
+      "sunrise": 399.4333,
+      "sunset": 1120.95,
+      "dawn": 376.8333,
+      "dusk": 1143.5667
+    },
+    {
+      "date": "2028-03-15",
+      "place": "kahului",
+      "sunrise": 393.8333,
+      "sunset": 1115.4333,
+      "dawn": 371.3,
+      "dusk": 1137.9833
+    },
+    {
+      "date": "2028-03-15",
+      "place": "lihue",
+      "sunrise": 405.5333,
+      "sunset": 1126.9167,
+      "dawn": 382.8333,
+      "dusk": 1149.6333
+    },
+    {
+      "date": "2028-06-15",
+      "place": "kona",
+      "sunrise": 345.5167,
+      "sunset": 1143.9333,
+      "dawn": 320.55,
+      "dusk": 1168.9
+    },
+    {
+      "date": "2028-06-15",
+      "place": "hilo",
+      "sunrise": 341.7,
+      "sunset": 1140.4667,
+      "dawn": 316.7333,
+      "dusk": 1165.45
+    },
+    {
+      "date": "2028-06-15",
+      "place": "volcano",
+      "sunrise": 342.9833,
+      "sunset": 1140.5833,
+      "dawn": 318.0833,
+      "dusk": 1165.4833
+    },
+    {
+      "date": "2028-06-15",
+      "place": "honolulu",
+      "sunrise": 349.5833,
+      "sunset": 1154.7667,
+      "dawn": 324.2667,
+      "dusk": 1180.0833
+    },
+    {
+      "date": "2028-06-15",
+      "place": "kahului",
+      "sunrise": 344.8833,
+      "sunset": 1148.3667,
+      "dawn": 319.6667,
+      "dusk": 1173.5833
+    },
+    {
+      "date": "2028-06-15",
+      "place": "lihue",
+      "sunrise": 354.25,
+      "sunset": 1162.1833,
+      "dawn": 328.7667,
+      "dusk": 1187.6667
+    },
+    {
+      "date": "2028-09-15",
+      "place": "kona",
+      "sunrise": 371.8333,
+      "sunset": 1105.6333,
+      "dawn": 349.4167,
+      "dusk": 1128.0333
+    },
+    {
+      "date": "2028-09-15",
+      "place": "hilo",
+      "sunrise": 368.1833,
+      "sunset": 1102.0167,
+      "dawn": 345.7333,
+      "dusk": 1124.4333
+    },
+    {
+      "date": "2028-09-15",
+      "place": "volcano",
+      "sunrise": 368.9333,
+      "sunset": 1102.6333,
+      "dawn": 346.55,
+      "dusk": 1125.0167
+    },
+    {
+      "date": "2028-09-15",
+      "place": "honolulu",
+      "sunrise": 378.9,
+      "sunset": 1113.4333,
+      "dawn": 356.2167,
+      "dusk": 1136.0833
+    },
+    {
+      "date": "2028-09-15",
+      "place": "kahului",
+      "sunrise": 373.4333,
+      "sunset": 1107.8,
+      "dawn": 350.8333,
+      "dusk": 1130.3833
+    },
+    {
+      "date": "2028-09-15",
+      "place": "lihue",
+      "sunrise": 384.7833,
+      "sunset": 1119.6167,
+      "dawn": 362.0,
+      "dusk": 1142.3667
+    },
+    {
+      "date": "2028-12-15",
+      "place": "kona",
+      "sunrise": 411.15,
+      "sunset": 1067.95,
+      "dawn": 386.7333,
+      "dusk": 1092.3667
+    },
+    {
+      "date": "2028-12-15",
+      "place": "hilo",
+      "sunrise": 407.6833,
+      "sunset": 1064.15,
+      "dawn": 383.25,
+      "dusk": 1088.5667
+    },
+    {
+      "date": "2028-12-15",
+      "place": "volcano",
+      "sunrise": 407.8,
+      "sunset": 1065.4167,
+      "dawn": 383.4167,
+      "dusk": 1089.7833
+    },
+    {
+      "date": "2028-12-15",
+      "place": "honolulu",
+      "sunrise": 421.8667,
+      "sunset": 1072.1333,
+      "dawn": 397.1667,
+      "dusk": 1096.8333
+    },
+    {
+      "date": "2028-12-15",
+      "place": "kahului",
+      "sunrise": 415.4833,
+      "sunset": 1067.4,
+      "dawn": 390.8667,
+      "dusk": 1092.0333
+    },
+    {
+      "date": "2028-12-15",
+      "place": "lihue",
+      "sunrise": 429.25,
+      "sunset": 1076.8333,
+      "dawn": 404.4167,
+      "dusk": 1101.6667
+    },
+    {
+      "date": "2028-12-31",
+      "place": "kona",
+      "sunrise": 418.4833,
+      "sunset": 1076.3667,
+      "dawn": 394.15,
+      "dusk": 1100.7167
+    },
+    {
+      "date": "2028-12-31",
+      "place": "hilo",
+      "sunrise": 415.0167,
+      "sunset": 1072.5667,
+      "dawn": 390.65,
+      "dusk": 1096.9333
+    },
+    {
+      "date": "2028-12-31",
+      "place": "volcano",
+      "sunrise": 415.15,
+      "sunset": 1073.8167,
+      "dawn": 390.8333,
+      "dusk": 1098.1333
+    },
+    {
+      "date": "2028-12-31",
+      "place": "honolulu",
+      "sunrise": 429.1667,
+      "sunset": 1080.6,
+      "dawn": 404.5167,
+      "dusk": 1105.25
+    },
+    {
+      "date": "2028-12-31",
+      "place": "kahului",
+      "sunrise": 422.8,
+      "sunset": 1075.8667,
+      "dawn": 398.2333,
+      "dusk": 1100.4167
+    },
+    {
+      "date": "2028-12-31",
+      "place": "lihue",
+      "sunrise": 436.5167,
+      "sunset": 1085.3333,
+      "dawn": 411.75,
+      "dusk": 1110.1
+    },
+    {
+      "date": "2020-01-01",
+      "place": "kona",
+      "sunrise": 418.5667,
+      "sunset": 1076.5,
+      "dawn": 394.2333,
+      "dusk": 1100.8333
+    },
+    {
+      "date": "2020-01-01",
+      "place": "hilo",
+      "sunrise": 415.1,
+      "sunset": 1072.7,
+      "dawn": 390.7333,
+      "dusk": 1097.05
+    },
+    {
+      "date": "2020-01-01",
+      "place": "volcano",
+      "sunrise": 415.2333,
+      "sunset": 1073.95,
+      "dawn": 390.9167,
+      "dusk": 1098.2667
+    },
+    {
+      "date": "2020-01-01",
+      "place": "honolulu",
+      "sunrise": 429.25,
+      "sunset": 1080.7333,
+      "dawn": 404.6,
+      "dusk": 1105.3667
+    },
+    {
+      "date": "2020-01-01",
+      "place": "kahului",
+      "sunrise": 422.8833,
+      "sunset": 1076.0,
+      "dawn": 398.3167,
+      "dusk": 1100.55
+    },
+    {
+      "date": "2020-01-01",
+      "place": "lihue",
+      "sunrise": 436.6,
+      "sunset": 1085.4667,
+      "dawn": 411.8333,
+      "dusk": 1110.2333
+    },
+    {
+      "date": "2020-02-29",
+      "place": "kona",
+      "sunrise": 403.9,
+      "sunset": 1108.9833,
+      "dawn": 381.4,
+      "dusk": 1131.5167
+    },
+    {
+      "date": "2020-02-29",
+      "place": "hilo",
+      "sunrise": 400.3167,
+      "sunset": 1105.3,
+      "dawn": 377.8,
+      "dusk": 1127.85
+    },
+    {
+      "date": "2020-02-29",
+      "place": "volcano",
+      "sunrise": 400.85,
+      "sunset": 1106.1667,
+      "dawn": 378.35,
+      "dusk": 1128.6667
+    },
+    {
+      "date": "2020-02-29",
+      "place": "honolulu",
+      "sunrise": 412.3333,
+      "sunset": 1115.4833,
+      "dawn": 389.5667,
+      "dusk": 1138.25
+    },
+    {
+      "date": "2020-02-29",
+      "place": "kahului",
+      "sunrise": 406.5333,
+      "sunset": 1110.1667,
+      "dawn": 383.8333,
+      "dusk": 1132.8833
+    },
+    {
+      "date": "2020-02-29",
+      "place": "lihue",
+      "sunrise": 418.7667,
+      "sunset": 1121.15,
+      "dawn": 395.9,
+      "dusk": 1144.0167
+    },
+    {
+      "date": "2040-12-31",
+      "place": "kona",
+      "sunrise": 418.5,
+      "sunset": 1076.4,
+      "dawn": 394.15,
+      "dusk": 1100.7333
+    },
+    {
+      "date": "2040-12-31",
+      "place": "hilo",
+      "sunrise": 415.0167,
+      "sunset": 1072.6,
+      "dawn": 390.65,
+      "dusk": 1096.95
+    },
+    {
+      "date": "2040-12-31",
+      "place": "volcano",
+      "sunrise": 415.15,
+      "sunset": 1073.85,
+      "dawn": 390.8333,
+      "dusk": 1098.15
+    },
+    {
+      "date": "2040-12-31",
+      "place": "honolulu",
+      "sunrise": 429.1667,
+      "sunset": 1080.6333,
+      "dawn": 404.5167,
+      "dusk": 1105.2667
+    },
+    {
+      "date": "2040-12-31",
+      "place": "kahului",
+      "sunrise": 422.8,
+      "sunset": 1075.8833,
+      "dawn": 398.2333,
+      "dusk": 1100.45
+    },
+    {
+      "date": "2040-12-31",
+      "place": "lihue",
+      "sunrise": 436.5167,
+      "sunset": 1085.3667,
+      "dawn": 411.75,
+      "dusk": 1110.1333
+    }
+  ]
+}

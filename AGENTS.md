@@ -18,3 +18,15 @@ Implement them in the root layout/document/template/generator or an idempotent b
 Before attaching a new or extracted repository to a ChrisIzworski.com production hostname, verify both identifiers in its build output. Redirect-only repositories that serve no HTML are exempt; their canonical destination must comply.
 
 The network source-of-truth policy is `izworskic/chrisizworski-com/docs/NETWORK_SITE_TAGS.md`.
+
+## Shared visitor-experience guidance (substantial UI work only)
+
+This repository owns its source, data, deployment and release decisions. The central site does not automatically inject its agent instructions into this repository.
+
+For a new visitor-facing tool, a major interactive feature, or a substantial redesign, first read this repository's instructions and tests, then review the latest compatible released 1.2.x Experience OS package (`EXPERIENCE_OS_V1`):
+https://github.com/izworskic/chrisizworski-com/tree/main/design-systems/experience-os-v1
+
+Also review the Experience Investment skill for purpose-built design alternatives and proof:
+https://github.com/izworskic/chrisizworski-com/tree/main/.agents/skills/experience-investment
+
+Preserve this repository's existing safety, fact provenance, canonical URLs, advertising, ownership and CI rules. Use the smallest technically justified stack. Do not apply a universal page template or copy implementation across repositories. For small repairs, apply directly relevant guardrails without a full design exercise. Never interpret this reference as approval to merge or deploy.

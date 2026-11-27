@@ -145,3 +145,55 @@ test("shared national place toolbar keeps shared links query-based and analytics
   assert.match(client,/National Place Switched/);
   assert.doesNotMatch(client,/National Place Shared[^\n]{0,160}(?:query|latitude|longitude|place)/);
 });
+
+const handler=require("../api/national-geocode.js");
+async function invoke(query){
+  const result={headers:{}};
+  await handler({method:"GET",query:{q:query}},{setHeader(k,v){result.headers[k]=v;},status(n){result.status=n;return this;},json(v){result.body=v;return this;}});
+  return result;
+}
+function jsonResponse(value,status=200){return new Response(JSON.stringify(value),{status});}
+test("unmapped ZIP does not fall through to unverified Nominatim coordinates",async t=>{
+  const fetch=t.mock.method(globalThis,"fetch",async url=>{
+    assert.match(String(url),/TIGERweb/);
+    return jsonResponse({features:[]});
+  });
+  const r=await invoke("99999");
+  assert.equal(r.status,404);
+  assert.match(r.body.error,/ZIP Code Tabulation Area/);
+  assert.equal(r.headers["Cache-Control"],"no-store");
+  assert.equal(fetch.mock.callCount(),1);
+});
+test("Census outage does not substitute an unrelated postal location",async t=>{
+  const fetch=t.mock.method(globalThis,"fetch",async()=>jsonResponse({},503));
+  const r=await invoke("48706");
+  assert.equal(r.status,502);
+  assert.equal(r.headers["Cache-Control"],"no-store");
+  assert.equal(fetch.mock.callCount(),1);
+});
+test("ZIP mismatch and missing numeric coordinates fail closed",async t=>{
+  const fetch=t.mock.method(globalThis,"fetch",async()=>jsonResponse({features:[{attributes:{ZCTA5:"99998",CENTLAT:39,CENTLON:-81}}]}));
+  assert.equal((await invoke("99999")).status,502);
+  assert.equal(fetch.mock.callCount(),1);
+  assert.equal(geo.validCoordinates(null,""),null);
+  assert.equal(geo.validCoordinates(false,0),null);
+});
+test("leading-zero ZIP gets exact Census identity, representative coordinates and NWS context",async t=>{
+  t.mock.method(globalThis,"fetch",async url=>{
+    const u=new URL(url);
+    if(u.hostname==="api.weather.gov")return jsonResponse({properties:{timeZone:"America/New_York"}});
+    if(u.pathname.includes("PUMA_TAD")){assert.equal(u.searchParams.get("where"),"ZCTA5='02108'");return jsonResponse({features:[{attributes:{ZCTA5:"02108",CENTLAT:"42.357",CENTLON:"-71.065"}}]});}
+    assert.match(u.pathname,/State_County/);
+    return jsonResponse({features:[{attributes:{STUSAB:"MA"}}]});
+  });
+  const r=await invoke("02108");
+  assert.equal(r.status,200);
+  assert.equal(r.body.postcode,"02108");
+  assert.equal(r.body.stateCode,"MA");
+  assert.equal(r.body.latitude,42.357);
+  assert.match(r.body.attribution,/not a street address or postal delivery verification/);
+});
+test("explicit city-state fallback cannot return a different state",async t=>{
+  t.mock.method(globalThis,"fetch",async url=>String(url).includes("nominatim")?jsonResponse([{lat:"45.52",lon:"-122.67",type:"city",address:{city:"Portland",country_code:"us","ISO3166-2-lvl4":"US-OR"}}]):jsonResponse({features:[]}));
+  assert.equal((await invoke("Portland, ME")).status,404);
+});

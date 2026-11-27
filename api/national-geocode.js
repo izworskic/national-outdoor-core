@@ -63,6 +63,8 @@ function sqlText(value) {
   return String(value || "").replace(/'/g, "''");
 }
 function finite(value) {
+  if (typeof value !== "number" && typeof value !== "string") return null;
+  if (typeof value === "string" && !value.trim()) return null;
   const n = Number(value);
   return Number.isFinite(n) ? n : null;
 }
@@ -225,11 +227,15 @@ async function censusPlaceGeocode(parsed) {
     const where = "ZCTA5='" + parsed.zip + "'";
     const data = await fetchJson(tigerQueryUrl(TIGER_ZCTA, where, "ZCTA5,CENTLAT,CENTLON,INTPTLAT,INTPTLON"), 6000);
     if (data?.error) throw new Error("Census TIGERweb ZIP lookup failed");
-    const attributes = data?.features?.[0]?.attributes;
+    if (!Array.isArray(data?.features)) throw new Error("Census TIGERweb ZIP response unrecognized");
+    if (!data.features.length) return null;
+    const attributes = data.features[0]?.attributes;
+    if (String(attributes?.ZCTA5 || "") !== parsed.zip) throw new Error("Census TIGERweb ZIP identity mismatch");
     const latitude = finite(attributes?.CENTLAT) ?? finite(attributes?.INTPTLAT);
     const longitude = finite(attributes?.CENTLON) ?? finite(attributes?.INTPTLON);
-    if (latitude == null || longitude == null) return null;
+    if (!validCoordinates(latitude, longitude)) throw new Error("Census TIGERweb ZIP coordinates unavailable");
     const state = await censusStateForPoint(latitude, longitude);
+    if (!state) throw new Error("Census TIGERweb ZIP state unavailable");
     return censusZipRow(attributes, state, parsed.zip);
   }
   return null;
@@ -246,6 +252,9 @@ async function nominatimGeocode(query) {
 }
 async function geocode(query) {
   const parsed = parseManualQuery(query);
+  // A postal code is an identity, not a free-text place search. ZCTA coverage is
+  // incomplete (e.g. some PO boxes); a missing area must not become an OSM guess.
+  if (parsed.kind === "zip") return censusPlaceGeocode(parsed);
   let censusError = null;
   if (parsed.kind !== "flexible") {
     try {
@@ -256,7 +265,9 @@ async function geocode(query) {
     }
   }
   try {
-    return await nominatimGeocode(query);
+    const row = await nominatimGeocode(query);
+    if (parsed.kind === "place" && row && stateCode(row.address) !== parsed.state.code) return null;
+    return row;
   } catch (error) {
     if (censusError) {
       throw new Error("Census TIGERweb and OpenStreetMap location services are temporarily unavailable");
@@ -312,7 +323,7 @@ function locationPayload(row, query, coordinates, context = {}, sourceMode = "ma
     coordinate_precision: sourceMode === "device" ? "rounded to 0.001° before lookup" : null,
     geocodeSource: provider === "census-tigerweb" ? "U.S. Census Bureau TIGERweb" : "OpenStreetMap Nominatim",
     attribution: provider === "census-tigerweb"
-      ? "Place/ZIP coordinates from the U.S. Census Bureau TIGERweb; timezone context from the National Weather Service."
+      ? "Place or ZIP Code Tabulation Area representative coordinates from the U.S. Census Bureau TIGERweb; not a street address or postal delivery verification. Timezone context from the National Weather Service."
       : "Geocoding © OpenStreetMap contributors via Nominatim; timezone context from the National Weather Service.",
     retrieved_at: new Date().toISOString(),
   };
@@ -352,10 +363,14 @@ module.exports = async function handler(req, res) {
     if (q.length < 2) return res.status(400).json({ error: "Enter a U.S. city or ZIP code" });
 
     const row = await geocode(q);
-    if (!row) return res.status(404).json({ error: "Location not found in the United States" });
+    if (!row) {
+      res.setHeader("Cache-Control", "no-store");
+      return res.status(404).json({ error: parseManualQuery(q).kind === "zip" ? "No mapped U.S. Census ZIP Code Tabulation Area found. Try a nearby city and state." : "Location not found in the United States" });
+    }
 
     const coordinates = validCoordinates(row.lat, row.lon);
-    const context = coordinates ? await nwsContext(coordinates.latitude, coordinates.longitude) : {};
+    if (!coordinates) throw new Error("Location coordinates unavailable");
+    const context = await nwsContext(coordinates.latitude, coordinates.longitude);
     return res.status(200).json(locationPayload(row, q, coordinates, context, "manual"));
   } catch (error) {
     res.setHeader("Cache-Control", "no-store");
